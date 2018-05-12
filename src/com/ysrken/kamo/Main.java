@@ -12,6 +12,8 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
         primaryStage.setTitle("艦これモニタリングツール「KAMO」");
         primaryStage.setScene(new Scene(root, 500, 300));
+        primaryStage.setMinWidth(350);
+        primaryStage.setMinHeight(200);
         primaryStage.show();
     }
     public static void main(String[] args) {
