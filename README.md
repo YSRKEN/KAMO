@@ -1,2 +1,6 @@
 # KAMO
-KAncolle MOnitoring tool
+
+## 概要
+
+　艦これ用のモニタリングツール(KAncolle MOnitoring tool)を略して「KAMO」になったかも！  
+　拙作「おりこうさんな秘書」の思想を継承しながら、より使いやすくパワーアップした感じになるかも！
