@@ -1,0 +1,2 @@
+# KAMO
+KAncolle MOnitoring tool
