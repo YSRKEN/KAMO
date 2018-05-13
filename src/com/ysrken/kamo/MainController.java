@@ -1,6 +1,7 @@
 package com.ysrken.kamo;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 
 import java.awt.*;
@@ -9,28 +10,28 @@ import java.net.URI;
 
 public class MainController {
     @FXML private MenuItem ExitMenu;
+    @FXML private MenuItem GetPositionMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
+    @FXML private Button GetPositionButton;
 
     public void initialize(){
-        // 終了コマンド
-        ExitMenu.setOnAction(e -> System.exit(0));
-        // バージョンチェックコマンド
-        CheckVersionMenu.setOnAction(e -> checkVersionCommand());
-        // バージョン情報コマンド
-        AboutMenu.setOnAction(e -> {
-            String contentText = String.format("ソフト名：%s%nバージョン：%s%n作者：%s",
-                    Utility.getSoftwareName(),
-                    Utility.getSoftwareVersion(),
-                    Utility.getSoftwareAuthor());
-            Utility.showDialog(contentText, "バージョン情報");
-        });
         // 起動時にバージョンチェックする
-        checkVersionCommand();
+        checkVersionCommand(false);
     }
-
+    // ソフトウェアを終了する
+    @FXML private void exitCommand(){
+        System.exit(0);
+    }
+    // ゲーム座標を取得する
+    @FXML private void getPositionCommand(){
+        return;
+    }
     // ソフトウェアの更新が来ているかをチェックする
-    private void checkVersionCommand(){
+    @FXML private void checkVersionCommand(){
+        checkVersionCommand(true);
+    }
+    @FXML private void checkVersionCommand(boolean successDialogFlg){
         try {
             // 更新情報を表すテキストファイルをダウンロードする
             String checkText = Utility.downloadTextData("https://raw.githubusercontent.com/YSRKEN/KAMO/master/version.txt");
@@ -54,11 +55,23 @@ public class MainController {
                         e.printStackTrace();
                     }
                 }
+            }else{
+                if(successDialogFlg){
+                    Utility.showDialog("このソフトウェアは最新です。", "更新チェック");
+                }
             }
         }catch(NumberFormatException | IOException e){
             e.printStackTrace();
             Utility.showDialog("更新データを確認できませんでした。", "更新チェック");
             return;
         }
+    }
+    // バージョン情報を表示する
+    @FXML private void aboutCommand(){
+        String contentText = String.format("ソフト名：%s%nバージョン：%s%n作者：%s",
+                Utility.getSoftwareName(),
+                Utility.getSoftwareVersion(),
+                Utility.getSoftwareAuthor());
+        Utility.showDialog(contentText, "バージョン情報");
     }
 }

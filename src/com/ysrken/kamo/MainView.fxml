@@ -18,19 +18,19 @@
         <menus>
           <Menu text="ファイル(_F)">
             <items>
-              <MenuItem fx:id="ExitMenu" text="終了(_X)" />
+              <MenuItem fx:id="ExitMenu" text="終了(_X)" onAction="#exitCommand"/>
             </items>
           </Menu>
           <Menu text="行動(_A)">
             <items>
-              <MenuItem text="座標取得(_P)" />
+              <MenuItem fx:id="GetPositionMenu" text="座標取得(_P)" onAction="#getPositionCommand"/>
                 <MenuItem text="スクショ(_S)" />
             </items>
           </Menu>
           <Menu text="ヘルプ(_H)">
             <items>
-              <MenuItem fx:id="CheckVersionMenu" text="更新を確認(_C)..." />
-              <MenuItem fx:id="AboutMenu" text="バージョン情報(_A)" />
+              <MenuItem fx:id="CheckVersionMenu" text="更新を確認(_C)..." onAction="#checkVersionCommand"/>
+              <MenuItem fx:id="AboutMenu" text="バージョン情報(_A)" onAction="#aboutCommand"/>
             </items>
           </Menu>
         </menus>
@@ -48,7 +48,7 @@
          <children>
             <HBox spacing="10.0">
                <children>
-                  <Button text="座標取得">
+                  <Button fx:id="GetPositionButton" text="座標取得" onMouseClicked="#getPositionCommand">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Button>
