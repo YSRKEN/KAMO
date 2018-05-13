@@ -29,6 +29,7 @@
           </Menu>
           <Menu text="ヘルプ(_H)">
             <items>
+              <MenuItem fx:id="CheckVersionMenu" text="更新を確認(_C)..." />
               <MenuItem fx:id="AboutMenu" text="バージョン情報(_A)" />
             </items>
           </Menu>
