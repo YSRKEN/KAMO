@@ -18,7 +18,7 @@
         <menus>
           <Menu text="ファイル(_F)">
             <items>
-              <MenuItem text="終了(_X)" />
+              <MenuItem fx:id="ExitCommand" text="終了(_X)" />
             </items>
           </Menu>
           <Menu text="行動(_A)">
