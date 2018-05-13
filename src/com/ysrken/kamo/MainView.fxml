@@ -18,7 +18,7 @@
         <menus>
           <Menu text="ファイル(_F)">
             <items>
-              <MenuItem fx:id="ExitCommand" text="終了(_X)" />
+              <MenuItem fx:id="ExitMenu" text="終了(_X)" />
             </items>
           </Menu>
           <Menu text="行動(_A)">
@@ -29,7 +29,7 @@
           </Menu>
           <Menu text="ヘルプ(_H)">
             <items>
-              <MenuItem text="バージョン情報(_A)" />
+              <MenuItem fx:id="AboutMenu" text="バージョン情報(_A)" />
             </items>
           </Menu>
         </menus>

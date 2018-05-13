@@ -10,7 +10,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
-        primaryStage.setTitle("艦これモニタリングツール「KAMO」");
+        primaryStage.setTitle(Utility.getSoftwareName());
         primaryStage.setScene(new Scene(root, 500, 300));
         primaryStage.setMinWidth(350);
         primaryStage.setMinHeight(200);
