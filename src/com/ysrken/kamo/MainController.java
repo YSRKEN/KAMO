@@ -43,13 +43,13 @@ public class MainController {
             }
             // 情報を読み取っていく
             int revision = Integer.parseInt(temp[0]);
-            if(Utility.getSoftwareRevision() < revision || true){
+            if(Utility.getSoftwareRevision() < revision){
                 String message = String.format("より新しいバージョンが見つかりました。%n現行バージョン：%s%n最新バージョン：%s%nダウンロードサイトを開きますか？", Utility.getSoftwareVersion(), temp[1]);
                 boolean openUrlFlg = Utility.showChoiceDialog(message, "更新チェック");
                 if(openUrlFlg){
                     Desktop desktop = Desktop.getDesktop();
                     try{
-                        desktop.browse(new URI("https://github.com/YSRKEN/KAMO"));
+                        desktop.browse(new URI("https://github.com/YSRKEN/KAMO/releases"));
                     }catch( Exception e ){
                         e.printStackTrace();
                     }

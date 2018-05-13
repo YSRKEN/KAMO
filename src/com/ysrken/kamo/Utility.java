@@ -1,6 +1,7 @@
 package com.ysrken.kamo;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 
 import java.io.*;
@@ -10,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,11 +78,11 @@ public class Utility {
         alert.show();
     }
     public static boolean showChoiceDialog(String contentText, String headerText){
-        ChoiceDialog<Boolean> choice = new ChoiceDialog();
-        choice.setHeaderText(headerText);
-        choice.setContentText(contentText);
-        choice.setTitle(SOFTWARE_NAME);
-        return choice.showAndWait().orElse(false);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
+        alert.setHeaderText(headerText);
+        alert.setTitle(SOFTWARE_NAME);
+        Optional<ButtonType> result = alert.showAndWait();
+        return (result.isPresent() && result.get() == ButtonType.APPLY);
     }
     /**
      * 指定したURL上のファイルをUTF-8形式の文字列としてダウンロードする。
@@ -99,28 +101,6 @@ public class Utility {
             }
             return sb.toString();
         } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-    public static String downloadTextData2(String url){
-        try (Stream<String> a = Files.lines(Paths.get(new URI(url)), Charset.forName("UTF-8"))) {
-            return a.collect(Collectors.joining());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-    public static String downloadTextData3(String url){
-        try {
-            return new String(Files.readAllBytes(Paths.get(new URI(url))), Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        } catch (URISyntaxException e) {
             e.printStackTrace();
             return "";
         }
