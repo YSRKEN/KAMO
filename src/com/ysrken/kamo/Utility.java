@@ -16,23 +16,23 @@ public class Utility {
     /**
      * ソフトウェアの名称
      */
-    private static String SOFTWARE_NAME = "艦これモニタリングツール「KAMO」";
+    private static final String SOFTWARE_NAME = "艦これモニタリングツール「KAMO」";
     /**
      * ソフトウェアのバージョン番号
      */
-    private static String SOFTWARE_VER = "1.0.0";
+    private static final String SOFTWARE_VER = "1.0.0";
     /**
      * ソフトウェアのリビジョン番号
      */
-    private static int SOFTWARE_REVISION = 1;
+    private static final int SOFTWARE_REVISION = 1;
     /**
      * ソフトウェアの作者名
      */
-    private static String SOFTWARE_AUTHOR = "YSRKEN";
+    private static final String SOFTWARE_AUTHOR = "YSRKEN";
     /**
      * ソフトウェアのURL
      */
-    private static String SOFTWARE_URL = "YSRKEN";
+    private static final String SOFTWARE_URL = "YSRKEN";
 
     /**
      * ソフトウェアの名称を取得
@@ -74,6 +74,12 @@ public class Utility {
         alert.setTitle(SOFTWARE_NAME);
         alert.show();
     }
+    /**
+     * YES/NOで選ぶ選択ダイアログを表示
+     * @param contentText 本文
+     * @param headerText タイトル文
+     * @return 選択結果。YESならtrue、それ以外はfalse
+     */
     public static boolean showChoiceDialog(String contentText, String headerText){
         Alert alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
         alert.setHeaderText(headerText);

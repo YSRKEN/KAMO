@@ -16,6 +16,8 @@ public class MainController {
     @FXML private Button GetPositionButton;
 
     public void initialize(){
+        // スクショ用のクラスを初期化する
+        ScreenshotProvider.initialize();
         // 起動時にバージョンチェックする
         checkVersionCommand(false);
     }
@@ -25,6 +27,7 @@ public class MainController {
     }
     // ゲーム座標を取得する
     @FXML private void getPositionCommand(){
+        ScreenshotProvider.test();
         return;
     }
     // ソフトウェアの更新が来ているかをチェックする
