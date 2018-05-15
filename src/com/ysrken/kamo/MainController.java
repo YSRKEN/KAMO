@@ -27,8 +27,12 @@ public class MainController {
     }
     // ゲーム座標を取得する
     @FXML private void getPositionCommand(){
-        ScreenshotProvider.test();
-        return;
+        boolean getPositionFlg = ScreenshotProvider.getPosition();
+        if(getPositionFlg){
+            System.out.println("OK");
+        }else{
+            System.out.println("NG");
+        }
     }
     // ソフトウェアの更新が来ているかをチェックする
     @FXML private void checkVersionCommand(){

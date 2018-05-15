@@ -1,6 +1,8 @@
 package com.ysrken.kamo;
 
 import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,9 +24,12 @@ public class ScreenshotProvider {
      * 初期化
      */
     public static void initialize(){}
-    public static void test() {
+
+    /**
+     * 自動座標取得を試みる(成功したらtrue)
+     */
+    public static boolean getPosition(){
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss-SSS");
             // グラフィックデバイスの情報を取得する
             GraphicsDevice[] all_gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
             for (GraphicsDevice gd : all_gd) {
@@ -34,12 +39,30 @@ public class ScreenshotProvider {
                 Robot robot = new Robot(gd);
                 for (GraphicsConfiguration gc : all_gc) {
                     BufferedImage imageData = robot.createScreenCapture(gc.getBounds());
-                    String fileName = sdf.format(Calendar.getInstance().getTime()) + ".png";
-                    ImageIO.write(imageData, "png", new File(fileName));
+                    // 撮ったスクショに対して、ゲーム画面を検索する
+                    List<Rectangle> rectList = searchGamePosition(imageData);
+                    // 検索にヒットした場合、その座標を取得して結果を返す
+                    if(rectList.size() > 0){
+                        ScreenshotProvider.robot = robot;
+                        ScreenshotProvider.rect = rectList.get(0);
+                        return true;
+                    }
                 }
             }
-        } catch (AWTException | IOException e) {
+            return false;
+        } catch (AWTException e) {
             e.printStackTrace();
+            return false;
         }
+    }
+
+    /**
+     * 画像データから、ゲーム画面の候補を抽出する
+     * @param image 画像データ
+     * @return ゲーム画面の候補の一覧
+     */
+    private static List<Rectangle> searchGamePosition(BufferedImage image){
+        List<Rectangle> rectList = new ArrayList<>();
+        return rectList;
     }
 }

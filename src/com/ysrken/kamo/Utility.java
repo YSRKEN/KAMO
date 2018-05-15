@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -102,5 +104,22 @@ public class Utility {
             e.printStackTrace();
             return "";
         }
+    }
+
+    /**
+     * 現在の日時を「2006-01-02 03-04-05-890」形式で取得
+     * @return 現在の日時文字列
+     */
+    private static SimpleDateFormat sdfLong = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss-SSS");
+    public static String getDateStringLong(){
+        return Utility.sdfLong.format(Calendar.getInstance().getTime());
+    }
+    /**
+     * 現在の日時を「03:04:05」形式で取得
+     * @return 現在の日時文字列
+     */
+    private static SimpleDateFormat sdfShort = new SimpleDateFormat("HH:mm:ss");
+    public static String getDateStringShort(){
+        return Utility.sdfShort.format(Calendar.getInstance().getTime());
     }
 }
