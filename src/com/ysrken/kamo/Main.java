@@ -6,6 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 public class Main extends Application {
     // ウィンドウにおけるマウスドラッグを開始した時の座標
     private double xOffset = 0, yOffset = 0;
@@ -35,7 +42,9 @@ public class Main extends Application {
         // 表示
         primaryStage.show();
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        BufferedImage bi = ImageIO.read(new File("F:\\ソフトウェア\\パズル・ゲーム\\PC\\・シミュレーションゲーム\\・艦これ\\・自作物\\艦これモニタリングツール「KAMO」\\sample\\get_position_test.png"));
+        List<Rectangle> rectList = ScreenshotProvider.searchGamePosition(bi);
         launch(args);
     }
 }
