@@ -42,9 +42,5 @@ public class Main extends Application {
         // 表示
         primaryStage.show();
     }
-    public static void main(String[] args) throws IOException {
-        BufferedImage bi = ImageIO.read(new File("get_position_test.png"));
-        List<Rectangle> rectList = ScreenshotProvider.searchGamePosition(bi);
-        launch(args);
-    }
+    public static void main(String[] args) throws IOException { launch(args); }
 }
