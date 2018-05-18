@@ -43,7 +43,7 @@ public class Main extends Application {
         primaryStage.show();
     }
     public static void main(String[] args) throws IOException {
-        BufferedImage bi = ImageIO.read(new File("F:\\ソフトウェア\\パズル・ゲーム\\PC\\・シミュレーションゲーム\\・艦これ\\・自作物\\艦これモニタリングツール「KAMO」\\sample\\get_position_test.png"));
+        BufferedImage bi = ImageIO.read(new File("get_position_test.png"));
         List<Rectangle> rectList = ScreenshotProvider.searchGamePosition(bi);
         launch(args);
     }
