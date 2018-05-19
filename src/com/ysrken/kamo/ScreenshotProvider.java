@@ -26,27 +26,42 @@ public class ScreenshotProvider {
     /**
      * 初期化
      */
-    public static void initialize(){}
+    public static void initialize() throws IOException {
+        // picフォルダを作成する
+        final var folder = new File("pic");
+        if(!folder.exists()){
+            if(!folder.mkdir()){
+                throw new IOException();
+            }
+        }
+    }
     /**
      * 自動座標取得を試みる(成功したらtrue)
      */
     public static boolean trySearchGamePosition(){
         try {
             // グラフィックデバイスの情報を取得する
-            GraphicsDevice[] all_gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-            for (GraphicsDevice gd : all_gd) {
+            final var allGD = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            for (GraphicsDevice gd : allGD) {
                 // 各グラフィックデバイスにおけるグラフィックス特性を取得する
-                GraphicsConfiguration[] all_gc = gd.getConfigurations();
+                final var allGC = gd.getConfigurations();
                 // 各グラフィックス特性に従い、その座標を取得してスクショを撮る
-                Robot robot = new Robot(gd);
-                for (GraphicsConfiguration gc : all_gc) {
-                    BufferedImage imageData = robot.createScreenCapture(gc.getBounds());
+                final var robot = new Robot(gd);
+                for (GraphicsConfiguration gc : allGC) {
+                    final var gcBounds = gc.getBounds();
+                    final var imageData = robot.createScreenCapture(gcBounds);
                     // 撮ったスクショに対して、ゲーム画面を検索する
-                    List<Rectangle> rectList = searchGamePosition(imageData);
+                    final var rectList = searchGamePosition(imageData);
                     // 検索にヒットした場合、その座標を取得して結果を返す
                     if(rectList.size() > 0){
                         ScreenshotProvider.robot = robot;
-                        ScreenshotProvider.rect = rectList.get(0);
+                        // マルチディスプレイ対策に左上座標を編集している
+                        final var selectRect = rectList.get(0);
+                        final var x = gcBounds.x + selectRect.x;
+                        final var y = gcBounds.y + selectRect.y;
+                        final var width = selectRect.width;
+                        final var height = selectRect.height;
+                        ScreenshotProvider.rect = new Rectangle(x, y, width, height);
                         return true;
                     }
                 }

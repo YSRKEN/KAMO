@@ -70,7 +70,16 @@ public class Utility {
      * @param headerText タイトル文
      */
     public static void showDialog(String contentText, String headerText){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        showDialog(contentText, headerText, Alert.AlertType.INFORMATION);
+    }
+    /**
+     * ダイアログを表示
+     * @param contentText 本文
+     * @param headerText タイトル文
+     * @param type ダイアログの種類
+     */
+    public static void showDialog(String contentText, String headerText, Alert.AlertType type){
+        Alert alert = new Alert(type);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
         alert.setTitle(SOFTWARE_NAME);

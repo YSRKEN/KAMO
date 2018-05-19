@@ -1,6 +1,7 @@
 package com.ysrken.kamo;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
@@ -36,7 +37,12 @@ public class MainController {
      */
     public void initialize(){
         // スクショ用のクラスを初期化する
-        ScreenshotProvider.initialize();
+        try {
+            ScreenshotProvider.initialize();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utility.showDialog("picフォルダを作成できませんでした。%nソフトウェアを終了します", "致命的なエラー", Alert.AlertType.ERROR);
+        }
         // 起動時にバージョンチェックする
         checkVersionCommand();
     }
@@ -72,7 +78,7 @@ public class MainController {
             final var screenShot = ScreenshotProvider.getScreenshot();
             final var fileName = String.format("%s.png", Utility.getDateStringLong());
             try {
-                ImageIO.write(screenShot, "png", new File(fileName));
+                ImageIO.write(screenShot, "png", new File(String.format("pic\\%s", fileName)));
                 addLogText(String.format("ファイル名：%s", fileName));
             } catch (IOException e) {
                 e.printStackTrace();
