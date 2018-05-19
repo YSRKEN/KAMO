@@ -27,7 +27,6 @@ public class ScreenshotProvider {
      * 初期化
      */
     public static void initialize(){}
-
     /**
      * 自動座標取得を試みる(成功したらtrue)
      */
@@ -55,10 +54,10 @@ public class ScreenshotProvider {
             return false;
         } catch (AWTException e) {
             e.printStackTrace();
+            rect = null;
             return false;
         }
     }
-
     /**
      * 画像データから、ゲーム画面の候補を抽出する。
      * ここで言う「候補」とは、以下の条件を満たすものである。
@@ -202,8 +201,23 @@ public class ScreenshotProvider {
         });
         return rectList;
     }
-
+    /**
+     * 取得した座標を返す
+     */
     public static Rectangle getPosition(){
         return rect;
+    }
+    /**
+     * スクリーンショットを取得できる状態ならtrue
+     */
+    public static boolean canGetScreenshot(){
+        return (rect != null);
+    }
+
+    /**
+     * スクリーンショットを取得する
+     */
+    public static BufferedImage getScreenshot(){
+        return robot.createScreenCapture(rect);
     }
 }

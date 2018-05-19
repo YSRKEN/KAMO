@@ -15,7 +15,7 @@
           <Menu text="行動(_A)">
             <items>
               <MenuItem fx:id="GetPositionMenu" text="座標取得(_P)" onAction="#getPositionCommand"/>
-                <MenuItem text="スクショ(_S)" />
+                <MenuItem fx:id="SaveScreenshotMenu" text="スクショ(_S)" disable="true"/>
             </items>
           </Menu>
           <Menu text="ヘルプ(_H)">
@@ -43,7 +43,7 @@
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Button>
-                  <Button text="スクショ">
+                  <Button fx:id="SaveScreenshotButton" text="スクショ" onMouseClicked="#saveScreenshotCommand" disable="true">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Button>

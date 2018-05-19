@@ -5,7 +5,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
@@ -15,31 +17,74 @@ public class MainController {
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
+    @FXML private MenuItem SaveScreenshotMenu;
+    @FXML private Button SaveScreenshotButton;
     @FXML private TextArea MessageLogTextArea;
 
+    /**
+     * ログにテキストを追加する
+     * @param text
+     */
+    private void addLogText(String text){
+        String allText = MessageLogTextArea.getText();
+        allText += Utility.getDateStringShort() + " " + text + String.format("%n");
+        MessageLogTextArea.setText(allText);
+        MessageLogTextArea.setScrollTop(Double.POSITIVE_INFINITY);
+    }
+    /**
+     * 初期化
+     */
     public void initialize(){
         // スクショ用のクラスを初期化する
         ScreenshotProvider.initialize();
         // 起動時にバージョンチェックする
         checkVersionCommand();
     }
-    // ソフトウェアを終了する
+    /**
+     * ソフトウェアを終了する
+     */
     @FXML private void exitCommand(){
         System.exit(0);
     }
-    // ゲーム座標を取得する
+    /**
+     * ゲーム座標を取得する
+     */
     @FXML private void getPositionCommand(){
         addLogText("【座標取得】");
         final var getPositionFlg = ScreenshotProvider.trySearchGamePosition();
         if(getPositionFlg){
-            addLogText("座標取得：OK");
             final var rect = ScreenshotProvider.getPosition();
             addLogText(String.format("取得位置：(%d,%d)-%dx%d", rect.x, rect.y, rect.width, rect.height));
+            SaveScreenshotMenu.setDisable(false);
+            SaveScreenshotButton.setDisable(false);
         }else{
             addLogText("座標取得：NG");
+            SaveScreenshotMenu.setDisable(true);
+            SaveScreenshotButton.setDisable(true);
         }
     }
-    // ソフトウェアの更新が来ているかをチェックする
+    /**
+     * スクリーンショットを取得・保存する
+     */
+    @FXML private void saveScreenshotCommand(){
+        addLogText("【スクリーンショット】");
+        if(ScreenshotProvider.canGetScreenshot()){
+            final var screenShot = ScreenshotProvider.getScreenshot();
+            final var fileName = String.format("%s.png", Utility.getDateStringLong());
+            try {
+                ImageIO.write(screenShot, "png", new File(fileName));
+                addLogText(String.format("ファイル名：%s", fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+                addLogText("エラー：スクリーンショットの保存に失敗しました。");
+            }
+        }else{
+            addLogText("エラー：スクリーンショットを取得できません。");
+        }
+    }
+    /**
+     * ソフトウェアの更新が来ているかをチェックする
+     */
     @FXML private void checkVersionCommand(){
         try {
             addLogText("【更新チェック】");
@@ -76,19 +121,14 @@ public class MainController {
             return;
         }
     }
-    // バージョン情報を表示する
+    /**
+     * バージョン情報を表示する
+     */
     @FXML private void aboutCommand(){
         String contentText = String.format("ソフト名：%s%nバージョン：%s%n作者：%s",
                 Utility.getSoftwareName(),
                 Utility.getSoftwareVersion(),
                 Utility.getSoftwareAuthor());
         Utility.showDialog(contentText, "バージョン情報");
-    }
-    // ログにテキストを追加する
-    public void addLogText(String text){
-        String allText = MessageLogTextArea.getText();
-        allText += Utility.getDateStringShort() + " " + text + String.format("%n");
-        MessageLogTextArea.setText(allText);
-        MessageLogTextArea.setScrollTop(MessageLogTextArea.getScrollTop() + 40);
     }
 }
