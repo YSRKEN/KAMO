@@ -31,7 +31,7 @@ public class ScreenshotProvider {
     /**
      * 自動座標取得を試みる(成功したらtrue)
      */
-    public static boolean getPosition(){
+    public static boolean trySearchGamePosition(){
         try {
             // グラフィックデバイスの情報を取得する
             GraphicsDevice[] all_gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
@@ -201,5 +201,9 @@ public class ScreenshotProvider {
             });
         });
         return rectList;
+    }
+
+    public static Rectangle getPosition(){
+        return rect;
     }
 }

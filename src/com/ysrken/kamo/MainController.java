@@ -3,6 +3,7 @@ package com.ysrken.kamo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 
 import java.awt.*;
 import java.io.IOException;
@@ -14,12 +15,13 @@ public class MainController {
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
+    @FXML private TextArea MessageLogTextArea;
 
     public void initialize(){
         // スクショ用のクラスを初期化する
         ScreenshotProvider.initialize();
         // 起動時にバージョンチェックする
-        checkVersionCommand(false);
+        checkVersionCommand();
     }
     // ソフトウェアを終了する
     @FXML private void exitCommand(){
@@ -27,19 +29,20 @@ public class MainController {
     }
     // ゲーム座標を取得する
     @FXML private void getPositionCommand(){
-        boolean getPositionFlg = ScreenshotProvider.getPosition();
+        addLogText("【座標取得】");
+        final var getPositionFlg = ScreenshotProvider.trySearchGamePosition();
         if(getPositionFlg){
-            System.out.println("OK");
+            addLogText("座標取得：OK");
+            final var rect = ScreenshotProvider.getPosition();
+            addLogText(String.format("取得位置：(%d,%d)-%dx%d", rect.x, rect.y, rect.width, rect.height));
         }else{
-            System.out.println("NG");
+            addLogText("座標取得：NG");
         }
     }
     // ソフトウェアの更新が来ているかをチェックする
     @FXML private void checkVersionCommand(){
-        checkVersionCommand(true);
-    }
-    @FXML private void checkVersionCommand(boolean successDialogFlg){
         try {
+            addLogText("【更新チェック】");
             // 更新情報を表すテキストファイルをダウンロードする
             String checkText = Utility.downloadTextData("https://raw.githubusercontent.com/YSRKEN/KAMO/master/version.txt");
             if(checkText == "")
@@ -51,8 +54,10 @@ public class MainController {
             }
             // 情報を読み取っていく
             int revision = Integer.parseInt(temp[0]);
+            addLogText(String.format("現在のバージョン：%s, リビジョン：%d", Utility.getSoftwareVersion(), Utility.getSoftwareRevision()));
+            addLogText(String.format("最新のバージョン：%s, リビジョン：%d", temp[1], revision));
             if(Utility.getSoftwareRevision() < revision){
-                String message = String.format("より新しいバージョンが見つかりました。%n現行バージョン：%s%n最新バージョン：%s%nダウンロードサイトを開きますか？", Utility.getSoftwareVersion(), temp[1]);
+                String message = String.format("より新しいバージョンが見つかりました。%n現在のバージョン：%s%n最新のバージョン：%s%nダウンロードサイトを開きますか？", Utility.getSoftwareVersion(), temp[1]);
                 boolean openUrlFlg = Utility.showChoiceDialog(message, "更新チェック");
                 if(openUrlFlg){
                     Desktop desktop = Desktop.getDesktop();
@@ -63,13 +68,11 @@ public class MainController {
                     }
                 }
             }else{
-                if(successDialogFlg){
-                    Utility.showDialog("このソフトウェアは最新です。", "更新チェック");
-                }
+                addLogText("このソフトウェアは最新です。");
             }
         }catch(NumberFormatException | IOException e){
             e.printStackTrace();
-            Utility.showDialog("更新データを確認できませんでした。", "更新チェック");
+            addLogText("エラー：更新データを確認できませんでした。");
             return;
         }
     }
@@ -80,5 +83,12 @@ public class MainController {
                 Utility.getSoftwareVersion(),
                 Utility.getSoftwareAuthor());
         Utility.showDialog(contentText, "バージョン情報");
+    }
+    // ログにテキストを追加する
+    public void addLogText(String text){
+        String allText = MessageLogTextArea.getText();
+        allText += Utility.getDateStringShort() + " " + text + String.format("%n");
+        MessageLogTextArea.setText(allText);
+        MessageLogTextArea.setScrollTop(MessageLogTextArea.getScrollTop() + 40);
     }
 }
