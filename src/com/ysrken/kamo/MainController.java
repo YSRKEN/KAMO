@@ -15,6 +15,7 @@ public class MainController {
     @FXML private MenuItem ExitMenu;
     @FXML private MenuItem GetPositionMenu;
     @FXML private MenuItem SaveScreenshotMenu;
+    @FXML private MenuItem OpenPicFolderMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
@@ -53,6 +54,7 @@ public class MainController {
         CheckVersionMenu.setOnAction(e -> model.checkVersionCommand());
         GetPositionMenu.setOnAction(e -> model.getPositionCommand());
         SaveScreenshotMenu.setOnAction(e -> model.saveScreenshotCommand());
+        OpenPicFolderMenu.setOnAction(e -> model.openPicFolderCommand());
         AboutMenu.setOnAction(e -> model.aboutCommand());
         GetPositionButton.setOnAction(e -> model.getPositionCommand());
         SaveScreenshotButton.setOnAction(e -> model.saveScreenshotCommand());
@@ -60,6 +62,8 @@ public class MainController {
         SaveScreenshotMenu.disableProperty().bind(model.DisableSaveScreenshotFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
         MessageLogTextArea.textProperty().bind(this.logText);
+        // 使えない設定をdisableする
+        OpenPicFolderMenu.setDisable(!Utility.isWindows());
         // スクショ用のクラスを初期化する
         try {
             ScreenshotProvider.initialize();

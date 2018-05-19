@@ -3,6 +3,7 @@ package com.ysrken.kamo;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.Alert;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -110,6 +111,19 @@ public class MainModel {
             }
         }else{
             addLogText.accept("エラー：スクリーンショットを取得できません。");
+        }
+    }
+    /**
+     * スクショの保存先であるpicフォルダを開く
+     * パス指定の時点で明らかなように、Windowsにしか対応していない
+     */
+    public void openPicFolderCommand(){
+        try {
+            final var rt = Runtime.getRuntime();
+            String cmd = String.format("explorer %s\\pic", System.getProperty("user.dir"));
+            rt.exec(cmd);
+        } catch (IOException e) {
+            Utility.showDialog("picフォルダを開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
     /**

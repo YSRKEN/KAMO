@@ -15,7 +15,8 @@
           <Menu text="行動(_A)">
             <items>
               <MenuItem fx:id="GetPositionMenu" text="座標取得(_P)"/>
-                <MenuItem fx:id="SaveScreenshotMenu" text="スクショ(_S)"/>
+              <MenuItem fx:id="SaveScreenshotMenu" text="スクショ(_S)"/>
+              <MenuItem fx:id="OpenPicFolderMenu" text="picフォルダを開く(_O)"/>
             </items>
           </Menu>
           <Menu text="ヘルプ(_H)">

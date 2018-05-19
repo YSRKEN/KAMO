@@ -36,7 +36,6 @@ public class Utility {
      */
     public static final String SOFTWARE_URL = "https://github.com/YSRKEN/KAMO/releases";
 
-
     /**
      * ダイアログを表示
      * @param contentText 本文
@@ -87,7 +86,6 @@ public class Utility {
             return "";
         }
     }
-
     /**
      * 現在の日時を「2006-01-02 03-04-05-890」形式で取得
      * @return 現在の日時文字列
@@ -103,5 +101,13 @@ public class Utility {
     private static SimpleDateFormat sdfShort = new SimpleDateFormat("HH:mm:ss");
     public static String getDateStringShort(){
         return Utility.sdfShort.format(Calendar.getInstance().getTime());
+    }
+    /**
+     * Windows OS上で動作しているかを判定
+     * @return
+     */
+    public static boolean isWindows(){
+        final var osName = System.getProperty("os.name").toLowerCase();
+        return (osName.startsWith("windows"));
     }
 }
