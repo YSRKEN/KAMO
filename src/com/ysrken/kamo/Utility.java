@@ -31,6 +31,11 @@ public class Utility {
      * ソフトウェアの作者名
      */
     public static final String SOFTWARE_AUTHOR = "YSRKEN";
+    /**
+     * ソフトウェアのURL
+     */
+    public static final String SOFTWARE_URL = "https://github.com/YSRKEN/KAMO/releases";
+
 
     /**
      * ダイアログを表示

@@ -96,16 +96,16 @@ public class MainModel {
                     Utility.SOFTWARE_VER, Utility.SOFTWARE_REVISION));
             addLogText.accept(String.format("最新のバージョン：%s, リビジョン：%d",
                     temp[1], revision));
-            if(Utility.SOFTWARE_REVISION< revision){
+            if(Utility.SOFTWARE_REVISION < revision){
                 String message = String.format(
                         "より新しいバージョンが見つかりました。%n現在のバージョン：%s%n最新のバージョン：%s%nダウンロードサイトを開きますか？",
                         Utility.SOFTWARE_VER, temp[1]
                 );
                 final var openUrlFlg = Utility.showChoiceDialog(message, "更新チェック");
                 if(openUrlFlg){
-                    Desktop desktop = Desktop.getDesktop();
+                    final var desktop = Desktop.getDesktop();
                     try{
-                        desktop.browse(new URI("https://github.com/YSRKEN/KAMO/releases"));
+                        desktop.browse(new URI(Utility.SOFTWARE_URL));
                     }catch( Exception e ){
                         e.printStackTrace();
                     }
