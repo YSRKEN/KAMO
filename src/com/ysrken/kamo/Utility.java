@@ -18,52 +18,20 @@ public class Utility {
     /**
      * ソフトウェアの名称
      */
-    private static final String SOFTWARE_NAME = "艦これモニタリングツール「KAMO」";
+    public static final String SOFTWARE_NAME = "艦これモニタリングツール「KAMO」";
     /**
      * ソフトウェアのバージョン番号
      */
-    private static final String SOFTWARE_VER = "1.0.0";
+    public static final String SOFTWARE_VER = "1.0.0";
     /**
      * ソフトウェアのリビジョン番号
      */
-    private static final int SOFTWARE_REVISION = 1;
+    public static final int SOFTWARE_REVISION = 1;
     /**
      * ソフトウェアの作者名
      */
-    private static final String SOFTWARE_AUTHOR = "YSRKEN";
-    /**
-     * ソフトウェアのURL
-     */
-    private static final String SOFTWARE_URL = "YSRKEN";
+    public static final String SOFTWARE_AUTHOR = "YSRKEN";
 
-    /**
-     * ソフトウェアの名称を取得
-     * @return ソフトウェアの名称
-     */
-    public static String getSoftwareName(){
-        return SOFTWARE_NAME;
-    }
-    /**
-     * ソフトウェアのバージョン番号を取得
-     * @return ソフトウェアのバージョン番号
-     */
-    public static String getSoftwareVersion(){
-        return SOFTWARE_VER;
-    }
-    /**
-     * ソフトウェアのリビジョン番号を取得
-     * @return ソフトウェアのリビジョン番号
-     */
-    public static int getSoftwareRevision(){
-        return SOFTWARE_REVISION;
-    }
-    /**
-     * ソフトウェアの作者名を取得
-     * @return ソフトウェアの作者名
-     */
-    public static String getSoftwareAuthor(){
-        return SOFTWARE_AUTHOR;
-    }
     /**
      * ダイアログを表示
      * @param contentText 本文
@@ -79,7 +47,7 @@ public class Utility {
      * @param type ダイアログの種類
      */
     public static void showDialog(String contentText, String headerText, Alert.AlertType type){
-        Alert alert = new Alert(type);
+        final var alert = new Alert(type);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
         alert.setTitle(SOFTWARE_NAME);
@@ -92,10 +60,10 @@ public class Utility {
      * @return 選択結果。YESならtrue、それ以外はfalse
      */
     public static boolean showChoiceDialog(String contentText, String headerText){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
+        final var alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
         alert.setHeaderText(headerText);
         alert.setTitle(SOFTWARE_NAME);
-        Optional<ButtonType> result = alert.showAndWait();
+        final var result = alert.showAndWait();
         return (result.isPresent() && result.get() == ButtonType.APPLY);
     }
     /**
@@ -105,9 +73,9 @@ public class Utility {
      * @return UTF-8形式のテキストデータ
      */
     public static String downloadTextData(String url){
-        try(InputStream is = new URL(url).openStream();
-            InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
-            BufferedReader br = new BufferedReader(isr)){
+        try(final var is = new URL(url).openStream();
+            final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+            final var br = new BufferedReader(isr)){
             return br.lines().collect(Collectors.joining(String.format("%n")));
         } catch (IOException e) {
             e.printStackTrace();

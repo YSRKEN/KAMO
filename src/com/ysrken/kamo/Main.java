@@ -20,9 +20,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         // FXMLファイルを読み込み
-        Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
+        final Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
         // タイトルを設定
-        primaryStage.setTitle(Utility.getSoftwareName());
+        primaryStage.setTitle(Utility.SOFTWARE_NAME);
         // 大きさを設定
         primaryStage.setScene(new Scene(root, 500, 300));
         // 最小の大きさを設定
@@ -42,5 +42,5 @@ public class Main extends Application {
         // 表示
         primaryStage.show();
     }
-    public static void main(String[] args) throws IOException { launch(args); }
+    public static void main(String[] args) { launch(args); }
 }

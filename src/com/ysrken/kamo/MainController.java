@@ -1,18 +1,17 @@
 package com.ysrken.kamo;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 public class MainController {
+    // 各コントロール
     @FXML private MenuItem ExitMenu;
     @FXML private MenuItem GetPositionMenu;
     @FXML private MenuItem SaveScreenshotMenu;
@@ -22,16 +21,26 @@ public class MainController {
     @FXML private Button SaveScreenshotButton;
     @FXML private TextArea MessageLogTextArea;
 
+    /**
+     * Dependency InjectionさせるModel
+     */
     private MainModel model;
+    /**
+     * ログテキスト
+     */
+    private StringProperty logText = new SimpleStringProperty("");
 
     /**
      * ログにテキストを追加する
      * @param text
      */
     private void addLogText(String text){
-        String allText = MessageLogTextArea.getText();
-        allText += Utility.getDateStringShort() + " " + text + String.format("%n");
-        MessageLogTextArea.setText(allText);
+        logText.set(String.format(
+                "%s%s %s%n",
+                logText.get(),
+                Utility.getDateStringShort(),
+                text
+        ));
         MessageLogTextArea.setScrollTop(Double.POSITIVE_INFINITY);
     }
     /**
@@ -50,6 +59,7 @@ public class MainController {
         // プロパティをData Bindingする
         SaveScreenshotMenu.disableProperty().bind(model.DisableSaveScreenshotFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
+        MessageLogTextArea.textProperty().bind(this.logText);
         // スクショ用のクラスを初期化する
         try {
             ScreenshotProvider.initialize();

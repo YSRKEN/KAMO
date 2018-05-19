@@ -1,15 +1,11 @@
 package com.ysrken.kamo;
 
-import javax.imageio.ImageIO;
-import java.io.Console;
-import java.util.ArrayList;
-import java.util.List;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -85,13 +81,12 @@ public class ScreenshotProvider {
      * @return ゲーム画面の候補の一覧
      */
     public static List<Rectangle> searchGamePosition(BufferedImage image){
-        final int minGameWidth = 800;
-        final int stepCount = 4;
-        final int stepWidth = minGameWidth / (stepCount + 1);
-        final int minGameHeight = 480;
-        final int stepHeight = minGameHeight / (stepCount + 1);
-        final int maxGameWidth = 1800;
-        final int maxGameHeight = 1080;
+        final var minGameWidth = 800;
+        final var stepCount = 4;
+        final var stepWidth = minGameWidth / (stepCount + 1);
+        final var minGameHeight = 480;
+        final var stepHeight = minGameHeight / (stepCount + 1);
+        final var maxGameWidth = 1800;
         /**
          * 第一段階：上辺の候補を検索する
          * 1. stepWidthピクセルごとに画素を読み取る(Y=yとY=y+1)
@@ -106,15 +101,15 @@ public class ScreenshotProvider {
          * 「↑の1ピクセル内側に、色Aと異なる色が1ピクセル以上存在する」を満たせない
          * 可能性が生じる(ステップサーチなので「可能性」で弾いている)。
          */
-        final List<Integer> yList = new ArrayList<>();
-        final List<Integer> aList = new ArrayList<>();
-        final List<Integer> baseColorList = new ArrayList<>();
-        final AtomicInteger yaCount = new AtomicInteger(0);
+        final var yList = new ArrayList<Integer>();
+        final var aList = new ArrayList<Integer>();
+        final var baseColorList = new ArrayList<Integer>();
+        final var yaCount = new AtomicInteger(0);
         IntStream.range(0, image.getHeight() - 4).forEach(y -> {
             IntStream.range(0, (image.getWidth() / stepWidth) - stepCount + 1)
                 .map(i -> i * stepWidth)
                 .filter(a -> {
-                    int baseColor = image.getRGB(a, y);
+                    final var baseColor = image.getRGB(a, y);
                     if(IntStream.range(1, stepCount)
                         .map(j -> a + j * stepWidth)
                         .anyMatch(a2 -> image.getRGB(a2, y) != baseColor)) {
@@ -141,7 +136,7 @@ public class ScreenshotProvider {
         final var yList2 = new ArrayList<Integer>();
         final var xList = new ArrayList<Integer>();
         final var baseColorList2 = new ArrayList<Integer>();
-        final AtomicInteger xyCount = new AtomicInteger(0);
+        final var xyCount = new AtomicInteger(0);
         IntStream.range(0, yaCount.get()).forEach(i -> {
             final var a = aList.get(i);
             final var y = yList.get(i);
@@ -171,7 +166,7 @@ public class ScreenshotProvider {
          * ・下辺候補・右辺候補をステップサーチで調べる
          * ・最後は1ピクセルづつ舐めるように検索して正当性を確かめる
          */
-        final List<Rectangle> rectList = new ArrayList<>();
+        final var rectList = new ArrayList<Rectangle>();
         IntStream.range(0, xyCount.get()).forEach(i -> {
             final var x = xList.get(i);
             final var y = yList2.get(i);
