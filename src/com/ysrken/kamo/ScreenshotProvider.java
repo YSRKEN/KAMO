@@ -196,7 +196,7 @@ public class ScreenshotProvider {
                         || IntStream.range(y, y2).anyMatch(y3 -> image.getRGB(x2, y3) != baseColor))
                         return;
                     // リストに追加
-                    rectList.add(new Rectangle(x, y, x2 - x - 1, y2 - y - 1));
+                    rectList.add(new Rectangle(x + 1, y + 1, x2 - x - 1, y2 - y - 1));
             });
         });
         return rectList;
