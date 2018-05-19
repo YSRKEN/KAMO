@@ -1,17 +1,11 @@
 package com.ysrken.kamo;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 public class Main extends Application {
     // ウィンドウにおけるマウスドラッグを開始した時の座標
@@ -30,6 +24,8 @@ public class Main extends Application {
         primaryStage.setMinHeight(200);
         // 最前面設定
         primaryStage.setAlwaysOnTop(true);
+        // ×ボタンを押した際に終了するように設定
+        primaryStage.setOnCloseRequest(req -> Platform.exit());
         // マウスドラッグを設定
         root.setOnMousePressed(event -> {
             xOffset = primaryStage.getX() - event.getScreenX();

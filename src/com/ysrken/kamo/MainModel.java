@@ -1,8 +1,8 @@
 package com.ysrken.kamo;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.Scene;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -24,7 +24,10 @@ public class MainModel {
      */
     private Consumer<String> addLogText;
 
-    private class OneSecondTask extends TimerTask{
+    /**
+     * 長い周期で行われるタスクを設定
+     */
+    private class LongIntervalTask extends TimerTask{
         public void run(){
             // スクリーンショットが撮影可能な場合の処理
             if(ScreenshotProvider.canGetScreenshot()){
@@ -37,6 +40,17 @@ public class MainModel {
             }
         }
     }
+    /**
+     * 短い周期で行われるタスクを設定
+     */
+    private class ShortIntervalTask extends TimerTask{
+        public void run(){
+            // スクリーンショットが撮影可能な場合の処理
+            if(ScreenshotProvider.canGetScreenshot()){
+                final var frame = ScreenshotProvider.getScreenshot();
+            }
+        }
+    }
 
     /**
      * コンストラクタ
@@ -44,15 +58,18 @@ public class MainModel {
      */
     public MainModel(Consumer<String> addLogText){
         this.addLogText = addLogText;
-        // 1秒ごとに実行されるタイマー
-        final var oneSecondTimer = new Timer();
-        oneSecondTimer.schedule(new OneSecondTask(), 0, 1000);
+        // 長周期で実行されるタイマー
+        final var longIntervalTimer = new Timer();
+        longIntervalTimer.schedule(new LongIntervalTask(), 0, 1000);
+        // 短周期で実行されるタイマー
+        final var shortIntervalTimer = new Timer();
+        shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 200);
     }
     /**
      * 終了コマンド
      */
     public void exitCommand(){
-        System.exit(0);
+        Platform.exit();
     }
     /**
      * ゲーム座標を取得する
