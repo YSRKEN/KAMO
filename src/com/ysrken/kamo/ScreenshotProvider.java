@@ -18,6 +18,14 @@ public class ScreenshotProvider {
      * 撮影範囲
      */
     private static Rectangle rect = null;
+    /**
+     * 位置ズレ確認用のrect
+     */
+    private static Rectangle rectForCheck = null;
+    /**
+     * 枠線の色
+     */
+    private  static int frameColor = 0;
 
     /**
      * 初期化
@@ -57,7 +65,10 @@ public class ScreenshotProvider {
                         final var y = gcBounds.y + selectRect.y;
                         final var width = selectRect.width;
                         final var height = selectRect.height;
-                        ScreenshotProvider.rect = new Rectangle(x, y, width, height);
+                        rect = new Rectangle(x, y, width, height);
+                        rectForCheck = new Rectangle(x - 1, y - 1, width + 2, height + 2);
+                        // 枠線の色も記憶しておく
+                        frameColor = imageData.getRGB((int)selectRect.getX() - 1, (int)selectRect.getY() - 1);
                         return true;
                     }
                 }
@@ -223,11 +234,24 @@ public class ScreenshotProvider {
     public static boolean canGetScreenshot(){
         return (rect != null);
     }
-
     /**
      * スクリーンショットを取得する
      */
     public static BufferedImage getScreenshot(){
         return robot.createScreenCapture(rect);
+    }
+    /**
+     * ゲーム画面の位置が動いたならtrue
+     * @return
+     */
+    public static boolean isMovedPosition(){
+        // スクショを取得し、枠線の色が正しいかを確認する
+        final var sampleImage = robot.createScreenCapture(rectForCheck);
+        final var x2 = sampleImage.getWidth() - 1;
+        final var y2 = sampleImage.getHeight() - 1;
+        return (IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage.getRGB(x, 0) != frameColor)
+        || IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage.getRGB(x, y2) != frameColor)
+        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage.getRGB(0, y) != frameColor)
+        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage.getRGB(x2, y) != frameColor));
     }
 }

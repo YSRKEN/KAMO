@@ -2,12 +2,15 @@ package com.ysrken.kamo;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Scene;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class MainModel {
@@ -21,12 +24,29 @@ public class MainModel {
      */
     private Consumer<String> addLogText;
 
+    private class OneSecondTask extends TimerTask{
+        public void run(){
+            // スクリーンショットが撮影可能な場合の処理
+            if(ScreenshotProvider.canGetScreenshot()){
+                // ゲーム画面の位置が移動した際の処理
+                if(ScreenshotProvider.isMovedPosition()){
+                    addLogText.accept("【位置ズレ検知】");
+                    addLogText.accept("自動で再取得を試みます...");
+                    getPositionCommand();
+                }
+            }
+        }
+    }
+
     /**
      * コンストラクタ
      * @param addLogText MainViewのログ表示部分にログを追加するメソッド
      */
     public MainModel(Consumer<String> addLogText){
         this.addLogText = addLogText;
+        // 1秒ごとに実行されるタイマー
+        final var oneSecondTimer = new Timer();
+        oneSecondTimer.schedule(new OneSecondTask(), 0, 1000);
     }
     /**
      * 終了コマンド
