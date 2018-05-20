@@ -16,6 +16,7 @@ public class MainController {
     @FXML private MenuItem GetPositionMenu;
     @FXML private MenuItem SaveScreenshotMenu;
     @FXML private MenuItem OpenPicFolderMenu;
+    @FXML private MenuItem OpenBattleSceneReflectionMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
@@ -55,11 +56,13 @@ public class MainController {
         GetPositionMenu.setOnAction(e -> model.getPositionCommand());
         SaveScreenshotMenu.setOnAction(e -> model.saveScreenshotCommand());
         OpenPicFolderMenu.setOnAction(e -> model.openPicFolderCommand());
+        OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
         AboutMenu.setOnAction(e -> model.aboutCommand());
         GetPositionButton.setOnAction(e -> model.getPositionCommand());
         SaveScreenshotButton.setOnAction(e -> model.saveScreenshotCommand());
         // プロパティをData Bindingする
         SaveScreenshotMenu.disableProperty().bind(model.DisableSaveScreenshotFlg);
+        OpenBattleSceneReflectionMenu.disableProperty().bind(model.OpenBattleSceneReflectionFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
         MessageLogTextArea.textProperty().bind(this.logText);
         // 使えない設定をdisableする

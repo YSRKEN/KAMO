@@ -3,7 +3,11 @@ package com.ysrken.kamo;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,6 +23,10 @@ public class MainModel {
      * スクリーンショットボタンを押せるかどうかのフラグ
      */
     public BooleanProperty DisableSaveScreenshotFlg = new SimpleBooleanProperty(true);
+    /**
+     * 戦闘振り返り画面を開いているかどうかのフラグ
+     */
+    public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
@@ -124,6 +132,34 @@ public class MainModel {
             rt.exec(cmd);
         } catch (IOException e) {
             Utility.showDialog("picフォルダを開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
+        }
+    }
+    /**
+     * 戦闘振り返り画面を開く
+     */
+    public void openBattleSceneReflectionCommand(){
+        try {
+            // 新しいウインドウを生成
+            final var stage = new Stage();
+            // ウィンドウの中身をFXMLから読み込み
+            final Parent root = FXMLLoader.load(getClass().getResource("BattleSceneReflectionView.fxml"));
+            // タイトルを設定
+            stage.setTitle("戦闘振り返り画面");
+            // 大きさを設定
+            stage.setScene(new Scene(root, 500, 300));
+            // 最小の大きさを設定
+            stage.setMinWidth(350);
+            stage.setMinHeight(200);
+            // 最前面設定
+            stage.setAlwaysOnTop(true);
+            // ×ボタンを押した際の設定
+            stage.setOnCloseRequest(req -> OpenBattleSceneReflectionFlg.set(false));
+            // 新しいウインドウを表示
+            stage.show();
+            OpenBattleSceneReflectionFlg.set(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utility.showDialog("戦闘振り返り画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
     /**
