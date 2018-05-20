@@ -8,12 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class ColorPoint{
-    public int X;
-    public int Y;
-    public int Color;
-}
-
 public class ScreenshotProvider {
     /**
      * 撮影用のRobot
@@ -31,6 +25,12 @@ public class ScreenshotProvider {
      * 枠線の色
      */
     private  static int frameColor = 0;
+
+    private static class ColorPoint{
+        public int X;
+        public int Y;
+        public int Color;
+    }
 
     /**
      * 初期化

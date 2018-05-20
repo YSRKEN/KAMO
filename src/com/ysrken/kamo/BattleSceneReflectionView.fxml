@@ -1,14 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.ysrken.kamo.BattleSceneReflectionController"
-            prefHeight="400.0" prefWidth="600.0">
-
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Label?>
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ysrken.kamo.BattleSceneReflectionController">
+    <children>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+         <tabs>
+            <Tab text="昼戦後">
+               <content>
+                   <GridPane>
+                       <columnConstraints>
+                           <ColumnConstraints />
+                           <ColumnConstraints />
+                       </columnConstraints>
+                       <rowConstraints>
+                           <RowConstraints />
+                       </rowConstraints>
+                       <ImageView fx:id="SceneImageView1" GridPane.rowIndex="0"/>
+                       <Label fx:id="SceneLabel1" GridPane.rowIndex="1"/>
+                   </GridPane>
+               </content>
+            </Tab>
+            <Tab text="夜戦後">
+              <content>
+                  <GridPane>
+                      <columnConstraints>
+                          <ColumnConstraints />
+                          <ColumnConstraints />
+                      </columnConstraints>
+                      <rowConstraints>
+                          <RowConstraints />
+                      </rowConstraints>
+                      <ImageView fx:id="SceneImageView2" GridPane.rowIndex="0"/>
+                      <Label fx:id="SceneLabel2" GridPane.rowIndex="1"/>
+                  </GridPane>
+              </content>
+            </Tab>
+            <Tab text="戦闘結果">
+              <content>
+                  <GridPane>
+                      <columnConstraints>
+                          <ColumnConstraints />
+                          <ColumnConstraints />
+                      </columnConstraints>
+                      <rowConstraints>
+                          <RowConstraints />
+                      </rowConstraints>
+                      <ImageView fx:id="SceneImageView3" GridPane.rowIndex="0"/>
+                      <Label fx:id="SceneLabel3" GridPane.rowIndex="1"/>
+                  </GridPane>
+              </content>
+            </Tab>
+            <Tab text="MVP">
+              <content>
+                  <GridPane>
+                      <columnConstraints>
+                          <ColumnConstraints />
+                          <ColumnConstraints />
+                      </columnConstraints>
+                      <rowConstraints>
+                          <RowConstraints />
+                      </rowConstraints>
+                      <ImageView fx:id="SceneImageView4" GridPane.rowIndex="0"/>
+                      <Label fx:id="SceneLabel4" GridPane.rowIndex="1"/>
+                  </GridPane>
+              </content>
+            </Tab>
+            <Tab text="マップ">
+              <content>
+                  <GridPane>
+                      <columnConstraints>
+                          <ColumnConstraints />
+                          <ColumnConstraints />
+                      </columnConstraints>
+                      <rowConstraints>
+                          <RowConstraints />
+                      </rowConstraints>
+                      <ImageView fx:id="SceneImageView5" GridPane.rowIndex="0"/>
+                      <Label fx:id="SceneLabel5" GridPane.rowIndex="1"/>
+                  </GridPane>
+              </content>
+            </Tab>
+         </tabs>
+        </TabPane>
+    </children>
 </AnchorPane>
