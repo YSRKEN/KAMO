@@ -7,7 +7,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+class ColorPoint{
+    public int X;
+    public int Y;
+    public int Color;
+}
 
 public class ScreenshotProvider {
     /**
@@ -112,115 +120,133 @@ public class ScreenshotProvider {
          * 「↑の1ピクセル内側に、色Aと異なる色が1ピクセル以上存在する」を満たせない
          * 可能性が生じる(ステップサーチなので「可能性」で弾いている)。
          */
-        final var yList = new ArrayList<Integer>();
-        final var aList = new ArrayList<Integer>();
-        final var baseColorList = new ArrayList<Integer>();
-        final var yaCount = new AtomicInteger(0);
-        IntStream.range(0, image.getHeight() - 4).forEach(y -> {
-            IntStream.range(0, (image.getWidth() / stepWidth) - stepCount + 1)
-                .map(i -> i * stepWidth)
+        final var step1Stream =
+        // yは探索範囲の上辺の候補のy座標を表す
+        // ここでboxedしているのは、その次のflatMapで参照型のStreamを返したいがため
+        IntStream.range(0, image.getHeight() - 4).boxed().flatMap(y ->
+            // range→mapにより、ステップサーチするx座標を生成している
+            IntStream.range(0, (image.getWidth() / stepWidth) - stepCount + 1).map(i -> i * stepWidth)
+                // フィルタ処理してからStream<ColorPoint>に変換する
+                // (これが前述のflarMapで1つに纏められる)
                 .filter(a -> {
+                    // 枠線(候補)の色を記憶する
                     final var baseColor = image.getRGB(a, y);
+                    // 枠線(候補)に、枠線の色と異なる色があった場合は弾く
                     if(IntStream.range(1, stepCount)
                         .map(j -> a + j * stepWidth)
                         .anyMatch(a2 -> image.getRGB(a2, y) != baseColor)) {
                         return false;
                     }
+                    // 枠線(候補)の1ピクセル内側が、全て枠線の色と同色だった場合は弾く
                     if(IntStream.range(0, stepCount)
                         .map(j -> a + j * stepWidth)
-                        .allMatch(b -> image.getRGB(b, y + 1) == baseColor))
+                        .allMatch(b -> image.getRGB(b, y + 1) == baseColor)) {
                         return false;
+                    }
                     return true;
-                    }).forEach(a -> {
-                    yList.add(y);
-                    aList.add(a);
-                    baseColorList.add(image.getRGB(a, y));
-                    yaCount.incrementAndGet();
-            });
-        });
+                }).mapToObj(a -> {
+                    // Javaに構造体はないのでクラスを生成するコードになってしまう。
+                    // また、ラムダ式内で宣言したローカル変数baseColorは
+                    // 次のラムダ式に引き継げないので、再度getRGBしている
+                    return new ColorPoint(){{
+                        X = a;
+                        Y = y;
+                        Color = image.getRGB(a, y);
+                    }};
+                })
+        );
         /**
          * 上辺の候補の左側を走査し、左辺となりうる辺を持ちうるかを調査する
          * ・上記のA1ピクセルより左側stepWidthピクセルの間に、「左上座標」の候補があると考えられる
          * ・ゆえに順番に1ピクセルづつ見ていき、縦方向の辺を持ちうるかをチェックする
          * ・候補になりうるかの判定には、上辺の検索と同じくステップサーチを用いる
          */
-        final var yList2 = new ArrayList<Integer>();
-        final var xList = new ArrayList<Integer>();
-        final var baseColorList2 = new ArrayList<Integer>();
-        final var xyCount = new AtomicInteger(0);
-        IntStream.range(0, yaCount.get()).forEach(i -> {
-            final var a = aList.get(i);
-            final var y = yList.get(i);
-            final var baseColor = baseColorList.get(i);
-            IntStream.range(0, stepWidth).map(j -> a - j)
-                .filter(x -> x >= 0)
-                .takeWhile(x -> image.getRGB(x, y) == baseColor).forEach(x -> {
-                    if(IntStream.range(1, stepCount).map(k -> y + k * stepHeight)
-                        .filter(y2 -> y2 < image.getHeight())
-                        .anyMatch(y2 -> image.getRGB(x, y2) != baseColor)) {
-                        return;
-                    }
-                    if(IntStream.range(1, stepCount).map(k -> y + k * stepHeight)
-                        .filter(y2 -> y2 < image.getHeight())
-                        .allMatch(y2 -> image.getRGB(x + 1, y2) == baseColor)) {
-                        return;
-                    }
-                    xList.add(x);
-                    yList2.add(y);
-                    baseColorList2.add(baseColor);
-                    xyCount.incrementAndGet();
-                });
-        });
+        final var step2Stream =
+            // Streamから終端操作を行わずにStreamに変換するので合法
+            step1Stream.flatMap(point ->
+                // (a,y)から左方向に0～stepWidth-1ピクセル戻るが、画像の範囲からはみ出さない
+                // ということを表現するため、こうした中間操作になっている
+                IntStream.range(0, stepWidth).map(j -> point.X - j).filter(x -> x >= 0)
+                    // (a,y)の画素色と共通の範囲までしか左に戻らない、ということを表現するため、
+                    // Java9のtakeWhileを使用した
+                    .takeWhile(x -> image.getRGB(x, point.Y) == point.Color)
+                    // 左辺が不適当だと判定した場合は弾く
+                    .filter(x -> {
+                        // 枠線(候補)に、枠線の色と異なる色があった場合は弾く
+                        if(IntStream.range(1, stepCount).map(k -> point.Y + k * stepHeight)
+                            .filter(y2 -> y2 < image.getHeight())
+                            .anyMatch(y2 -> image.getRGB(x, y2) != point.Color)) {
+                            return false;
+                        }
+                        // 枠線(候補)の1ピクセル内側が、全て枠線の色と同色だった場合は弾く
+                        if(IntStream.range(1, stepCount).map(k -> point.Y + k * stepHeight)
+                                .filter(y2 -> y2 < image.getHeight())
+                                .allMatch(y2 -> image.getRGB(x + 1, y2) == point.Color)) {
+                            return false;
+                        }
+                        return true;
+                    })
+                    .mapToObj(x -> {
+                        // 再び座標・画素値に変換する
+                        return new ColorPoint(){{
+                            X = x;
+                            Y = point.Y;
+                            Color = point.Color;
+                        }};
+                    })
+        );
         /**
          * 上辺・左辺から決まる各候補について、Rectangleとしての条件を満たせるかをチェックする
          * ・左上座標候補からもう一度ステップサーチしていって、最小縦幅・横幅は大丈夫そうか調べる
          * ・下辺候補・右辺候補をステップサーチで調べる
          * ・最後は1ピクセルづつ舐めるように検索して正当性を確かめる
          */
-        final var rectList = new ArrayList<Rectangle>();
-        IntStream.range(0, xyCount.get()).forEach(i -> {
-            final var x = xList.get(i);
-            final var y = yList2.get(i);
-            final var baseColor = baseColorList2.get(i);
-            IntStream.range(x + minGameWidth + 1, Math.min(x + maxGameWidth + 2, image.getWidth()))
-                .takeWhile(x2 -> image.getRGB(x2, y) == baseColor).forEach(x2 -> {
+        return step2Stream.flatMap(point ->
+            // つまり、「左上座標から右にminGameWidth+1ピクセル進んだ位置」から
+            // 「min(左上座標から右にmaxGameWidth + 1ピクセル進んだ位置, 画像の右端)」まで。
+            // rangeメソッドは終端(第二引数)を含まないので、+1ではなく+2表記なことに注意
+            IntStream.range(point.X + minGameWidth + 1, Math.min(point.X + maxGameWidth + 2, image.getWidth()))
+                //　ここのtakeWhileは、右上座標を右に1つづつ見ていく際に、右上座標が枠線の色と
+                // 異なってしまった場合、それ以上探索するのは無駄ということから来ている
+                .takeWhile(x2 -> image.getRGB(x2, point.Y) == point.Color).filter(x2 -> {
                     // 左下候補のy座標
-                    final var y2 = y + (x2 - (x + 1)) * minGameHeight / minGameWidth + 1;
+                    final var y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
                     if(y2 >= image.getHeight())
-                        return;
+                        return false;
                     // 左下候補をチェック
-                    if(image.getRGB(x2, y2) != baseColor)
-                        return;
-                    // ステップサーチで下辺と右辺をチェック
-                    if(IntStream.range(0, stepCount)
-                        .map(j -> x + j * stepWidth)
-                        .anyMatch(x3 -> image.getRGB(x3, y2) != baseColor)) {
-                        return;
+                    if(image.getRGB(x2, y2) != point.Color)
+                        return false;
+                    // ステップサーチで下辺をチェック
+                    if(IntStream.range(0, stepCount).map(j -> point.X + j * stepWidth)
+                            .anyMatch(x3 -> image.getRGB(x3, y2) != point.Color)) {
+                        return false;
                     }
-                    if(IntStream.range(0, stepCount)
-                            .map(j -> x + j * stepWidth)
-                            .allMatch(x3 -> image.getRGB(x3, y2 - 1) == baseColor)) {
-                        return;
+                    if(IntStream.range(0, stepCount).map(j -> point.X + j * stepWidth)
+                            .allMatch(x3 -> image.getRGB(x3, y2 - 1) == point.Color)) {
+                        return false;
                     }
-                    if(IntStream.range(1, stepCount).map(j -> y + j * stepHeight)
-                            .anyMatch(y3 -> image.getRGB(x2, y3) != baseColor)) {
-                        return;
+                    // ステップサーチで右辺をチェック
+                    if(IntStream.range(1, stepCount).map(j -> point.Y + j * stepHeight)
+                            .anyMatch(y3 -> image.getRGB(x2, y3) != point.Color)) {
+                        return false;
                     }
-                    if(IntStream.range(1, stepCount).map(j -> y + j * stepHeight)
-                            .allMatch(y3 -> image.getRGB(x2 - 1, y3) == baseColor)) {
-                        return;
+                    if(IntStream.range(1, stepCount).map(j -> point.Y + j * stepHeight)
+                            .allMatch(y3 -> image.getRGB(x2 - 1, y3) == point.Color)) {
+                        return false;
                     }
                     // 最終チェック
-                    if(IntStream.range(x, x2).anyMatch(x3 -> image.getRGB(x3, y) != baseColor)
-                        || IntStream.range(x, x2).anyMatch(x3 -> image.getRGB(x3, y2) != baseColor)
-                        || IntStream.range(y, y2).anyMatch(y3 -> image.getRGB(x, y3) != baseColor)
-                        || IntStream.range(y, y2).anyMatch(y3 -> image.getRGB(x2, y3) != baseColor))
-                        return;
-                    // リストに追加
-                    rectList.add(new Rectangle(x + 1, y + 1, x2 - x - 1, y2 - y - 1));
-            });
-        });
-        return rectList;
+                    if(IntStream.range(point.X, x2).anyMatch(x3 -> image.getRGB(x3, point.Y) != point.Color)
+                    || IntStream.range(point.X, x2).anyMatch(x3 -> image.getRGB(x3, y2) != point.Color)
+                    || IntStream.range(point.Y, y2).anyMatch(y3 -> image.getRGB(point.X, y3) != point.Color)
+                    || IntStream.range(point.Y, y2).anyMatch(y3 -> image.getRGB(x2, y3) != point.Color))
+                        return false;
+                    return true;
+            }).mapToObj(x2 -> {
+                // 最後にRecrangleに変換
+                final var y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
+                return new Rectangle(point.X + 1, point.Y + 1, x2 - point.X - 1, y2 - point.Y - 1);
+            })
+        ).collect(Collectors.toList());
     }
     /**
      * 取得した座標を返す
