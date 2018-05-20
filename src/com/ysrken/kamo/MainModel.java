@@ -11,11 +11,13 @@ import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MainModel {
@@ -32,6 +34,8 @@ public class MainModel {
      * MainViewのログ表示部分にログを追加するメソッド
      */
     private Consumer<String> addLogText;
+    private BiConsumer<String, BufferedImage> setImage = null;
+    private BiConsumer<String, String> setText = null;
 
     /**
      * 長い周期で行われるタスクを設定
@@ -110,6 +114,8 @@ public class MainModel {
         if(ScreenshotProvider.canGetScreenshot()){
             final var screenShot = ScreenshotProvider.getScreenshot();
             final var fileName = String.format("%s.png", Utility.getDateStringLong());
+            setImage.accept("昼戦後", screenShot);
+            setText.accept("昼戦後", fileName);
             try {
                 ImageIO.write(screenShot, "png", new File(String.format("pic\\%s", fileName)));
                 addLogText.accept(String.format("ファイル名：%s", fileName));
@@ -142,7 +148,11 @@ public class MainModel {
             // 新しいウインドウを生成
             final var stage = new Stage();
             // ウィンドウの中身をFXMLから読み込み
-            final Parent root = FXMLLoader.load(getClass().getResource("BattleSceneReflectionView.fxml"));
+            final var loader = new FXMLLoader(getClass().getResource("BattleSceneReflectionView.fxml"));
+            final Parent root = loader.load();
+            final BattleSceneReflectionController controller = loader.getController();
+            this.setImage = (key, image) -> controller.setImage(key ,image);
+            this.setText = (key, text) -> controller.setText(key, text);
             // タイトルを設定
             stage.setTitle("戦闘振り返り画面");
             // 大きさを設定
@@ -153,7 +163,11 @@ public class MainModel {
             // 最前面設定
             stage.setAlwaysOnTop(true);
             // ×ボタンを押した際の設定
-            stage.setOnCloseRequest(req -> OpenBattleSceneReflectionFlg.set(false));
+            stage.setOnCloseRequest(req -> {
+                OpenBattleSceneReflectionFlg.set(false);
+                this.setImage = null;
+                this.setText = null;
+            });
             // 新しいウインドウを表示
             stage.show();
             OpenBattleSceneReflectionFlg.set(true);

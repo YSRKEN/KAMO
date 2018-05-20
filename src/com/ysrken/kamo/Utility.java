@@ -5,13 +5,11 @@ import javafx.scene.control.ButtonType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Utility {

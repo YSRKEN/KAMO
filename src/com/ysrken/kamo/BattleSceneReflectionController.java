@@ -5,29 +5,27 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-
 public class BattleSceneReflectionController {
     // RI KI WA ZA
-    public ImageView SceneImageView1;
-    public ImageView SceneImageView2;
-    public ImageView SceneImageView3;
-    public ImageView SceneImageView4;
-    public ImageView SceneImageView5;
-    public Label SceneLabel1;
-    public Label SceneLabel2;
-    public Label SceneLabel3;
-    public Label SceneLabel4;
-    public Label SceneLabel5;
+    @FXML private ImageView SceneImageView1;
+    @FXML private ImageView SceneImageView2;
+    @FXML private ImageView SceneImageView3;
+    @FXML private ImageView SceneImageView4;
+    @FXML private ImageView SceneImageView5;
+    @FXML private Label SceneLabel1;
+    @FXML private Label SceneLabel2;
+    @FXML private Label SceneLabel3;
+    @FXML private Label SceneLabel4;
+    @FXML private Label SceneLabel5;
 
     /**
      * シーンごとのマッピング
@@ -79,12 +77,21 @@ public class BattleSceneReflectionController {
         sceneMapping.put("戦闘結果", new TabContents(SceneImageView3, SceneLabel3));
         sceneMapping.put("MVP",     new TabContents(SceneImageView4, SceneLabel4));
         sceneMapping.put("マップ",   new TabContents(SceneImageView5, SceneLabel5));
-        // 表示テスト
-        var image = new BufferedImage(300, 200, TYPE_INT_ARGB);
-        final var graphics = image.getGraphics();
-        graphics.setColor(Color.BLUE);
-        graphics.fillRect(0, 0, 300, 200);
-        sceneMapping.get("昼戦後").setImage(image);
-        sceneMapping.get("昼戦後").setText("2006/01/02 03:04:05:890");
+    }
+    /**
+     * 画像をタブにセット
+     * @param key タブ名
+     * @param image 画像
+     */
+    public void setImage(String key, BufferedImage image){
+        sceneMapping.get(key).setImage(image);
+    }
+    /**
+     * テキストをタブにセット
+     * @param key タブ名
+     * @param text テキスト
+     */
+    public void setText(String key, String text){
+        sceneMapping.get(key).setText(text);
     }
 }
