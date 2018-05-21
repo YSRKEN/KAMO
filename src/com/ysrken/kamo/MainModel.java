@@ -61,6 +61,13 @@ public class MainModel {
             // スクリーンショットが撮影可能な場合の処理
             if(ScreenshotProvider.canGetScreenshot()){
                 final var frame = ScreenshotProvider.getScreenshot();
+                final var scene = SceneRecognitionService.judgeScene(frame);
+                if(scene.equals("昼戦後")){
+                    Platform.runLater(() -> {
+                        setImage.accept(scene, frame);
+                        setText.accept(scene, Utility.getDateStringLong());
+                    });
+                }
             }
         }
     }

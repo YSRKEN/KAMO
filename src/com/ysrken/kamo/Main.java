@@ -7,6 +7,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.awt.image.BufferedImage;
+
 public class Main extends Application {
     // ウィンドウにおけるマウスドラッグを開始した時の座標
     private double xOffset = 0, yOffset = 0;
@@ -38,5 +40,7 @@ public class Main extends Application {
         // 表示
         primaryStage.show();
     }
-    public static void main(String[] args) { launch(args); }
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
