@@ -80,6 +80,49 @@ public class SceneRecognitionService {
         }
         return hash;
     }
+    /**
+     * 画像の一部分における平均色を取得する(rectで指定する範囲は％単位)
+     * @param image 画像
+     * @param rectPer rect(％表記)
+     * @return 平均色
+     */
+    private static Color calcAverageColor(BufferedImage image, Rectangle2D.Double rectPer){
+        // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
+        final var rectX = (int)perToPixel(rectPer.getX(), image.getWidth());
+        final var rectY = (int)perToPixel(rectPer.getY(), image.getHeight());
+        final var rectW = (int)perToPixel(rectPer.getWidth(), image.getWidth());
+        final var rectH = (int)perToPixel(rectPer.getHeight(), image.getHeight());
+        // 画素値の平均色を計算する
+        long rSum = 0, gSum = 0, bSum = 0;
+        for(int y = rectY; y < rectY + rectH; ++y) {
+            for (int x = rectX; x < rectX + rectW; ++x) {
+                final var color = image.getRGB(x, y);
+                rSum += (color >>> 16) & 0xFF;
+                gSum += (color >>> 8) & 0xFF;
+                bSum += color & 0xFF;
+            }
+        }
+        int rAve = (int)Math.round(1.0 * rSum / rectW / rectH);
+        int gAve = (int)Math.round(1.0 * gSum / rectW / rectH);
+        int bAve = (int)Math.round(1.0 * bSum / rectW / rectH);
+        // クロップ後に出力
+        rAve = (rAve < 0 ? 0 : rAve > 255 ? 255 : rAve);
+        gAve = (gAve < 0 ? 0 : gAve > 255 ? 255 : gAve);
+        bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
+        return new Color(rAve, gAve, bAve);
+    }
+    /**
+     * 画像間のRGB色空間における距離を計算する
+     * @param a 色1
+     * @param b 色2
+     * @return 距離
+     */
+    private static int calcColorDistance(Color a, Color b){
+        final var rDiff = a.getRed() - b.getRed();
+        final var gDiff = a.getGreen() - b.getGreen();
+        final var bDiff = a.getBlue() - b.getBlue();
+        return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
+    }
 
     /**
      * シーン判定を行う
@@ -98,8 +141,13 @@ public class SceneRecognitionService {
         final var rect2 = new Rectangle2D.Double(433.0 / 8, 20.0 / 4.8, 20.0 / 8, 20.0 / 4.8);
         final var hash2 = calcDifferenceHash(frame, rect2);
         if(calcHummingDistance(hash1, 0x20000000L) < 20 & calcHummingDistance(hash2, 0x8040C141C2620586L) < 20){
-            return "昼戦後";
+            final var rect3 = new Rectangle2D.Double(407.0 / 8, 3.0 / 4.8, 20.0 / 8, 20.0 / 4.8);
+            final var color = calcAverageColor(frame, rect3);
+            if(calcColorDistance(color, new Color(50, 107, 158)) < 50){
+                return "昼戦後";
+            }
         }
+
         return "";
     }
 }
