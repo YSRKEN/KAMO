@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 public class BattleSceneReflectionController {
     // RI KI WA ZA
+    @FXML private BorderPane SceneLabel1BP;
     @FXML private ImageView SceneImageView1;
     @FXML private ImageView SceneImageView2;
     @FXML private ImageView SceneImageView3;
@@ -72,6 +74,8 @@ public class BattleSceneReflectionController {
      * 初期化
      */
     public void initialize(){
+        SceneImageView1.fitWidthProperty().bind(SceneLabel1BP.widthProperty());
+        SceneImageView1.fitHeightProperty().bind(SceneLabel1BP.heightProperty());
         sceneMapping.put("昼戦後",   new TabContents(SceneImageView1, SceneLabel1));
         sceneMapping.put("夜戦後",   new TabContents(SceneImageView2, SceneLabel2));
         sceneMapping.put("戦闘結果", new TabContents(SceneImageView3, SceneLabel3));

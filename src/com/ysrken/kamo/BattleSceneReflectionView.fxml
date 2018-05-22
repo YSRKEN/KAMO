@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ysrken.kamo.BattleSceneReflectionController">
     <children>
-        <TabPane tabClosingPolicy="UNAVAILABLE">
+        <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
          <tabs>
             <Tab text="昼戦後">
                <content>
-                   <GridPane>
+                   <GridPane gridLinesVisible="true">
                        <columnConstraints>
-                           <ColumnConstraints />
-                           <ColumnConstraints />
+                           <ColumnConstraints hgrow="ALWAYS" />
                        </columnConstraints>
                        <rowConstraints>
-                           <RowConstraints />
+                           <RowConstraints vgrow="ALWAYS" />
+                           <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
                        </rowConstraints>
-                       <ImageView fx:id="SceneImageView1" GridPane.rowIndex="0"/>
-                       <Label fx:id="SceneLabel1" GridPane.rowIndex="1"/>
+                       <BorderPane fx:id="SceneLabel1BP" minHeight="0.0" minWidth="0.0" GridPane.rowIndex="0">
+                           <center>
+                               <ImageView fx:id="SceneImageView1" preserveRatio="true"/>
+                           </center>
+                       </BorderPane>
+                       <Label fx:id="SceneLabel1" style="-fx-font-size: 20;" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                               <Insets left="5.0" />
+                           </GridPane.margin>
+                       </Label>
                    </GridPane>
                </content>
             </Tab>
@@ -31,9 +47,10 @@
                       </columnConstraints>
                       <rowConstraints>
                           <RowConstraints />
+                        <RowConstraints />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView2" GridPane.rowIndex="0"/>
-                      <Label fx:id="SceneLabel2" GridPane.rowIndex="1"/>
+                      <ImageView fx:id="SceneImageView2" GridPane.rowIndex="0" />
+                      <Label fx:id="SceneLabel2" GridPane.rowIndex="1" />
                   </GridPane>
               </content>
             </Tab>
@@ -46,9 +63,10 @@
                       </columnConstraints>
                       <rowConstraints>
                           <RowConstraints />
+                        <RowConstraints />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView3" GridPane.rowIndex="0"/>
-                      <Label fx:id="SceneLabel3" GridPane.rowIndex="1"/>
+                      <ImageView fx:id="SceneImageView3" GridPane.rowIndex="0" />
+                      <Label fx:id="SceneLabel3" GridPane.rowIndex="1" />
                   </GridPane>
               </content>
             </Tab>
@@ -61,9 +79,10 @@
                       </columnConstraints>
                       <rowConstraints>
                           <RowConstraints />
+                        <RowConstraints />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView4" GridPane.rowIndex="0"/>
-                      <Label fx:id="SceneLabel4" GridPane.rowIndex="1"/>
+                      <ImageView fx:id="SceneImageView4" GridPane.rowIndex="0" />
+                      <Label fx:id="SceneLabel4" GridPane.rowIndex="1" />
                   </GridPane>
               </content>
             </Tab>
@@ -76,9 +95,10 @@
                       </columnConstraints>
                       <rowConstraints>
                           <RowConstraints />
+                        <RowConstraints />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView5" GridPane.rowIndex="0"/>
-                      <Label fx:id="SceneLabel5" GridPane.rowIndex="1"/>
+                      <ImageView fx:id="SceneImageView5" GridPane.rowIndex="0" />
+                      <Label fx:id="SceneLabel5" GridPane.rowIndex="1" />
                   </GridPane>
               </content>
             </Tab>
