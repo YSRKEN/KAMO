@@ -78,6 +78,7 @@ public class ScreenshotProvider {
                     }
                 }
             }
+            rect = null;
             return false;
         } catch (AWTException e) {
             e.printStackTrace();
