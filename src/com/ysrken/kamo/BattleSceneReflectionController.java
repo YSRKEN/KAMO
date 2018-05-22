@@ -74,8 +74,11 @@ public class BattleSceneReflectionController {
      * 初期化
      */
     public void initialize(){
+        // ImageViewのサイズを自動調整する。
+        // 参考→https://qiita.com/opengl-8080/items/29c3ef163f41ee172173
         SceneImageView1.fitWidthProperty().bind(SceneLabel1BP.widthProperty());
         SceneImageView1.fitHeightProperty().bind(SceneLabel1BP.heightProperty());
+        // マッピング
         sceneMapping.put("昼戦後",   new TabContents(SceneImageView1, SceneLabel1));
         sceneMapping.put("夜戦後",   new TabContents(SceneImageView2, SceneLabel2));
         sceneMapping.put("戦闘結果", new TabContents(SceneImageView3, SceneLabel3));

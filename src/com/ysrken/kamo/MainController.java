@@ -1,12 +1,10 @@
 package com.ysrken.kamo;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 
@@ -17,6 +15,7 @@ public class MainController {
     @FXML private MenuItem SaveScreenshotMenu;
     @FXML private MenuItem OpenPicFolderMenu;
     @FXML private MenuItem OpenBattleSceneReflectionMenu;
+    @FXML private CheckMenuItem AutoGetPositionMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
@@ -37,13 +36,15 @@ public class MainController {
      * @param text
      */
     private void addLogText(String text){
-        logText.set(String.format(
-                "%s%s %s%n",
-                logText.get(),
-                Utility.getDateStringShort(),
-                text
-        ));
-        MessageLogTextArea.setScrollTop(Double.POSITIVE_INFINITY);
+        Platform.runLater(() -> {
+            logText.set(String.format(
+                    "%s%s %s%n",
+                    logText.get(),
+                    Utility.getDateStringShort(),
+                    text
+            ));
+            MessageLogTextArea.setScrollTop(Double.POSITIVE_INFINITY);
+        });
     }
     /**
      * 初期化
@@ -63,6 +64,7 @@ public class MainController {
         // プロパティをData Bindingする
         SaveScreenshotMenu.disableProperty().bind(model.DisableSaveScreenshotFlg);
         OpenBattleSceneReflectionMenu.disableProperty().bind(model.OpenBattleSceneReflectionFlg);
+        AutoGetPositionMenu.selectedProperty().bindBidirectional(model.AutoGetPositionFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
         MessageLogTextArea.textProperty().bind(this.logText);
         // 使えない設定をdisableする

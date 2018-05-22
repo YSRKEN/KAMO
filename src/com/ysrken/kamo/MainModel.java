@@ -29,6 +29,7 @@ public class MainModel {
      * 戦闘振り返り画面を開いているかどうかのフラグ
      */
     public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
@@ -50,6 +51,10 @@ public class MainModel {
                     addLogText.accept("自動で再取得を試みます...");
                     getPositionCommand();
                 }
+            }else if(AutoGetPositionFlg.get()){
+                addLogText.accept("【自動座標認識】");
+                addLogText.accept("自動で再取得を試みます...");
+                getPositionCommand();
             }
         }
     }
