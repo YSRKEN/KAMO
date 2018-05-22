@@ -22,7 +22,7 @@ public class Main extends Application {
         // 大きさを設定
         primaryStage.setScene(new Scene(root, 500, 300));
         // 最小の大きさを設定
-        primaryStage.setMinWidth(350);
+        primaryStage.setMinWidth(400);
         primaryStage.setMinHeight(200);
         // 最前面設定
         primaryStage.setAlwaysOnTop(true);
