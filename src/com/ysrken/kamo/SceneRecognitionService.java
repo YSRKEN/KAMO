@@ -130,11 +130,6 @@ public class SceneRecognitionService {
      * @return シーンを表す文字列
      */
     public static String judgeScene(BufferedImage frame){
-        /*try {
-            frame = ImageIO.read(new File("pic\\2018-05-20 11-06-39-103.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         // スタブ
         final var rect1 = new Rectangle2D.Double(18.0 / 8, 2.0 / 4.8, 16.0 / 8, 16.0 / 4.8);
         final var hash1 = calcDifferenceHash(frame, rect1);
