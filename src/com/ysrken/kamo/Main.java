@@ -5,9 +5,13 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class Main extends Application {
     // ウィンドウにおけるマウスドラッグを開始した時の座標
@@ -36,6 +40,31 @@ public class Main extends Application {
         root.setOnMouseDragged(event -> {
             primaryStage.setX(event.getScreenX() + xOffset);
             primaryStage.setY(event.getScreenY() + yOffset);
+        });
+        // ファイルドラッグを設定
+        root.setOnDragOver(event -> {
+            final var board = event.getDragboard();
+            if (board.hasFiles()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+        });
+        root.setOnDragDropped(event -> {
+            final var board = event.getDragboard();
+            if (board.hasFiles()) {
+                board.getFiles().forEach(file -> {
+                    try {
+                        final var BufferedImage = ImageIO.read(file);
+                        final var scene = SceneRecognitionService.judgeScene(BufferedImage);
+                        final var contentText = String.format("シーン判定：%s", scene.isEmpty() ? "不明" : scene);
+                        Utility.showDialog(contentText, "画像認識結果");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                event.setDropCompleted(true);
+            } else {
+                event.setDropCompleted(false);
+            }
         });
         // 表示
         primaryStage.show();
