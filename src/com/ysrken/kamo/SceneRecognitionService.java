@@ -6,10 +6,30 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.awt.Image.SCALE_SMOOTH;
 
-public class SceneRecognitionService {
+/**
+ * 画像がそのシーンたりうる証拠
+ */
+interface SceneEvidence{
+    /**
+     * 画像がその証拠とマッチするかを判定する
+     * @param image 入力画像
+     * @return マッチすればtrue
+     */
+    public boolean isMatchImage(BufferedImage image);
+}
+
+/**
+ * 画像がそのシーンたりうる証拠(DifferenceHash版)
+ */
+class SceneEvidenceDH implements SceneEvidence{
+    private double xPer, yPer, wPer, hPer;
+    private long hash;
     /**
      * ％表記の割合(A)と100％時のピクセル値(B)から、ピクセルを出力する
      * ただし出力値は、[0, B - 1]にクロップされる
@@ -23,41 +43,16 @@ public class SceneRecognitionService {
         return Math.min(Math.max(roundPixel, 0), pixel - 1);
     }
     /**
-     * ビットカウント
-     * 参考→http://developer.cybozu.co.jp/takesako/2006/11/binary_hacks.html
-     * @param x long型(64bit)の値
-     * @return ビットカウント後の数
-     */
-    private static long popcnt(long x) {
-        x = ((x & 0xaaaaaaaaaaaaaaaaL) >> 1) + (x & 0x5555555555555555L);
-        x = ((x & 0xccccccccccccccccL) >> 2) + (x & 0x3333333333333333L);
-        x = ((x & 0xf0f0f0f0f0f0f0f0L) >> 4) + (x & 0x0f0f0f0f0f0f0f0fL);
-        x = ((x & 0xff00ff00ff00ff00L) >> 8) + (x & 0x00ff00ff00ff00ffL);
-        x = ((x & 0xffff0000ffff0000L) >> 16) + (x & 0x0000ffff0000ffffL);
-        x = ((x & 0xffffffff00000000L) >> 32) + (x & 0x00000000ffffffffL);
-        return x;
-    }
-    /**
-     * ハミング距離を計算する
-     * @param a 値1
-     * @param b 値2
-     * @return ハミング距離
-     */
-    public static long calcHummingDistance(long a, long b) {
-        return popcnt(a ^ b);
-    }
-    /**
      * 画像の一部分におけるDifferenceHashを取得する(rectで指定する範囲は％単位)
      * @param image 画像
-     * @param rectPer rect(％表記)
      * @return ハッシュ値
      */
-    private static long calcDifferenceHash(BufferedImage image, Rectangle2D.Double rectPer) {
+    private long calcDifferenceHash(BufferedImage image) {
         // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
-        final var rectX = (int)perToPixel(rectPer.getX(), image.getWidth());
-        final var rectY = (int)perToPixel(rectPer.getY(), image.getHeight());
-        final var rectW = (int)perToPixel(rectPer.getWidth(), image.getWidth());
-        final var rectH = (int)perToPixel(rectPer.getHeight(), image.getHeight());
+        final var rectX = (int)perToPixel(xPer, image.getWidth());
+        final var rectY = (int)perToPixel(yPer, image.getHeight());
+        final var rectW = (int)perToPixel(wPer, image.getWidth());
+        final var rectH = (int)perToPixel(hPer, image.getHeight());
         // 元画像を切り抜き、9x8ピクセルにリサイズ
         final var tempImage = image
                 .getSubimage(rectX, rectY, rectW, rectH)
@@ -81,17 +76,82 @@ public class SceneRecognitionService {
         return hash;
     }
     /**
+     * ビットカウント
+     * 参考→http://developer.cybozu.co.jp/takesako/2006/11/binary_hacks.html
+     * @param x long型(64bit)の値
+     * @return ビットカウント後の数
+     */
+    private static long popcnt(long x) {
+        x = ((x & 0xaaaaaaaaaaaaaaaaL) >> 1) + (x & 0x5555555555555555L);
+        x = ((x & 0xccccccccccccccccL) >> 2) + (x & 0x3333333333333333L);
+        x = ((x & 0xf0f0f0f0f0f0f0f0L) >> 4) + (x & 0x0f0f0f0f0f0f0f0fL);
+        x = ((x & 0xff00ff00ff00ff00L) >> 8) + (x & 0x00ff00ff00ff00ffL);
+        x = ((x & 0xffff0000ffff0000L) >> 16) + (x & 0x0000ffff0000ffffL);
+        x = ((x & 0xffffffff00000000L) >> 32) + (x & 0x00000000ffffffffL);
+        return x;
+    }
+    /**
+     * hashｔのハミング距離を計算する
+     * @param a 値
+     * @return ハミング距離
+     */
+    private long calcHummingDistance(long a) {
+        return popcnt(a ^ hash);
+    }
+    /**
+     * コンストラクタ
+     * @param xPer 左上X座標の％
+     * @param yPer 左上Y座標の％
+     * @param wPer 横幅の％
+     * @param hPer 縦幅の％
+     * @param hash ハッシュ値
+     */
+    public SceneEvidenceDH(double xPer, double yPer, double wPer, double hPer, long hash){
+        this.xPer = xPer;
+        this.yPer = yPer;
+        this.wPer = wPer;
+        this.hPer = hPer;
+        this.hash = hash;
+    }
+    /**
+     * 画像がその証拠とマッチするかを判定する
+     * @param image 入力画像
+     * @return マッチすればtrue
+     */
+    public boolean isMatchImage(BufferedImage image){
+        return calcHummingDistance(calcDifferenceHash(image)) < 20;
+    }
+}
+
+/**
+ * 画像がそのシーンたりうる証拠(AverageColor版)
+ */
+class SceneEvidenceAC implements SceneEvidence{
+    private double xPer, yPer, wPer, hPer;
+    private int r, g, b;
+    /**
+     * ％表記の割合(A)と100％時のピクセル値(B)から、ピクセルを出力する
+     * ただし出力値は、[0, B - 1]にクロップされる
+     * @param per 割合
+     * @param pixel ピクセル
+     * @return 割合値のピクセル
+     */
+    private static long perToPixel(double per, int pixel){
+        final var rawPixel = per * pixel / 100;
+        final var roundPixel = Math.round(rawPixel);
+        return Math.min(Math.max(roundPixel, 0), pixel - 1);
+    }
+    /**
      * 画像の一部分における平均色を取得する(rectで指定する範囲は％単位)
      * @param image 画像
-     * @param rectPer rect(％表記)
      * @return 平均色
      */
-    private static Color calcAverageColor(BufferedImage image, Rectangle2D.Double rectPer){
+    private Color calcAverageColor(BufferedImage image){
         // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
-        final var rectX = (int)perToPixel(rectPer.getX(), image.getWidth());
-        final var rectY = (int)perToPixel(rectPer.getY(), image.getHeight());
-        final var rectW = (int)perToPixel(rectPer.getWidth(), image.getWidth());
-        final var rectH = (int)perToPixel(rectPer.getHeight(), image.getHeight());
+        final var rectX = (int)perToPixel(xPer, image.getWidth());
+        final var rectY = (int)perToPixel(yPer, image.getHeight());
+        final var rectW = (int)perToPixel(wPer, image.getWidth());
+        final var rectH = (int)perToPixel(hPer, image.getHeight());
         // 画素値の平均色を計算する
         long rSum = 0, gSum = 0, bSum = 0;
         for(int y = rectY; y < rectY + rectH; ++y) {
@@ -112,37 +172,71 @@ public class SceneRecognitionService {
         return new Color(rAve, gAve, bAve);
     }
     /**
-     * 画像間のRGB色空間における距離を計算する
-     * @param a 色1
-     * @param b 色2
+     * 色間のRGB色空間における距離を計算する
+     * @param a 色
      * @return 距離
      */
-    private static int calcColorDistance(Color a, Color b){
-        final var rDiff = a.getRed() - b.getRed();
-        final var gDiff = a.getGreen() - b.getGreen();
-        final var bDiff = a.getBlue() - b.getBlue();
+    private int calcColorDistance(Color a){
+        final var rDiff = a.getRed() - r;
+        final var gDiff = a.getGreen() - g;
+        final var bDiff = a.getBlue() - b;
         return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
     }
+    /**
+     * コンストラクタ
+     * @param xPer 左上X座標の％
+     * @param yPer 左上Y座標の％
+     * @param wPer 横幅の％
+     * @param hPer 縦幅の％
+     * @param r R値
+     * @param g G値
+     * @param b B値
+     */
+    public SceneEvidenceAC(double xPer, double yPer, double wPer, double hPer, int r, int g, int b){
+        this.xPer = xPer;
+        this.yPer = yPer;
+        this.wPer = wPer;
+        this.hPer = hPer;
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+    /**
+     * 画像がその証拠とマッチするかを判定する
+     * @param image 入力画像
+     * @return マッチすればtrue
+     */
+    public boolean isMatchImage(BufferedImage image){
+        return calcColorDistance(calcAverageColor(image)) < 50;
+    }
+}
 
+/**
+ * 画面のシーン判定を行う
+ */
+public class SceneRecognitionService {
+    /**
+     * シーン一覧
+     */
+    private static Map<String, SceneEvidence[]> sceneList = new HashMap<String, SceneEvidence[]>();
+    /**
+     * 初期化コード
+     */
+    public static void initialize(){
+        sceneList.put("昼戦後", new SceneEvidence[]{
+                new SceneEvidenceDH(18.0 / 8, 2.0 / 4.8, 16.0 / 8, 16.0 / 4.8, 0x20000000L),
+                new SceneEvidenceDH(433.0 / 8, 20.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 0x8040C141C2620586L),
+                new SceneEvidenceAC(407.0 / 8, 3.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 50, 107, 158)
+        });
+    }
     /**
      * シーン判定を行う
      * @param frame スクショ
      * @return シーンを表す文字列
      */
     public static String judgeScene(BufferedImage frame){
-        // スタブ
-        final var rect1 = new Rectangle2D.Double(18.0 / 8, 2.0 / 4.8, 16.0 / 8, 16.0 / 4.8);
-        final var hash1 = calcDifferenceHash(frame, rect1);
-        final var rect2 = new Rectangle2D.Double(433.0 / 8, 20.0 / 4.8, 20.0 / 8, 20.0 / 4.8);
-        final var hash2 = calcDifferenceHash(frame, rect2);
-        if(calcHummingDistance(hash1, 0x20000000L) < 20 & calcHummingDistance(hash2, 0x8040C141C2620586L) < 20){
-            final var rect3 = new Rectangle2D.Double(407.0 / 8, 3.0 / 4.8, 20.0 / 8, 20.0 / 4.8);
-            final var color = calcAverageColor(frame, rect3);
-            if(calcColorDistance(color, new Color(50, 107, 158)) < 50){
-                return "昼戦後";
-            }
-        }
-
-        return "";
+        return sceneList.entrySet().stream().filter(e ->
+                Arrays.stream(e.getValue()).allMatch(se -> se.isMatchImage(frame))
+        ).map(e -> e.getKey()).findFirst().orElse("");
     }
 }

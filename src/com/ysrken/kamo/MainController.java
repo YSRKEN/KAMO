@@ -76,6 +76,8 @@ public class MainController {
             e.printStackTrace();
             Utility.showDialog("picフォルダを作成できませんでした。%nソフトウェアを終了します", "致命的なエラー", Alert.AlertType.ERROR);
         }
+        // 画像認識用のクラスを初期化する
+        SceneRecognitionService.initialize();
         // 起動時にバージョンチェックする
         model.checkVersionCommand();
     }

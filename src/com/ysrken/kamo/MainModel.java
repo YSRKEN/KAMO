@@ -29,7 +29,7 @@ public class MainModel {
      * 戦闘振り返り画面を開いているかどうかのフラグ
      */
     public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
-    public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(true);
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
