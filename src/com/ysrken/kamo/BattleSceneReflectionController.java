@@ -18,6 +18,7 @@ import java.util.Map;
 public class BattleSceneReflectionController {
     // RI KI WA ZA
     @FXML private BorderPane SceneLabel1BP;
+    @FXML private BorderPane SceneLabel2BP;
     @FXML private ImageView SceneImageView1;
     @FXML private ImageView SceneImageView2;
     @FXML private ImageView SceneImageView3;
@@ -78,6 +79,8 @@ public class BattleSceneReflectionController {
         // 参考→https://qiita.com/opengl-8080/items/29c3ef163f41ee172173
         SceneImageView1.fitWidthProperty().bind(SceneLabel1BP.widthProperty());
         SceneImageView1.fitHeightProperty().bind(SceneLabel1BP.heightProperty());
+        SceneImageView2.fitWidthProperty().bind(SceneLabel2BP.widthProperty());
+        SceneImageView2.fitHeightProperty().bind(SceneLabel2BP.heightProperty());
         // マッピング
         sceneMapping.put("昼戦後",   new TabContents(SceneImageView1, SceneLabel1));
         sceneMapping.put("夜戦後",   new TabContents(SceneImageView2, SceneLabel2));

@@ -119,7 +119,9 @@ class SceneEvidenceDH implements SceneEvidence{
      * @return マッチすればtrue
      */
     public boolean isMatchImage(BufferedImage image){
-        return calcHummingDistance(calcDifferenceHash(image)) < 20;
+        final var hash = calcDifferenceHash(image);
+        //System.out.println(hash);
+        return calcHummingDistance(hash) < 20;
     }
 }
 
@@ -207,7 +209,9 @@ class SceneEvidenceAC implements SceneEvidence{
      * @return マッチすればtrue
      */
     public boolean isMatchImage(BufferedImage image){
-        return calcColorDistance(calcAverageColor(image)) < 50;
+        final var color = calcAverageColor(image);
+        //System.out.println("" + color.getRed() + "," + color.getGreen() + "," + color.getBlue());
+        return calcColorDistance(color) < 50;
     }
 }
 
@@ -228,6 +232,11 @@ public class SceneRecognitionService {
                 new SceneEvidenceDH(433.0 / 8, 20.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 0x8040C141C2620586L),
                 new SceneEvidenceAC(407.0 / 8, 3.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 50, 107, 158)
         });
+        sceneList.put("夜戦後", new SceneEvidence[]{
+                new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
+                new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
+                new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
+        });
     }
     /**
      * シーン判定を行う
@@ -235,6 +244,7 @@ public class SceneRecognitionService {
      * @return シーンを表す文字列
      */
     public static String judgeScene(BufferedImage frame){
+
         return sceneList.entrySet().stream().filter(e ->
                 Arrays.stream(e.getValue()).allMatch(se -> se.isMatchImage(frame))
         ).map(e -> e.getKey()).findFirst().orElse("");
