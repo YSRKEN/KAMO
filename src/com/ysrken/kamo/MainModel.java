@@ -30,6 +30,13 @@ public class MainModel {
      * 戦闘振り返り画面を開いているかどうかのフラグ
      */
     public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    /**
+     * 画像認識支援画面を開いているかどうかのフラグ
+     */
+    public BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
+    /**
+     * 自動で座標を取得し直すか？
+     */
     public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
 
     /**
@@ -189,6 +196,38 @@ public class MainModel {
         } catch (IOException e) {
             e.printStackTrace();
             Utility.showDialog("戦闘振り返り画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
+        }
+    }
+    /**
+     * 画像認識支援画面を開く
+     */
+    public void openSceneHelperCommand(){
+        try {
+            // 新しいウインドウを生成
+            final var stage = new Stage();
+            // ウィンドウの中身をFXMLから読み込み
+            final var loader = new FXMLLoader(getClass().getResource("SceneHelperView.fxml"));
+            final Parent root = loader.load();
+            final SceneHelperController controller = loader.getController();
+            // タイトルを設定
+            stage.setTitle("画像認識支援画面");
+            // 大きさを設定
+            stage.setScene(new Scene(root, 500, 400));
+            // 最小の大きさを設定
+            stage.setMinWidth(400);
+            stage.setMinHeight(300);
+            // 最前面設定
+            stage.setAlwaysOnTop(true);
+            // ×ボタンを押した際の設定
+            stage.setOnCloseRequest(req -> {
+                OpenSceneHelperFlg.set(false);
+            });
+            // 新しいウインドウを表示
+            stage.show();
+            OpenSceneHelperFlg.set(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utility.showDialog("画像認識支援画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
     /**

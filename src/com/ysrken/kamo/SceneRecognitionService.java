@@ -237,6 +237,26 @@ public class SceneRecognitionService {
                 new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
                 new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
         });
+        sceneList.put("戦闘結果", new SceneEvidence[]{
+                new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
+                new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
+                new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
+        });
+        sceneList.put("戦闘判定", new SceneEvidence[]{
+                new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
+                new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
+                new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
+        });
+        sceneList.put("MVP", new SceneEvidence[]{
+                new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
+                new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
+                new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
+        });
+        sceneList.put("マップ", new SceneEvidence[]{
+                new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
+                new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
+                new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
+        });
     }
     /**
      * シーン判定を行う

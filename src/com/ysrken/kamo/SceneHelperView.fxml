@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.ysrken.kamo.SceneHelperController">
+    <GridPane gridLinesVisible="true">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
+            <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
+            <RowConstraints vgrow="ALWAYS" />
+        </rowConstraints>
+        <Label fx:id="DifferenceHashLabel" style="-fx-font-size: 20;" GridPane.rowIndex="0">
+            <GridPane.margin>
+                <Insets left="5.0" />
+            </GridPane.margin>
+        </Label>
+        <Label fx:id="AverageColorLabel" style="-fx-font-size: 20;" GridPane.rowIndex="1">
+            <GridPane.margin>
+                <Insets left="5.0" />
+            </GridPane.margin>
+        </Label>
+        <BorderPane fx:id="SceneBP" GridPane.rowIndex="2">
+            <center>
+                <ImageView fx:id="SceneImageView" preserveRatio="true"/>
+            </center>
+        </BorderPane>
+    </GridPane>
+</AnchorPane>
