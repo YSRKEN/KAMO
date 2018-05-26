@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.BiConsumer;
@@ -29,7 +30,7 @@ public class MainModel {
      * 戦闘振り返り画面を開いているかどうかのフラグ
      */
     public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
-    public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(true);
+    public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
@@ -37,6 +38,7 @@ public class MainModel {
     private Consumer<String> addLogText;
     private BiConsumer<String, BufferedImage> setImage = null;
     private BiConsumer<String, String> setText = null;
+    private Set<String> battleSceneSet = null;
 
     /**
      * 長い周期で行われるタスクを設定
@@ -68,7 +70,7 @@ public class MainModel {
                 final var frame = ScreenshotProvider.getScreenshot();
                 final var scene = SceneRecognitionService.judgeScene(frame);
                 if(OpenBattleSceneReflectionFlg.get()){
-                    if(scene.equals("昼戦後") || scene.equals("夜戦後")){
+                    if(battleSceneSet.contains(scene)){
                         Platform.runLater(() -> {
                             setImage.accept(scene, frame);
                             setText.accept(scene, Utility.getDateStringLong());
@@ -128,8 +130,6 @@ public class MainModel {
         if(ScreenshotProvider.canGetScreenshot()){
             final var screenShot = ScreenshotProvider.getScreenshot();
             final var fileName = String.format("%s.png", Utility.getDateStringLong());
-            setImage.accept("昼戦後", screenShot);
-            setText.accept("昼戦後", fileName);
             try {
                 ImageIO.write(screenShot, "png", new File(String.format("pic\\%s", fileName)));
                 addLogText.accept(String.format("ファイル名：%s", fileName));
@@ -167,6 +167,7 @@ public class MainModel {
             final BattleSceneReflectionController controller = loader.getController();
             this.setImage = (key, image) -> controller.setImage(key ,image);
             this.setText = (key, text) -> controller.setText(key, text);
+            battleSceneSet = controller.getBattleSceneSet();
             // タイトルを設定
             stage.setTitle("戦闘振り返り画面");
             // 大きさを設定

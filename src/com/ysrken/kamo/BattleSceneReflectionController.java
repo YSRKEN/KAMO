@@ -13,7 +13,9 @@ import javafx.scene.layout.BorderPane;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BattleSceneReflectionController {
     // RI KI WA ZA
@@ -103,5 +105,8 @@ public class BattleSceneReflectionController {
      */
     public void setText(String key, String text){
         sceneMapping.get(key).setText(text);
+    }
+    public Set<String> getBattleSceneSet(){
+        return sceneMapping.keySet();
     }
 }
