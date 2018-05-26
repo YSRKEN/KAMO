@@ -13,10 +13,9 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.awt.Image.SCALE_SMOOTH;
@@ -244,37 +243,65 @@ public class SceneRecognitionService {
             // パースエンジンを準備
             final var manager = new ScriptEngineManager();
             final var engine = manager.getEngineByName("nashorn");
+            // ヘルパーメソッドを定義
+            final Function<String, ScriptObjectMirror> parseJson = (str) -> {
+                try {
+                    return (ScriptObjectMirror) engine.eval(str);
+                } catch (ScriptException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            };
+            final Function<ScriptObjectMirror, Collection<ScriptObjectMirror>> getArray = (som) ->
+                som.values().stream().map(obj -> (ScriptObjectMirror)obj).collect(Collectors.toList());
+            final BiFunction<ScriptObjectMirror, String, String> getString = (som, key) ->
+                    (String)som.get(key);
+            final BiFunction<ScriptObjectMirror, String, Integer> getInteger = (som, key) ->
+                    (Integer)som.get(key);
+            final BiFunction<ScriptObjectMirror, String, ScriptObjectMirror> getJson = (som, key) ->
+                    (ScriptObjectMirror)som.get(key);
+            final BiFunction<ScriptObjectMirror, String, Double> getDoubleEval = (som, key) ->
+            {
+                try {
+                    return (double) engine.eval(getString.apply(som, key));
+                } catch (ScriptException e) {
+                    e.printStackTrace();
+                    return 0.0;
+                }
+            };
             // JavaScriptの実行
-            final var json = (ScriptObjectMirror) engine.eval(jsonText);
-            // 各シーン毎に処理
-            for(var sceneJson : json.values()){
-                final var evidenceList = new ArrayList<SceneEvidence>();
-                final var sceneName = (String)((ScriptObjectMirror)sceneJson).get("name");
-                final var differenceHashList = (ScriptObjectMirror)((ScriptObjectMirror)sceneJson).get("differenceHash");
-                for(var differenceHash : differenceHashList.values()){
-                    final var xPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("xPer"));
-                    final var yPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("yPer"));
-                    final var wPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("wPer"));
-                    final var hPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("hPer"));
-                    final var hash = Long.parseUnsignedLong((String)((ScriptObjectMirror)differenceHash).get("hash"), 16);
-                    final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
-                    evidenceList.add(data);
+            final var json = parseJson.apply(jsonText);
+            if(json != null){
+                // 各シーン毎に処理
+                for(var sceneJson : getArray.apply(json)){
+                    final var evidenceList = new ArrayList<SceneEvidence>();
+                    final var sceneName = getString.apply(sceneJson, "name");
+                    final var differenceHashList = getJson.apply(sceneJson, "differenceHash");
+                    for(var differenceHash : getArray.apply(differenceHashList)){
+                        final var xPer = getDoubleEval.apply(differenceHash, "xPer");
+                        final var yPer = getDoubleEval.apply(differenceHash, "yPer");
+                        final var wPer = getDoubleEval.apply(differenceHash, "wPer");
+                        final var hPer = getDoubleEval.apply(differenceHash, "hPer");
+                        final var hash = Long.parseUnsignedLong(getString.apply(differenceHash, "hash"), 16);
+                        final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
+                        evidenceList.add(data);
+                    }
+                    final var averageColorList = getJson.apply(sceneJson, "averageColor");
+                    for(var averageColor : getArray.apply(averageColorList)){
+                        final var xPer = getDoubleEval.apply(averageColor, "xPer");
+                        final var yPer = getDoubleEval.apply(averageColor, "yPer");
+                        final var wPer = getDoubleEval.apply(averageColor, "wPer");
+                        final var hPer = getDoubleEval.apply(averageColor, "hPer");
+                        final var r = getInteger.apply(averageColor, "r");
+                        final var g = getInteger.apply(averageColor, "g");
+                        final var b = getInteger.apply(averageColor, "b");
+                        final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
+                        evidenceList.add(data);
+                    }
+                    sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
                 }
-                final var averageColorList = (ScriptObjectMirror)((ScriptObjectMirror)sceneJson).get("averageColor");
-                for(var averageColor : averageColorList.values()){
-                    final var xPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("xPer"));
-                    final var yPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("yPer"));
-                    final var wPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("wPer"));
-                    final var hPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("hPer"));
-                    final var r = (Integer)((ScriptObjectMirror)averageColor).get("r");
-                    final var g = (Integer)((ScriptObjectMirror)averageColor).get("g");
-                    final var b = (Integer)((ScriptObjectMirror)averageColor).get("b");
-                    final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
-                    evidenceList.add(data);
-                }
-                sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
             }
-        } catch (IOException | ScriptException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
