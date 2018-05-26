@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.control.Tab">
+    <content>
+        <GridPane gridLinesVisible="true">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="ALWAYS" />
+                <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
+            </rowConstraints>
+            <BorderPane fx:id="SceneBP" minHeight="0.0" minWidth="0.0" GridPane.rowIndex="0">
+                <center>
+                    <ImageView fx:id="SceneImageView" preserveRatio="true"/>
+                </center>
+            </BorderPane>
+            <Label fx:id="SceneLabel" style="-fx-font-size: 20;" GridPane.rowIndex="1">
+                <GridPane.margin>
+                    <Insets left="5.0" />
+                </GridPane.margin>
+            </Label>
+        </GridPane>
+    </content>
+</fx:root>
