@@ -21,6 +21,9 @@ public class BattleSceneReflectionController {
     // RI KI WA ZA
     @FXML private BorderPane SceneLabel1BP;
     @FXML private BorderPane SceneLabel2BP;
+    @FXML private BorderPane SceneLabel3BP;
+    @FXML private BorderPane SceneLabel4BP;
+    @FXML private BorderPane SceneLabel5BP;
     @FXML private ImageView SceneImageView1;
     @FXML private ImageView SceneImageView2;
     @FXML private ImageView SceneImageView3;
@@ -83,6 +86,12 @@ public class BattleSceneReflectionController {
         SceneImageView1.fitHeightProperty().bind(SceneLabel1BP.heightProperty());
         SceneImageView2.fitWidthProperty().bind(SceneLabel2BP.widthProperty());
         SceneImageView2.fitHeightProperty().bind(SceneLabel2BP.heightProperty());
+        SceneImageView3.fitWidthProperty().bind(SceneLabel3BP.widthProperty());
+        SceneImageView3.fitHeightProperty().bind(SceneLabel3BP.heightProperty());
+        SceneImageView4.fitWidthProperty().bind(SceneLabel4BP.widthProperty());
+        SceneImageView4.fitHeightProperty().bind(SceneLabel4BP.heightProperty());
+        SceneImageView5.fitWidthProperty().bind(SceneLabel5BP.widthProperty());
+        SceneImageView5.fitHeightProperty().bind(SceneLabel5BP.heightProperty());
         // マッピング
         sceneMapping.put("昼戦後",   new TabContents(SceneImageView1, SceneLabel1));
         sceneMapping.put("夜戦後",   new TabContents(SceneImageView2, SceneLabel2));

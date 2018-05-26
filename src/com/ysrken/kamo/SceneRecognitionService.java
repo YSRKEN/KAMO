@@ -241,7 +241,8 @@ public class SceneRecognitionService {
                 new SceneEvidenceAC(15.0 / 8, 58.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 13, 47, 53),
                 new SceneEvidenceDH( 4.0 / 8, 24.0 / 4.8, 34.0 / 8, 34.0 / 4.8, 0x8c8f2b15352b0eccL),
                 new SceneEvidenceAC(2.0 / 8, 199.0 / 4.8, 10.0 / 8, 10.0 / 4.8, 42, 129, 167),
-                new SceneEvidenceAC(751.0 / 8, 443.0 / 4.8, 4.0 / 8, 4.0 / 4.8, 37, 39, 40)
+                new SceneEvidenceAC(751.0 / 8, 443.0 / 4.8, 4.0 / 8, 4.0 / 4.8, 37, 39, 40),
+                new SceneEvidenceAC( 409.0 / 8, 146.0 / 4.8, 1.0 / 8, 1.0 / 4.8, 255, 246, 242)
         });
         sceneList.put("MVP", new SceneEvidence[]{
                 new SceneEvidenceAC(142 / 8, 27.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 37, 38, 40),

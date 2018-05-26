@@ -63,49 +63,70 @@
             </Tab>
             <Tab text="戦闘結果">
               <content>
-                  <GridPane>
+                  <GridPane gridLinesVisible="true">
                       <columnConstraints>
-                          <ColumnConstraints />
-                          <ColumnConstraints />
+                          <ColumnConstraints hgrow="ALWAYS" />
                       </columnConstraints>
                       <rowConstraints>
-                          <RowConstraints />
-                        <RowConstraints />
+                          <RowConstraints vgrow="ALWAYS" />
+                          <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView3" GridPane.rowIndex="0" />
-                      <Label fx:id="SceneLabel3" GridPane.rowIndex="1" />
+                      <BorderPane fx:id="SceneLabel3BP" minHeight="0.0" minWidth="0.0" GridPane.rowIndex="0">
+                          <center>
+                              <ImageView fx:id="SceneImageView3" preserveRatio="true"/>
+                          </center>
+                      </BorderPane>
+                      <Label fx:id="SceneLabel3" style="-fx-font-size: 20;" GridPane.rowIndex="1">
+                          <GridPane.margin>
+                              <Insets left="5.0" />
+                          </GridPane.margin>
+                      </Label>
                   </GridPane>
               </content>
             </Tab>
             <Tab text="MVP">
               <content>
-                  <GridPane>
+                  <GridPane gridLinesVisible="true">
                       <columnConstraints>
-                          <ColumnConstraints />
-                          <ColumnConstraints />
+                          <ColumnConstraints hgrow="ALWAYS" />
                       </columnConstraints>
                       <rowConstraints>
-                          <RowConstraints />
-                        <RowConstraints />
+                          <RowConstraints vgrow="ALWAYS" />
+                          <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView4" GridPane.rowIndex="0" />
-                      <Label fx:id="SceneLabel4" GridPane.rowIndex="1" />
+                      <BorderPane fx:id="SceneLabel4BP" minHeight="0.0" minWidth="0.0" GridPane.rowIndex="0">
+                          <center>
+                              <ImageView fx:id="SceneImageView4" preserveRatio="true"/>
+                          </center>
+                      </BorderPane>
+                      <Label fx:id="SceneLabel4" style="-fx-font-size: 20;" GridPane.rowIndex="1">
+                          <GridPane.margin>
+                              <Insets left="5.0" />
+                          </GridPane.margin>
+                      </Label>
                   </GridPane>
               </content>
             </Tab>
             <Tab text="マップ">
               <content>
-                  <GridPane>
+                  <GridPane gridLinesVisible="true">
                       <columnConstraints>
-                          <ColumnConstraints />
-                          <ColumnConstraints />
+                          <ColumnConstraints hgrow="ALWAYS" />
                       </columnConstraints>
                       <rowConstraints>
-                          <RowConstraints />
-                        <RowConstraints />
+                          <RowConstraints vgrow="ALWAYS" />
+                          <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
                       </rowConstraints>
-                      <ImageView fx:id="SceneImageView5" GridPane.rowIndex="0" />
-                      <Label fx:id="SceneLabel5" GridPane.rowIndex="1" />
+                      <BorderPane fx:id="SceneLabel5BP" minHeight="0.0" minWidth="0.0" GridPane.rowIndex="0">
+                          <center>
+                              <ImageView fx:id="SceneImageView5" preserveRatio="true"/>
+                          </center>
+                      </BorderPane>
+                      <Label fx:id="SceneLabel5" style="-fx-font-size: 20;" GridPane.rowIndex="1">
+                          <GridPane.margin>
+                              <Insets left="5.0" />
+                          </GridPane.margin>
+                      </Label>
                   </GridPane>
               </content>
             </Tab>
