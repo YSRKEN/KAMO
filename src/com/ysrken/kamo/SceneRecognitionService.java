@@ -259,7 +259,8 @@ public class SceneRecognitionService {
         sceneList.put("マップ", new SceneEvidence[]{
                 new SceneEvidenceDH( 312.0 / 8, 4.0 / 4.8, 25.0 / 8, 14.0 / 4.8, 0xc142c220010041e0L),
                 new SceneEvidenceAC(135.0 / 8, 442.0 / 4.8, 7.0 / 8, 7.0 / 4.8, 34, 24, 25),
-                new SceneEvidenceAC(102.0 / 8, 421.0 / 4.8, 10.0 / 8, 7.0 / 4.8, 211, 211, 211)
+                new SceneEvidenceAC(102.0 / 8, 421.0 / 4.8, 10.0 / 8, 7.0 / 4.8, 211, 211, 211),
+                new SceneEvidenceAC( 8.0 / 8, 236.0 / 4.8, 8.0 / 8, 8.0 / 4.8, 60, 135, 178)
         });
     }
     /**
