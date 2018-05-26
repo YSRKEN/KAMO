@@ -29,7 +29,10 @@ public class Main extends Application {
         // 最前面設定
         primaryStage.setAlwaysOnTop(true);
         // ×ボタンを押した際に終了するように設定
-        primaryStage.setOnCloseRequest(req -> Platform.exit());
+        primaryStage.setOnCloseRequest(req -> {
+            Platform.exit();
+            System.exit(0);
+        });
         // マウスドラッグを設定
         root.setOnMousePressed(event -> {
             xOffset = primaryStage.getX() - event.getScreenX();
