@@ -1,4 +1,4 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.Service;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

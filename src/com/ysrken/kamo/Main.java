@@ -1,5 +1,6 @@
 package com.ysrken.kamo;
 
+import com.ysrken.kamo.Service.SceneRecognitionService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +19,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         // FXMLファイルを読み込み
-        final Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
+        final Parent root = FXMLLoader.load(getClass().getResource("View/MainView.fxml"));
         // タイトルを設定
         primaryStage.setTitle(Utility.SOFTWARE_NAME);
         // 大きさを設定

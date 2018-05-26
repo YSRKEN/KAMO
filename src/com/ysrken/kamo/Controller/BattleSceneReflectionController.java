@@ -1,4 +1,4 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.Controller;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

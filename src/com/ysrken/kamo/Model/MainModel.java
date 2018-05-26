@@ -1,5 +1,10 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.Model;
 
+import com.ysrken.kamo.Controller.BattleSceneReflectionController;
+import com.ysrken.kamo.Controller.SceneHelperController;
+import com.ysrken.kamo.Service.SceneRecognitionService;
+import com.ysrken.kamo.Service.ScreenshotProvider;
+import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -174,7 +179,7 @@ public class MainModel {
             // 新しいウインドウを生成
             final var stage = new Stage();
             // ウィンドウの中身をFXMLから読み込み
-            final var loader = new FXMLLoader(getClass().getResource("BattleSceneReflectionView.fxml"));
+            final var loader = new FXMLLoader(getClass().getResource("../View/BattleSceneReflectionView.fxml"));
             final Parent root = loader.load();
             final BattleSceneReflectionController controller = loader.getController();
             this.setImage = (key, image) -> controller.setImage(key ,image);
@@ -211,7 +216,7 @@ public class MainModel {
             // 新しいウインドウを生成
             final var stage = new Stage();
             // ウィンドウの中身をFXMLから読み込み
-            final var loader = new FXMLLoader(getClass().getResource("SceneHelperView.fxml"));
+            final var loader = new FXMLLoader(getClass().getResource("../View/SceneHelperView.fxml"));
             final Parent root = loader.load();
             final SceneHelperController controller = loader.getController();
             // タイトルを設定

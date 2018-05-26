@@ -1,5 +1,6 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.Controller;
 
+import com.ysrken.kamo.Model.SceneHelperModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;

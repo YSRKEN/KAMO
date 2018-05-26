@@ -1,4 +1,4 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.Model;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;

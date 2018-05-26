@@ -1,5 +1,9 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.Controller;
 
+import com.ysrken.kamo.Model.MainModel;
+import com.ysrken.kamo.Service.SceneRecognitionService;
+import com.ysrken.kamo.Service.ScreenshotProvider;
+import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.ysrken.kamo.SceneHelperController">
+            fx:controller="com.ysrken.kamo.Controller.SceneHelperController">
     <GridPane gridLinesVisible="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
         <columnConstraints>
             <ColumnConstraints hgrow="ALWAYS" />
