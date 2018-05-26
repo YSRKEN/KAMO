@@ -3,6 +3,7 @@ package com.ysrken.kamo;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 
@@ -12,10 +13,14 @@ public class SceneHelperController {
     /**
      * 各コントロール・コンテナ
      */
+    @FXML private TextField RectXPerTextField;
+    @FXML private TextField RectYPerTextField;
+    @FXML private TextField RectWPerTextField;
+    @FXML private TextField RectHPerTextField;
+    @FXML private TextField DifferenceHashTextField;
+    @FXML private TextField AverageColorTextField;
     @FXML private ImageView SceneImageView;
     @FXML private BorderPane SceneBP;
-    @FXML private Label DifferenceHashLabel;
-    @FXML private Label AverageColorLabel;
 
     /**
      * Model
@@ -28,9 +33,13 @@ public class SceneHelperController {
     public void initialize(){
         model = new SceneHelperModel();
         // Data Binding
+        RectXPerTextField.textProperty().bindBidirectional(model.RectXPer);
+        RectYPerTextField.textProperty().bindBidirectional(model.RectYPer);
+        RectWPerTextField.textProperty().bindBidirectional(model.RectWPer);
+        RectHPerTextField.textProperty().bindBidirectional(model.RectHPer);
+        DifferenceHashTextField.textProperty().bind(model.DifferenceHash);
+        AverageColorTextField.textProperty().bind(model.AverageColor);
         SceneImageView.imageProperty().bind(model.ViewImage);
-        DifferenceHashLabel.textProperty().bind(model.DifferenceHash);
-        AverageColorLabel.textProperty().bind(model.AverageColor);
         // ImageViewのサイズを自動調整する
         // 参考→https://qiita.com/opengl-8080/items/29c3ef163f41ee172173
         SceneImageView.fitWidthProperty().bind(SceneBP.widthProperty());

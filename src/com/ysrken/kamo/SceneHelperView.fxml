@@ -16,20 +16,34 @@
             <ColumnConstraints hgrow="ALWAYS" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
-            <RowConstraints maxHeight="30" minHeight="30" prefHeight="30" />
+            <RowConstraints/>
+            <RowConstraints/>
             <RowConstraints vgrow="ALWAYS" />
         </rowConstraints>
-        <Label fx:id="DifferenceHashLabel" style="-fx-font-size: 20;" GridPane.rowIndex="0">
-            <GridPane.margin>
-                <Insets left="5.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="AverageColorLabel" style="-fx-font-size: 20;" GridPane.rowIndex="1">
-            <GridPane.margin>
-                <Insets left="5.0" />
-            </GridPane.margin>
-        </Label>
+        <GridPane GridPane.rowIndex="0">
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <TextField fx:id="RectXPerTextField" GridPane.columnIndex="0"/>
+            <TextField fx:id="RectYPerTextField" GridPane.columnIndex="1"/>
+            <TextField fx:id="RectWPerTextField" GridPane.columnIndex="2"/>
+            <TextField fx:id="RectHPerTextField" GridPane.columnIndex="3"/>
+        </GridPane>
+        <GridPane GridPane.rowIndex="1">
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <Label text="DifferenceHash：" GridPane.columnIndex="0"/>
+            <TextField fx:id="DifferenceHashTextField" GridPane.columnIndex="1"/>
+            <Label text="AverageColor：" GridPane.columnIndex="2"/>
+            <TextField fx:id="AverageColorTextField" GridPane.columnIndex="3"/>
+        </GridPane>
         <BorderPane fx:id="SceneBP" GridPane.rowIndex="2" minHeight="0.0" minWidth="0.0">
             <center>
                 <ImageView fx:id="SceneImageView" preserveRatio="true"/>
