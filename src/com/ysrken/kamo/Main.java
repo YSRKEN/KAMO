@@ -9,8 +9,6 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Main extends Application {

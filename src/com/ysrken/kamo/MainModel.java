@@ -3,6 +3,8 @@ package com.ysrken.kamo;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,6 +37,7 @@ public class MainModel {
      * 画像認識支援画面を開いているかどうかのフラグ
      */
     public BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
+    public StringProperty NowSceneText = new SimpleStringProperty("シーン判定：[不明]");
     /**
      * 自動で座標を取得し直すか？
      */
@@ -77,6 +80,7 @@ public class MainModel {
             if(ScreenshotProvider.canGetScreenshot()){
                 final var frame = ScreenshotProvider.getScreenshot();
                 final var scene = SceneRecognitionService.judgeScene(frame);
+                Platform.runLater(() -> NowSceneText.set(String.format("シーン判定：%s", scene.isEmpty() ? "[不明]" : scene)));
                 if(OpenBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
                         Platform.runLater(() -> {

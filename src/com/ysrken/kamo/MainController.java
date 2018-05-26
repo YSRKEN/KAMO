@@ -21,6 +21,7 @@ public class MainController {
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
     @FXML private Button SaveScreenshotButton;
+    @FXML private Label NowSceneTextLabel;
     @FXML private TextArea MessageLogTextArea;
 
     /**
@@ -69,6 +70,7 @@ public class MainController {
         OpenSceneHelperMenu.disableProperty().bind(model.OpenSceneHelperFlg);
         AutoGetPositionMenu.selectedProperty().bindBidirectional(model.AutoGetPositionFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
+        NowSceneTextLabel.textProperty().bind(model.NowSceneText);
         MessageLogTextArea.textProperty().bind(this.logText);
         // 使えない設定をdisableする
         OpenPicFolderMenu.setDisable(!Utility.isWindows());
