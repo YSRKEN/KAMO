@@ -1,10 +1,23 @@
 package com.ysrken.kamo.Service;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.awt.Image.SCALE_SMOOTH;
 
@@ -223,11 +236,53 @@ public class SceneRecognitionService {
      * 初期化コード
      */
     public static void initialize(){
-        sceneList.put("昼戦後", new SceneEvidence[]{
+        // JSONを読み込む
+        // https://kiidax.wordpress.com/2014/09/07/jdk8のjavascript実装nashornを使ってみた/
+        try (final var lines = Files.lines(Paths.get("./src/com/ysrken/kamo/File/SceneParameter.json"), Charset.forName("UTF-8"))){
+            // テキストデータを用意
+            final var jsonText = lines.collect(Collectors.joining());
+            // パースエンジンを準備
+            final var manager = new ScriptEngineManager();
+            final var engine = manager.getEngineByName("nashorn");
+            // JavaScriptの実行
+            final var json = (ScriptObjectMirror) engine.eval(jsonText);
+            // 各シーン毎に処理
+            for(var sceneJson : json.values()){
+                final var evidenceList = new ArrayList<SceneEvidence>();
+                final var sceneName = (String)((ScriptObjectMirror)sceneJson).get("name");
+                final var differenceHashList = (ScriptObjectMirror)((ScriptObjectMirror)sceneJson).get("differenceHash");
+                for(var differenceHash : differenceHashList.values()){
+                    final var xPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("xPer"));
+                    final var yPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("yPer"));
+                    final var wPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("wPer"));
+                    final var hPer = (double) engine.eval((String)((ScriptObjectMirror)differenceHash).get("hPer"));
+                    final var hash = Long.parseUnsignedLong((String)((ScriptObjectMirror)differenceHash).get("hash"), 16);
+                    final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
+                    evidenceList.add(data);
+                }
+                final var averageColorList = (ScriptObjectMirror)((ScriptObjectMirror)sceneJson).get("averageColor");
+                for(var averageColor : averageColorList.values()){
+                    final var xPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("xPer"));
+                    final var yPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("yPer"));
+                    final var wPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("wPer"));
+                    final var hPer = (double) engine.eval((String)((ScriptObjectMirror)averageColor).get("hPer"));
+                    final var r = (Integer)((ScriptObjectMirror)averageColor).get("r");
+                    final var g = (Integer)((ScriptObjectMirror)averageColor).get("g");
+                    final var b = (Integer)((ScriptObjectMirror)averageColor).get("b");
+                    final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
+                    evidenceList.add(data);
+                }
+                sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+            }
+        } catch (IOException | ScriptException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+        /*sceneList.put("昼戦後", new SceneEvidence[]{
                 new SceneEvidenceDH(18.0 / 8, 2.0 / 4.8, 16.0 / 8, 16.0 / 4.8, 0x20000000L),
                 new SceneEvidenceDH(433.0 / 8, 20.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 0x8040C141C2620586L),
                 new SceneEvidenceAC(407.0 / 8, 3.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 50, 107, 158)
-        });
+        });*/
         sceneList.put("夜戦後", new SceneEvidence[]{
                 new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
                 new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
