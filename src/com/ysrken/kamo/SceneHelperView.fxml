@@ -11,7 +11,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.ysrken.kamo.SceneHelperController">
-    <GridPane gridLinesVisible="true">
+    <GridPane gridLinesVisible="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
         <columnConstraints>
             <ColumnConstraints hgrow="ALWAYS" />
         </columnConstraints>
@@ -30,7 +30,7 @@
                 <Insets left="5.0" />
             </GridPane.margin>
         </Label>
-        <BorderPane fx:id="SceneBP" GridPane.rowIndex="2">
+        <BorderPane fx:id="SceneBP" GridPane.rowIndex="2" minHeight="0.0" minWidth="0.0">
             <center>
                 <ImageView fx:id="SceneImageView" preserveRatio="true"/>
             </center>

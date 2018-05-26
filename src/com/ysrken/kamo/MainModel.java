@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -221,6 +222,29 @@ public class MainModel {
             // ×ボタンを押した際の設定
             stage.setOnCloseRequest(req -> {
                 OpenSceneHelperFlg.set(false);
+            });
+            // ファイルドラッグを設定
+            root.setOnDragOver(event -> {
+                final var board = event.getDragboard();
+                if (board.hasFiles()) {
+                    event.acceptTransferModes(TransferMode.MOVE);
+                }
+            });
+            root.setOnDragDropped(event -> {
+                final var board = event.getDragboard();
+                if (board.hasFiles()) {
+                    board.getFiles().forEach(file -> {
+                        try {
+                            final var image = ImageIO.read(file);
+                            controller.setImage(image);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    event.setDropCompleted(true);
+                } else {
+                    event.setDropCompleted(false);
+                }
             });
             // 新しいウインドウを表示
             stage.show();
