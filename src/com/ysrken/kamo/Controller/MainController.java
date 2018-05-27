@@ -3,6 +3,7 @@ package com.ysrken.kamo.Controller;
 import com.ysrken.kamo.Model.MainModel;
 import com.ysrken.kamo.Service.SceneRecognitionService;
 import com.ysrken.kamo.Service.ScreenshotService;
+import com.ysrken.kamo.Service.SettingsStore;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,6 +57,9 @@ public class MainController {
      * 初期化
      */
     public void initialize(){
+        // 設定用のクラスを初期化する
+        SettingsStore.initialize();
+        //
         model = new MainModel(this::addLogText);
         // メソッドをコントロールに割り当てる
         ExitMenu.setOnAction(e -> model.exitCommand());

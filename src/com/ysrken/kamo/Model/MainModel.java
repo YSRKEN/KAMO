@@ -4,6 +4,7 @@ import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
 import com.ysrken.kamo.Service.SceneRecognitionService;
 import com.ysrken.kamo.Service.ScreenshotService;
+import com.ysrken.kamo.Service.SettingsStore;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -46,7 +47,7 @@ public class MainModel {
     /**
      * 自動で座標を取得し直すか？
      */
-    public BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty AutoGetPositionFlg = SettingsStore.AutoGetPositionFlg;
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
