@@ -1,7 +1,16 @@
 package com.ysrken.kamo;
 
+import com.ysrken.kamo.Controller.BattleSceneReflectionController;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,11 +58,28 @@ public class Utility {
      * @param type ダイアログの種類
      */
     public static void showDialog(String contentText, String headerText, Alert.AlertType type){
+        // ダイアログの設定を行う
         final var alert = new Alert(type);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
-        alert.setTitle(SOFTWARE_NAME);
-        alert.show();
+        // 適当なStageを作成し、ダイアログを「載せる」
+        final var dialogPane = alert.getDialogPane();
+        dialogPane.getScene().setRoot(new Group());
+        final var stage = new Stage();
+        for (ButtonType buttonType : dialogPane.getButtonTypes()) {
+            final var button = (ButtonBase) dialogPane.lookupButton(buttonType);
+            button.setOnAction(e -> {
+                dialogPane.setUserData(buttonType);
+                stage.close();
+            });
+        }
+        stage.setScene(new Scene(dialogPane));
+        stage.setTitle(SOFTWARE_NAME);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setAlwaysOnTop(true);
+        stage.setResizable(false);
+        // Stageを「表示」
+        stage.show();
     }
     /**
      * YES/NOで選ぶ選択ダイアログを表示
