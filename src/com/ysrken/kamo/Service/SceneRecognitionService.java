@@ -6,7 +6,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -233,9 +235,11 @@ public class SceneRecognitionService {
     public static void initialize(){
         // JSONを読み込む
         // https://kiidax.wordpress.com/2014/09/07/jdk8のjavascript実装nashornを使ってみた/
-        try (final var lines = Files.lines(Paths.get("./src/com/ysrken/kamo/File/SceneParameter.json"), Charset.forName("UTF-8"))){
+        try(final var is = ClassLoader.getSystemResourceAsStream("com/ysrken/kamo/File/SceneParameter.json");
+            final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+            final var br = new BufferedReader(isr)){
             // テキストデータを用意
-            final var jsonText = lines.collect(Collectors.joining());
+            final var jsonText = br.lines().collect(Collectors.joining());
             // パースエンジンを準備
             final var manager = new ScriptEngineManager();
             final var engine = manager.getEngineByName("nashorn");

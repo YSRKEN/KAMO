@@ -180,7 +180,9 @@ public class MainModel {
             // 新しいウインドウを生成
             final var stage = new Stage();
             // ウィンドウの中身をFXMLから読み込み
-            final var loader = new FXMLLoader(getClass().getResource("../View/BattleSceneReflectionView.fxml"));
+            final var loader = new FXMLLoader(
+                    ClassLoader
+                    .getSystemResource("com/ysrken/kamo/View/BattleSceneReflectionView.fxml"));
             final Parent root = loader.load();
             final BattleSceneReflectionController controller = loader.getController();
             this.setImage = (key, image) -> controller.setImage(key ,image);
