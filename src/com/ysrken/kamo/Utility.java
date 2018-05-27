@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Utility {
@@ -44,6 +45,50 @@ public class Utility {
     public static final String SOFTWARE_URL = "https://github.com/YSRKEN/KAMO/releases";
 
     /**
+     * 常に最前面表示になるAlertダイアログ
+     */
+    private static class AlwaysOnTopAlert extends Stage{
+        private void setAlertOnStage(Alert alert){
+            final var dialogPane = alert.getDialogPane();
+            dialogPane.getScene().setRoot(new Group());
+            for (var buttonType : dialogPane.getButtonTypes()) {
+                final var button = (ButtonBase) dialogPane.lookupButton(buttonType);
+                button.setOnAction(e -> {
+                    dialogPane.setUserData(buttonType);
+                    this.close();
+                });
+            }
+            this.setScene(new Scene(dialogPane));
+            this.setTitle(SOFTWARE_NAME);
+            this.initModality(Modality.APPLICATION_MODAL);
+            this.setAlwaysOnTop(true);
+            this.setResizable(false);
+        }
+        public void showDialog(String contentText, String headerText, Alert.AlertType type){
+            // ダイアログの設定を行う
+            final var alert = new Alert(type);
+            alert.setHeaderText(headerText);
+            alert.setContentText(contentText);
+            // Stageにダイアログを「載せる」
+            setAlertOnStage(alert);
+            // Stageを「表示」
+            this.show();
+        }
+        public boolean showChoiceDialog(String contentText, String headerText){
+            // ダイアログの設定を行う
+            final var alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
+            alert.setHeaderText(headerText);
+            alert.setContentText(contentText);
+            // Stageにダイアログを「載せる」
+            setAlertOnStage(alert);
+            // Stageを「表示」
+            this.showAndWait();
+            final var buttonType = Optional.ofNullable((ButtonType) alert.getDialogPane().getUserData());
+            return (buttonType.isPresent() && buttonType.get() == ButtonType.APPLY);
+        }
+    }
+
+    /**
      * ダイアログを表示
      * @param contentText 本文
      * @param headerText タイトル文
@@ -58,28 +103,8 @@ public class Utility {
      * @param type ダイアログの種類
      */
     public static void showDialog(String contentText, String headerText, Alert.AlertType type){
-        // ダイアログの設定を行う
-        final var alert = new Alert(type);
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        // 適当なStageを作成し、ダイアログを「載せる」
-        final var dialogPane = alert.getDialogPane();
-        dialogPane.getScene().setRoot(new Group());
-        final var stage = new Stage();
-        for (ButtonType buttonType : dialogPane.getButtonTypes()) {
-            final var button = (ButtonBase) dialogPane.lookupButton(buttonType);
-            button.setOnAction(e -> {
-                dialogPane.setUserData(buttonType);
-                stage.close();
-            });
-        }
-        stage.setScene(new Scene(dialogPane));
-        stage.setTitle(SOFTWARE_NAME);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setAlwaysOnTop(true);
-        stage.setResizable(false);
-        // Stageを「表示」
-        stage.show();
+        final var alert = new AlwaysOnTopAlert();
+        alert.showDialog(contentText, headerText, type);
     }
     /**
      * YES/NOで選ぶ選択ダイアログを表示
@@ -88,11 +113,8 @@ public class Utility {
      * @return 選択結果。YESならtrue、それ以外はfalse
      */
     public static boolean showChoiceDialog(String contentText, String headerText){
-        final var alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
-        alert.setHeaderText(headerText);
-        alert.setTitle(SOFTWARE_NAME);
-        final var result = alert.showAndWait();
-        return (result.isPresent() && result.get() == ButtonType.APPLY);
+        final var alert = new AlwaysOnTopAlert();
+        return alert.showChoiceDialog(contentText, headerText);
     }
     /**
      * 指定したURL上のファイルをUTF-8形式の文字列としてダウンロードする。
