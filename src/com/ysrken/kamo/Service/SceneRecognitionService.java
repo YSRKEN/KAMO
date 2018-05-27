@@ -305,41 +305,6 @@ public class SceneRecognitionService {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
-        /*sceneList.put("昼戦後", new SceneEvidence[]{
-                new SceneEvidenceDH(18.0 / 8, 2.0 / 4.8, 16.0 / 8, 16.0 / 4.8, 0x20000000L),
-                new SceneEvidenceDH(433.0 / 8, 20.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 0x8040C141C2620586L),
-                new SceneEvidenceAC(407.0 / 8, 3.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 50, 107, 158)
-        });*/
-        sceneList.put("夜戦後", new SceneEvidence[]{
-                new SceneEvidenceDH(367.0 / 8, 6.0 / 4.8, 25.0 / 8, 25.0 / 4.8, 0xB97BF9FFAEE9282L),
-                new SceneEvidenceDH( 93.0 / 8, 12.0 / 4.8, 18.0 / 8, 18.0 / 4.8, 0x400000000000000L),
-                new SceneEvidenceAC(517.0 / 8, 15.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 3, 26, 71)
-        });
-        sceneList.put("戦闘結果", new SceneEvidence[]{
-                new SceneEvidenceAC(15.0 / 8, 58.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 13, 47, 53),
-                new SceneEvidenceDH( 4.0 / 8, 24.0 / 4.8, 34.0 / 8, 34.0 / 4.8, 0x8c8f2b15352b0eccL),
-                new SceneEvidenceAC(2.0 / 8, 199.0 / 4.8, 10.0 / 8, 10.0 / 4.8, 42, 129, 167),
-                new SceneEvidenceAC(751.0 / 8, 443.0 / 4.8, 4.0 / 8, 4.0 / 4.8, 37, 39, 40),
-                new SceneEvidenceAC( 409.0 / 8, 146.0 / 4.8, 1.0 / 8, 1.0 / 4.8, 255, 246, 242)
-        });
-        sceneList.put("MVP", new SceneEvidence[]{
-                new SceneEvidenceAC(142 / 8, 27.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 37, 38, 40),
-                new SceneEvidenceAC(25.0 / 8, 445.0 / 4.8, 9.0 / 8, 9.0 / 4.8, 33, 35, 37),
-                new SceneEvidenceAC(750.0 / 8, 445.0 / 4.8, 4.0 / 8, 4.0 / 4.8, 28, 154, 156),
-                new SceneEvidenceAC( 465.0 / 8, 130.0 / 4.8, 1.0 / 8, 1.0 / 4.8, 29, 189, 192)
-        });
-        sceneList.put("戦闘判定", new SceneEvidence[]{
-                new SceneEvidenceAC(142.0 / 8, 27.0 / 4.8, 20.0 / 8, 20.0 / 4.8, 37, 38, 40),
-                new SceneEvidenceAC(25.0 / 8, 445.0 / 4.8, 9.0 / 8, 9.0 / 4.8, 33, 35, 37),
-                new SceneEvidenceAC(750.0 / 8, 445.0 / 4.8, 4.0 / 8, 4.0 / 4.8, 28, 154, 156),
-                new SceneEvidenceAC( 465.0 / 8, 130.0 / 4.8, 1.0 / 8, 1.0 / 4.8, 43, 57, 65)
-        });
-        sceneList.put("マップ", new SceneEvidence[]{
-                new SceneEvidenceDH( 312.0 / 8, 4.0 / 4.8, 25.0 / 8, 14.0 / 4.8, 0xc142c220010041e0L),
-                new SceneEvidenceAC(135.0 / 8, 442.0 / 4.8, 7.0 / 8, 7.0 / 4.8, 34, 24, 25),
-                new SceneEvidenceAC(102.0 / 8, 421.0 / 4.8, 10.0 / 8, 7.0 / 4.8, 211, 211, 211),
-                new SceneEvidenceAC( 8.0 / 8, 236.0 / 4.8, 8.0 / 8, 8.0 / 4.8, 60, 135, 178)
-        });
     }
     /**
      * シーン判定を行う
