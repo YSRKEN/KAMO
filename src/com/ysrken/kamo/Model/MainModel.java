@@ -3,7 +3,7 @@ package com.ysrken.kamo.Model;
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
 import com.ysrken.kamo.Service.SceneRecognitionService;
-import com.ysrken.kamo.Service.ScreenshotProvider;
+import com.ysrken.kamo.Service.ScreenshotService;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -62,9 +62,9 @@ public class MainModel {
     private class LongIntervalTask extends TimerTask{
         public void run(){
             // スクリーンショットが撮影可能な場合の処理
-            if(ScreenshotProvider.canGetScreenshot()){
+            if(ScreenshotService.canGetScreenshot()){
                 // ゲーム画面の位置が移動した際の処理
-                if(ScreenshotProvider.isMovedPosition()){
+                if(ScreenshotService.isMovedPosition()){
                     addLogText.accept("【位置ズレ検知】");
                     addLogText.accept("自動で再取得を試みます...");
                     getPositionCommand();
@@ -82,8 +82,8 @@ public class MainModel {
     private class ShortIntervalTask extends TimerTask{
         public void run(){
             // スクリーンショットが撮影可能な場合の処理
-            if(ScreenshotProvider.canGetScreenshot()){
-                final var frame = ScreenshotProvider.getScreenshot();
+            if(ScreenshotService.canGetScreenshot()){
+                final var frame = ScreenshotService.getScreenshot();
                 final var scene = SceneRecognitionService.judgeScene(frame);
                 Platform.runLater(() -> NowSceneText.set(String.format("シーン判定：%s", scene.isEmpty() ? "[不明]" : scene)));
                 if(OpenBattleSceneReflectionFlg.get()){
@@ -123,11 +123,11 @@ public class MainModel {
     public void getPositionCommand(){
         addLogText.accept("【座標取得】");
         // 取得操作を行う
-        final var getPositionFlg = ScreenshotProvider.trySearchGamePosition();
+        final var getPositionFlg = ScreenshotService.trySearchGamePosition();
         // 取得に成功したか否かで処理を分ける
         if(getPositionFlg){
             // ゲーム座標を取得する
-            final var rect = ScreenshotProvider.getPosition();
+            final var rect = ScreenshotService.getPosition();
             // 取得したゲーム座標を記録する
             addLogText.accept(String.format("取得位置：(%d,%d)-%dx%d",
                     rect.x, rect.y, rect.width, rect.height));
@@ -144,8 +144,8 @@ public class MainModel {
      */
     public void saveScreenshotCommand(){
         addLogText.accept("【スクリーンショット】");
-        if(ScreenshotProvider.canGetScreenshot()){
-            final var screenShot = ScreenshotProvider.getScreenshot();
+        if(ScreenshotService.canGetScreenshot()){
+            final var screenShot = ScreenshotService.getScreenshot();
             final var fileName = String.format("%s.png", Utility.getDateStringLong());
             try {
                 ImageIO.write(screenShot, "png", new File(String.format("pic\\%s", fileName)));

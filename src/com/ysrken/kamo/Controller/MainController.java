@@ -2,7 +2,7 @@ package com.ysrken.kamo.Controller;
 
 import com.ysrken.kamo.Model.MainModel;
 import com.ysrken.kamo.Service.SceneRecognitionService;
-import com.ysrken.kamo.Service.ScreenshotProvider;
+import com.ysrken.kamo.Service.ScreenshotService;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -80,7 +80,7 @@ public class MainController {
         OpenPicFolderMenu.setDisable(!Utility.isWindows());
         // スクショ用のクラスを初期化する
         try {
-            ScreenshotProvider.initialize();
+            ScreenshotService.initialize();
         } catch (IOException e) {
             e.printStackTrace();
             Utility.showDialog("picフォルダを作成できませんでした。%nソフトウェアを終了します", "致命的なエラー", Alert.AlertType.ERROR);

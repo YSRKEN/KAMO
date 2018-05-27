@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ScreenshotProvider {
+public class ScreenshotService {
     /**
      * 撮影用のRobot
      */
@@ -63,7 +63,7 @@ public class ScreenshotProvider {
                     final var rectList = searchGamePosition(imageData);
                     // 検索にヒットした場合、その座標を取得して結果を返す
                     if(rectList.size() > 0){
-                        ScreenshotProvider.robot = robot;
+                        ScreenshotService.robot = robot;
                         // マルチディスプレイ対策に左上座標を編集している
                         final var selectRect = rectList.get(0);
                         final var x = gcBounds.x + selectRect.x;
