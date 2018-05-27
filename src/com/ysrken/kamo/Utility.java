@@ -1,18 +1,13 @@
 package com.ysrken.kamo;
 
-import com.ysrken.kamo.Controller.BattleSceneReflectionController;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,7 +53,7 @@ public class Utility {
         private void setAlertOnStage(Alert alert){
             final var dialogPane = alert.getDialogPane();
             dialogPane.getScene().setRoot(new Group());
-            dialogPane.setPadding(new Insets(0,0,1,0));
+            dialogPane.setPadding(new Insets(0,0,1,0)); //黒魔術こわい
             for (var buttonType : dialogPane.getButtonTypes()) {
                 final var button = (ButtonBase) dialogPane.lookupButton(buttonType);
                 button.setOnAction(e -> {
