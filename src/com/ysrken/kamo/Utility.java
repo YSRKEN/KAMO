@@ -3,6 +3,7 @@ package com.ysrken.kamo;
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,11 +48,17 @@ public class Utility {
 
     /**
      * 常に最前面表示になるAlertダイアログ
+     * 参考→http://totomo.net/11317-javafxalert.htm
      */
     private static class AlwaysOnTopAlert extends Stage{
+        /**
+         * AlertをStage上に載せる
+         * @param alert Alert
+         */
         private void setAlertOnStage(Alert alert){
             final var dialogPane = alert.getDialogPane();
             dialogPane.getScene().setRoot(new Group());
+            dialogPane.setPadding(new Insets(0,0,1,0));
             for (var buttonType : dialogPane.getButtonTypes()) {
                 final var button = (ButtonBase) dialogPane.lookupButton(buttonType);
                 button.setOnAction(e -> {
@@ -64,6 +72,13 @@ public class Utility {
             this.setAlwaysOnTop(true);
             this.setResizable(false);
         }
+
+        /**
+         * 通常のダイアログを表示する
+         * @param contentText 内容
+         * @param headerText タイトル
+         * @param type 種類
+         */
         public void showDialog(String contentText, String headerText, Alert.AlertType type){
             // ダイアログの設定を行う
             final var alert = new Alert(type);
@@ -74,6 +89,12 @@ public class Utility {
             // Stageを「表示」
             this.show();
         }
+        /**
+         * 選択ダイアログを表示する
+         * @param contentText 内容
+         * @param headerText タイトル
+         * @return 選択結果が「OK」の時のみtrue
+         */
         public boolean showChoiceDialog(String contentText, String headerText){
             // ダイアログの設定を行う
             final var alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
