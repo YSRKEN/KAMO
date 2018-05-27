@@ -71,7 +71,8 @@ public class SceneTab extends Tab {
     public SceneTab(String scene){
         super();
         this.setText(scene);
-        final var fxmlLoader  = new FXMLLoader(getClass().getResource("../View/SceneTab.fxml"));
+        final var fxmlLoader  = new FXMLLoader(
+                ClassLoader.getSystemResource("com/ysrken/kamo/View/SceneTab.fxml"));
         // FXMLのルートタグとして、自らを登録
         fxmlLoader.setRoot( this );
         fxmlLoader.setController( this );
