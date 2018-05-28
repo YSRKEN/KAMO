@@ -267,6 +267,17 @@ public class MainModel {
         }
     }
     /**
+     * オンラインヘルプ(Wiki)を開く
+     */
+    public void openWikiCommand(){
+        final var desktop = Desktop.getDesktop();
+        try{
+            desktop.browse(new URI(Utility.HELP_URL));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    /**
      * ソフトウェアの更新が来ているかをチェックする
      */
     public void checkVersionCommand(){

@@ -22,6 +22,7 @@ public class MainController {
     @FXML private MenuItem OpenBattleSceneReflectionMenu;
     @FXML private MenuItem OpenSceneHelperMenu;
     @FXML private CheckMenuItem AutoGetPositionMenu;
+    @FXML private MenuItem OpenWikiMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
     @FXML private Button GetPositionButton;
@@ -69,6 +70,7 @@ public class MainController {
         OpenPicFolderMenu.setOnAction(e -> model.openPicFolderCommand());
         OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
         OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());
+        OpenWikiMenu.setOnAction(e -> model.openWikiCommand());
         AboutMenu.setOnAction(e -> model.aboutCommand());
         GetPositionButton.setOnAction(e -> model.getPositionCommand());
         SaveScreenshotButton.setOnAction(e -> model.saveScreenshotCommand());

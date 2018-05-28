@@ -40,6 +40,7 @@ public class Utility {
      * ソフトウェアのURL
      */
     public static final String SOFTWARE_URL = "https://github.com/YSRKEN/KAMO/releases";
+    public static final String HELP_URL = "https://github.com/YSRKEN/KAMO/wiki";
 
     /**
      * 常に最前面表示になるAlertダイアログ

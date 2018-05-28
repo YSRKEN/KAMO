@@ -32,6 +32,7 @@
                 </Menu>
                 <Menu text="ヘルプ(_H)">
                     <items>
+                        <MenuItem fx:id="OpenWikiMenu" text="オンラインヘルプを開く(_O)..." />
                         <MenuItem fx:id="CheckVersionMenu" text="更新を確認(_C)..." />
                         <MenuItem fx:id="AboutMenu" text="バージョン情報(_A)" />
                     </items>
