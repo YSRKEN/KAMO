@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.ysrken.kamo.Controller.SceneHelperController">
+    <GridPane gridLinesVisible="true" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints/>
+            <RowConstraints/>
+            <RowConstraints vgrow="ALWAYS" />
+        </rowConstraints>
+        <GridPane GridPane.rowIndex="0">
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <TextField fx:id="RectXPerTextField" GridPane.columnIndex="0"/>
+            <TextField fx:id="RectYPerTextField" GridPane.columnIndex="1"/>
+            <TextField fx:id="RectWPerTextField" GridPane.columnIndex="2"/>
+            <TextField fx:id="RectHPerTextField" GridPane.columnIndex="3"/>
+        </GridPane>
+        <GridPane GridPane.rowIndex="1">
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <Label text="DifferenceHash：" GridPane.columnIndex="0"/>
+            <TextField fx:id="DifferenceHashTextField" GridPane.columnIndex="1"/>
+            <Label text="AverageColor：" GridPane.columnIndex="2"/>
+            <TextField fx:id="AverageColorTextField" GridPane.columnIndex="3"/>
+        </GridPane>
+        <BorderPane fx:id="SceneBP" GridPane.rowIndex="2" minHeight="0.0" minWidth="0.0">
+            <center>
+                <ImageView fx:id="SceneImageView" preserveRatio="true"/>
+            </center>
+        </BorderPane>
+    </GridPane>
+</AnchorPane>
