@@ -22,6 +22,7 @@ public class MainController {
     @FXML private MenuItem OpenBattleSceneReflectionMenu;
     @FXML private MenuItem OpenSceneHelperMenu;
     @FXML private CheckMenuItem AutoGetPositionMenu;
+    @FXML private CheckMenuItem BlindNameTextMenu;
     @FXML private MenuItem OpenWikiMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
@@ -79,6 +80,7 @@ public class MainController {
         OpenBattleSceneReflectionMenu.disableProperty().bind(model.OpenBattleSceneReflectionFlg);
         OpenSceneHelperMenu.disableProperty().bind(model.OpenSceneHelperFlg);
         AutoGetPositionMenu.selectedProperty().bindBidirectional(model.AutoGetPositionFlg);
+        BlindNameTextMenu.selectedProperty().bindBidirectional(model.BlindNameTextFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
         NowSceneTextLabel.textProperty().bind(model.NowSceneText);
         MessageLogTextArea.textProperty().bind(this.logText);

@@ -48,6 +48,7 @@ public class MainModel {
      * 自動で座標を取得し直すか？
      */
     public BooleanProperty AutoGetPositionFlg = SettingsStore.AutoGetPositionFlg;
+    public BooleanProperty BlindNameTextFlg = SettingsStore.BlindNameTextFlg;
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
