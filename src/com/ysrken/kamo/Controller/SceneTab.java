@@ -1,5 +1,6 @@
 package com.ysrken.kamo.Controller;
 
+import com.ysrken.kamo.Service.PictureProcessingService;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -17,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
 
 /**
  * タブによるスクショ表示を表現するカスタムコントロール
@@ -58,7 +60,8 @@ public class SceneTab extends Tab {
         lastSelectFolder = file.getParentFile();
         // 保存用のデータを保存
         try{
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            final var processedImage = PictureProcessingService.getProcessedImage(SwingFXUtils.fromFXImage(image, null));
+            ImageIO.write(processedImage, "png", file);
         } catch (IOException e) {
             Utility.showDialog("画像を保存できませんでした。", "IOエラー", Alert.AlertType.ERROR);
             e.printStackTrace();

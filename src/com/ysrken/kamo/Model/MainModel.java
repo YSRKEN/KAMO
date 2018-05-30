@@ -2,6 +2,7 @@ package com.ysrken.kamo.Model;
 
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
+import com.ysrken.kamo.Service.PictureProcessingService;
 import com.ysrken.kamo.Service.SceneRecognitionService;
 import com.ysrken.kamo.Service.ScreenshotService;
 import com.ysrken.kamo.Service.SettingsStore;
@@ -148,9 +149,10 @@ public class MainModel {
         addLogText.accept("【スクリーンショット】");
         if(ScreenshotService.canGetScreenshot()){
             final var screenShot = ScreenshotService.getScreenshot();
+            final var processedImage = PictureProcessingService.getProcessedImage(screenShot);
             final var fileName = String.format("%s.png", Utility.getDateStringLong());
             try {
-                ImageIO.write(screenShot, "png", new File(String.format("pic\\%s", fileName)));
+                ImageIO.write(processedImage, "png", new File(String.format("pic\\%s", fileName)));
                 addLogText.accept(String.format("ファイル名：%s", fileName));
             } catch (IOException e) {
                 e.printStackTrace();
