@@ -36,6 +36,9 @@ public class SceneTab extends Tab {
 
     private File lastSelectFolder = null;
 
+    /**
+     * 画像を保存するコマンド
+     */
     private void saveScene(){
         // 画像がそもそも存在しているか？
         final var image = SceneImageView.getImage();
@@ -93,9 +96,17 @@ public class SceneTab extends Tab {
         // Data Binding
         SaveSceneButton.setOnAction(e -> saveScene());
     }
+    /**
+     * 画像をタブにセットする
+     * @param image 画像
+     */
     public void setImage(BufferedImage image){
         Platform.runLater(() -> SceneImageView.setImage(SwingFXUtils.toFXImage(image, null)));
     }
+    /**
+     * テキストをタブにセットする
+     * @param text
+     */
     public void setLabelText(String text){
         Platform.runLater(() -> SceneLabel.setText(text));
     }

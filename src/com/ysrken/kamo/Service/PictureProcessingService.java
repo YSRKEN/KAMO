@@ -19,6 +19,7 @@ public class PictureProcessingService {
     }
     /**
      * 画像データの一部分を、一部分を選択した部分を拡大することによって覆い隠す
+     * wPerが負数の場合、左から右ではなく右から左に上書きする
      * @param image 画像データ
      * @param xPer 選択左上座標の割合(X軸)
      * @param yPer 選択左上座標の割合(Y軸)
@@ -27,10 +28,11 @@ public class PictureProcessingService {
      * @return 隠した後の画像データ
      */
     private static BufferedImage blindImageByAreaStretch(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
+        final var reverseFlg = (wPer < 0.0);
         // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
         final var rectX = (int)perToPixel(xPer, image.getWidth());
         final var rectY = (int)perToPixel(yPer, image.getHeight());
-        final var rectW = (int)perToPixel(wPer, image.getWidth());
+        final var rectW = (int)perToPixel((reverseFlg ? -wPer : wPer), image.getWidth());
         final var rectH = (int)perToPixel(hPer, image.getHeight());
         // 元画像から領域を選択してリサイズした画像を用意
         final var tempImage = image
@@ -40,7 +42,11 @@ public class PictureProcessingService {
         final var canvas = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
         final var g = canvas.getGraphics();
         g.drawImage(image, 0, 0, null);
-        g.drawImage(tempImage, rectX, rectY, null);
+        if(reverseFlg) {
+            g.drawImage(tempImage, rectX - rectW, rectY, null);
+        }else{
+            g.drawImage(tempImage, rectX, rectY, null);
+        }
         g.dispose();
         return canvas;
     }
@@ -52,7 +58,11 @@ public class PictureProcessingService {
     private static BufferedImage blindUserName(BufferedImage image){
         // シーン判定を行う
         final var scene = SceneRecognitionService.judgeScene(image);
+        final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(image);
         // シーン認識結果から、画像のどの部分を覆うべきかを判定し、隠蔽操作を行う
+        if(isNearlyHomeFlg){
+            image = blindImageByAreaStretch(image, 277.0 / 8, 4.0 / 4.8, -165.0 / 8, 20.0 / 4.8);
+        }
         switch(scene){
             case "戦闘結果":
                 return blindImageByAreaStretch(image, 93.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);

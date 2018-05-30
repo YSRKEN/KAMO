@@ -88,7 +88,12 @@ public class MainModel {
             if(ScreenshotService.canGetScreenshot()){
                 final var frame = ScreenshotService.getScreenshot();
                 final var scene = SceneRecognitionService.judgeScene(frame);
-                Platform.runLater(() -> NowSceneText.set(String.format("シーン判定：%s", scene.isEmpty() ? "[不明]" : scene)));
+                final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(frame);
+                Platform.runLater(() -> NowSceneText.set(String.format(
+                        "シーン判定：%s%s",
+                        scene.isEmpty() ? "[不明]" : scene,
+                        isNearlyHomeFlg ? "*" : ""))
+                );
                 if(OpenBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
                         Platform.runLater(() -> {
