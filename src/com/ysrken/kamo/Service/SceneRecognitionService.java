@@ -238,6 +238,14 @@ public class SceneRecognitionService {
         // 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
         final var manager = new ScriptEngineManager();
         final var engine = manager.getEngineByName("javascript");
+        final BiFunction<ScriptObjectMirror, String, Double> toDouble = ((so, key) -> {
+            try {
+                return (Double)engine.eval((String)so.get(key));
+            } catch (ScriptException e) {
+                e.printStackTrace();
+                return 0.0;
+            }
+        });
         try(final var is = ClassLoader.getSystemResourceAsStream("com/ysrken/kamo/File/SceneParameter.json");
             final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
             final var br = new BufferedReader(isr)){
@@ -255,10 +263,10 @@ public class SceneRecognitionService {
                 // DifferenceHashについての処理
                 final var differenceHashList = ((ScriptObjectMirror)pair.get("differenceHash")).to(ScriptObjectMirror[].class);
                 for(var differenceHash : differenceHashList){
-                    final var xPer = (Double)engine.eval((String)differenceHash.get("xPer"));
-                    final var yPer = (Double)engine.eval((String)differenceHash.get("yPer"));
-                    final var wPer = (Double)engine.eval((String)differenceHash.get("wPer"));
-                    final var hPer = (Double)engine.eval((String)differenceHash.get("hPer"));
+                    final var xPer = toDouble.apply(differenceHash, "xPer");
+                    final var yPer = toDouble.apply(differenceHash, "yPer");
+                    final var wPer = toDouble.apply(differenceHash, "wPer");
+                    final var hPer = toDouble.apply(differenceHash, "hPer");
                     final var hash = Long.parseUnsignedLong((String)differenceHash.get("hash"), 16);
                     final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
                     evidenceList.add(data);
@@ -266,10 +274,10 @@ public class SceneRecognitionService {
                 // AverageColorについての処理
                 final var averageColorList =  ((ScriptObjectMirror)pair.get("averageColor")).to(ScriptObjectMirror[].class);
                 for(var averageColor : averageColorList){
-                    final var xPer = (Double)engine.eval((String)averageColor.get("xPer"));
-                    final var yPer = (Double)engine.eval((String)averageColor.get("yPer"));
-                    final var wPer = (Double)engine.eval((String)averageColor.get("wPer"));
-                    final var hPer = (Double)engine.eval((String)averageColor.get("hPer"));
+                    final var xPer = toDouble.apply(averageColor, "xPer");
+                    final var yPer = toDouble.apply(averageColor, "yPer");
+                    final var wPer = toDouble.apply(averageColor, "wPer");
+                    final var hPer = toDouble.apply(averageColor, "hPer");
                     final var r = (Integer)averageColor.get("r");
                     final var g = (Integer)averageColor.get("g");
                     final var b = (Integer)averageColor.get("b");
