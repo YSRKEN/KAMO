@@ -9,6 +9,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,18 +23,20 @@ public class SettingsStore {
      */
     private static void loadSettings(){
         Platform.runLater(() -> {
-            final var manager = new ScriptEngineManager();
-            final var engine = manager.getEngineByName("javascript");
-            try(final var fis = new FileInputStream("settings.json");
-                final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-                final var br = new BufferedReader(isr)) {
-                final var json = (ScriptObjectMirror) engine.eval("JSON");
-                final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
-                final var m = (Map<?, ?>)result;
-                AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg")));
-                BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg")));
-            } catch (IOException | ScriptException e) {
-                e.printStackTrace();
+            if(Files.exists(new File("settings.json").toPath())){
+                final var manager = new ScriptEngineManager();
+                final var engine = manager.getEngineByName("javascript");
+                try(final var fis = new FileInputStream("settings.json");
+                    final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+                    final var br = new BufferedReader(isr)) {
+                    final var json = (ScriptObjectMirror) engine.eval("JSON");
+                    final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
+                    final var m = (Map<?, ?>)result;
+                    AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg")));
+                    BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg")));
+                } catch (IOException | ScriptException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
