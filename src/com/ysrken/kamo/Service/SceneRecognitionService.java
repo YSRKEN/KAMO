@@ -235,83 +235,59 @@ public class SceneRecognitionService {
      */
     public static void initialize(){
         // JSONを読み込む
-        // https://kiidax.wordpress.com/2014/09/07/jdk8のjavascript実装nashornを使ってみた/
+        // 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
+        final var manager = new ScriptEngineManager();
+        final var engine = manager.getEngineByName("javascript");
         try(final var is = ClassLoader.getSystemResourceAsStream("com/ysrken/kamo/File/SceneParameter.json");
             final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
             final var br = new BufferedReader(isr)){
             // テキストデータを用意
             final var jsonText = br.lines().collect(Collectors.joining());
-            // パースエンジンを準備
-            final var manager = new ScriptEngineManager();
-            final var engine = manager.getEngineByName("nashorn");
-            // ヘルパーメソッドを定義
-            final Function<String, ScriptObjectMirror> parseJson = (str) -> {
-                try {
-                    return (ScriptObjectMirror) engine.eval(str);
-                } catch (ScriptException e) {
-                    e.printStackTrace();
-                    return null;
+            // テキストデータをJSONとしてパース
+            final var json = (ScriptObjectMirror) engine.eval("JSON");
+            final var result = json.callMember("parse", jsonText);
+            // mapに変換
+            final var m =  (ScriptObjectMirror)result;
+            // 各シーン毎に処理
+            for(var pair : m.to(ScriptObjectMirror[].class)){
+                final var evidenceList = new ArrayList<SceneEvidence>();
+                final var sceneName = (String)pair.get("name");
+                // DifferenceHashについての処理
+                final var differenceHashList = ((ScriptObjectMirror)pair.get("differenceHash")).to(ScriptObjectMirror[].class);
+                for(var differenceHash : differenceHashList){
+                    final var xPer = (Double)engine.eval((String)differenceHash.get("xPer"));
+                    final var yPer = (Double)engine.eval((String)differenceHash.get("yPer"));
+                    final var wPer = (Double)engine.eval((String)differenceHash.get("wPer"));
+                    final var hPer = (Double)engine.eval((String)differenceHash.get("hPer"));
+                    final var hash = Long.parseUnsignedLong((String)differenceHash.get("hash"), 16);
+                    final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
+                    evidenceList.add(data);
                 }
-            };
-            final Function<ScriptObjectMirror, Collection<ScriptObjectMirror>> getArray = (som) ->
-                som.values().stream().map(obj -> (ScriptObjectMirror)obj).collect(Collectors.toList());
-            final BiFunction<ScriptObjectMirror, String, String> getString = (som, key) ->
-                    (String)som.get(key);
-            final BiFunction<ScriptObjectMirror, String, Integer> getInteger = (som, key) ->
-                    (Integer)som.get(key);
-            final BiFunction<ScriptObjectMirror, String, ScriptObjectMirror> getJson = (som, key) ->
-                    (ScriptObjectMirror)som.get(key);
-            final BiFunction<ScriptObjectMirror, String, Double> getDoubleEval = (som, key) ->
-            {
-                try {
-                    return (double) engine.eval(getString.apply(som, key));
-                } catch (ScriptException e) {
-                    e.printStackTrace();
-                    return 0.0;
+                // AverageColorについての処理
+                final var averageColorList =  ((ScriptObjectMirror)pair.get("averageColor")).to(ScriptObjectMirror[].class);
+                for(var averageColor : averageColorList){
+                    final var xPer = (Double)engine.eval((String)averageColor.get("xPer"));
+                    final var yPer = (Double)engine.eval((String)averageColor.get("yPer"));
+                    final var wPer = (Double)engine.eval((String)averageColor.get("wPer"));
+                    final var hPer = (Double)engine.eval((String)averageColor.get("hPer"));
+                    final var r = (Integer)averageColor.get("r");
+                    final var g = (Integer)averageColor.get("g");
+                    final var b = (Integer)averageColor.get("b");
+                    final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
+                    evidenceList.add(data);
                 }
-            };
-            // JavaScriptの実行
-            final var json = parseJson.apply(jsonText);
-            if(json != null){
-                // 各シーン毎に処理
-                for(var sceneJson : getArray.apply(json)){
-                    final var evidenceList = new ArrayList<SceneEvidence>();
-                    final var sceneName = getString.apply(sceneJson, "name");
-                    // DifferenceHashについての処理
-                    final var differenceHashList = getJson.apply(sceneJson, "differenceHash");
-                    for(var differenceHash : getArray.apply(differenceHashList)){
-                        final var xPer = getDoubleEval.apply(differenceHash, "xPer");
-                        final var yPer = getDoubleEval.apply(differenceHash, "yPer");
-                        final var wPer = getDoubleEval.apply(differenceHash, "wPer");
-                        final var hPer = getDoubleEval.apply(differenceHash, "hPer");
-                        final var hash = Long.parseUnsignedLong(getString.apply(differenceHash, "hash"), 16);
-                        final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
-                        evidenceList.add(data);
-                    }
-                    // AverageColorについての処理
-                    final var averageColorList = getJson.apply(sceneJson, "averageColor");
-                    for(var averageColor : getArray.apply(averageColorList)){
-                        final var xPer = getDoubleEval.apply(averageColor, "xPer");
-                        final var yPer = getDoubleEval.apply(averageColor, "yPer");
-                        final var wPer = getDoubleEval.apply(averageColor, "wPer");
-                        final var hPer = getDoubleEval.apply(averageColor, "hPer");
-                        final var r = getInteger.apply(averageColor, "r");
-                        final var g = getInteger.apply(averageColor, "g");
-                        final var b = getInteger.apply(averageColor, "b");
-                        final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
-                        evidenceList.add(data);
-                    }
-                    // 特殊処理
-                    if(sceneName.equals("ほぼ母港")){
-                        nearlyHomeScene = evidenceList.toArray(new SceneEvidence[0]);
-                    }else {
-                        sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
-                    }
+                // 特殊処理
+                if(sceneName.equals("ほぼ母港")){
+                    nearlyHomeScene = evidenceList.toArray(new SceneEvidence[0]);
+                }else {
+                    sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
+        } catch (ScriptException e) {
+            e.printStackTrace();
         }
     }
     /**
