@@ -22,12 +22,13 @@
                 <Menu text="ウィンドウ(_W)">
                     <items>
                         <MenuItem fx:id="OpenBattleSceneReflectionMenu" text="戦闘振り返り(_B)" />
-                        <MenuItem fx:id="OpenSceneHelperMenu" text="画像認識支援(_R)" visible="false"/>
+                        <MenuItem fx:id="OpenSceneHelperMenu" text="画像認識支援(_R)"/>
                     </items>
                 </Menu>
                 <Menu text="オプション(_O)">
                     <items>
                         <CheckMenuItem fx:id="AutoGetPositionMenu" text="自動で座標を取得し直す(_A)" />
+                        <CheckMenuItem fx:id="BlindNameTextMenu" text="スクショで名前を隠す(_B)" />
                     </items>
                 </Menu>
                 <Menu text="ヘルプ(_H)">

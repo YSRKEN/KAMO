@@ -134,7 +134,6 @@ public class SceneRecognitionService {
             return calcHummingDistance(hash) < 20;
         }
     }
-
     /**
      * 画像がそのシーンたりうる証拠(AverageColor版)
      */
@@ -229,6 +228,8 @@ public class SceneRecognitionService {
      * シーン一覧
      */
     private static Map<String, SceneEvidence[]> sceneList = new HashMap<String, SceneEvidence[]>();
+    private static SceneEvidence[] nearlyHomeScene = new SceneEvidence[]{};
+
     /**
      * 初期化コード
      */
@@ -276,6 +277,7 @@ public class SceneRecognitionService {
                 for(var sceneJson : getArray.apply(json)){
                     final var evidenceList = new ArrayList<SceneEvidence>();
                     final var sceneName = getString.apply(sceneJson, "name");
+                    // DifferenceHashについての処理
                     final var differenceHashList = getJson.apply(sceneJson, "differenceHash");
                     for(var differenceHash : getArray.apply(differenceHashList)){
                         final var xPer = getDoubleEval.apply(differenceHash, "xPer");
@@ -286,6 +288,7 @@ public class SceneRecognitionService {
                         final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
                         evidenceList.add(data);
                     }
+                    // AverageColorについての処理
                     final var averageColorList = getJson.apply(sceneJson, "averageColor");
                     for(var averageColor : getArray.apply(averageColorList)){
                         final var xPer = getDoubleEval.apply(averageColor, "xPer");
@@ -298,7 +301,12 @@ public class SceneRecognitionService {
                         final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
                         evidenceList.add(data);
                     }
-                    sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                    // 特殊処理
+                    if(sceneName.equals("ほぼ母港")){
+                        nearlyHomeScene = evidenceList.toArray(new SceneEvidence[0]);
+                    }else {
+                        sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                    }
                 }
             }
         } catch (IOException e) {
@@ -316,5 +324,14 @@ public class SceneRecognitionService {
         return sceneList.entrySet().stream().filter(e ->
                 Arrays.stream(e.getValue()).allMatch(se -> se.isMatchImage(frame))
         ).map(e -> e.getKey()).findFirst().orElse("");
+    }
+    /**
+     * 「ほぼ母港画面」であるかを判定する。ここで「ほぼ母港画面」とは、
+     * 母港画面などにある画面上の構造物(名前・資源表示・各種メニュー)が
+     * 見えている全ての状況を指す
+     * @param frame 画像
+     */
+    public static boolean isNearlyHomeScene(BufferedImage frame){
+        return Arrays.stream(nearlyHomeScene).allMatch(se -> se.isMatchImage(frame));
     }
 }
