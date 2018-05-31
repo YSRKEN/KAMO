@@ -2,6 +2,7 @@ package com.ysrken.kamo.Model;
 
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
+import com.ysrken.kamo.Service.PictureProcessingService;
 import com.ysrken.kamo.Service.SceneRecognitionService;
 import com.ysrken.kamo.Service.ScreenshotService;
 import com.ysrken.kamo.Service.SettingsStore;
@@ -48,6 +49,7 @@ public class MainModel {
      * 自動で座標を取得し直すか？
      */
     public BooleanProperty AutoGetPositionFlg = SettingsStore.AutoGetPositionFlg;
+    public BooleanProperty BlindNameTextFlg = SettingsStore.BlindNameTextFlg;
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
@@ -86,7 +88,12 @@ public class MainModel {
             if(ScreenshotService.canGetScreenshot()){
                 final var frame = ScreenshotService.getScreenshot();
                 final var scene = SceneRecognitionService.judgeScene(frame);
-                Platform.runLater(() -> NowSceneText.set(String.format("シーン判定：%s", scene.isEmpty() ? "[不明]" : scene)));
+                final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(frame);
+                Platform.runLater(() -> NowSceneText.set(String.format(
+                        "シーン判定：%s%s",
+                        scene.isEmpty() ? "[不明]" : scene,
+                        isNearlyHomeFlg ? "*" : ""))
+                );
                 if(OpenBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
                         Platform.runLater(() -> {
@@ -147,9 +154,10 @@ public class MainModel {
         addLogText.accept("【スクリーンショット】");
         if(ScreenshotService.canGetScreenshot()){
             final var screenShot = ScreenshotService.getScreenshot();
+            final var processedImage = PictureProcessingService.getProcessedImage(screenShot);
             final var fileName = String.format("%s.png", Utility.getDateStringLong());
             try {
-                ImageIO.write(screenShot, "png", new File(String.format("pic\\%s", fileName)));
+                ImageIO.write(processedImage, "png", new File(String.format("pic\\%s", fileName)));
                 addLogText.accept(String.format("ファイル名：%s", fileName));
             } catch (IOException e) {
                 e.printStackTrace();
