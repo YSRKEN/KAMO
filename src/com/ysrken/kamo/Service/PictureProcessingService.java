@@ -68,6 +68,20 @@ public class PictureProcessingService {
                 return blindImageByAreaStretch(image, 93.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
             case "MVP":
                 return blindImageByAreaStretch(image, 58.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
+            case "艦隊司令部情報":
+                return blindImageByAreaStretch(image, 201.0 / 8, 123.0 / 4.8, 295.0 / 8, 26.0 / 4.8);
+            case "ランキング":
+                return blindImageByAreaStretch(image, 228.0 / 8, 157.0 / 4.8, 146.0 / 8, 290.0 / 4.8);
+            case "演習一覧":
+                image = blindImageByAreaStretch(image, 336.0 / 8, 178.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
+                image = blindImageByAreaStretch(image, 336.0 / 8, 233.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
+                image = blindImageByAreaStretch(image, 336.0 / 8, 288.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
+                image = blindImageByAreaStretch(image, 336.0 / 8, 343.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
+                return  blindImageByAreaStretch(image, 336.0 / 8, 398.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
+            case "演習個別":
+                return  blindImageByAreaStretch(image, 129.0 / 8, 85.0 / 4.8, 285.0 / 8, 27.0 / 4.8);
+            case "遠征結果":
+                return  blindImageByAreaStretch(image, 62.0 / 8, 79.0 / 4.8, 172.0 / 8, 19.0 / 4.8);
             default:
                 return image;
         }

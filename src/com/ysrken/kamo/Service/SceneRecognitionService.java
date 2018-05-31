@@ -302,7 +302,7 @@ public class SceneRecognitionService {
                         evidenceList.add(data);
                     }
                     // 特殊処理
-                    if(sceneName.equals("ほぼ母港画面")){
+                    if(sceneName.equals("ほぼ母港")){
                         nearlyHomeScene = evidenceList.toArray(new SceneEvidence[0]);
                     }else {
                         sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
