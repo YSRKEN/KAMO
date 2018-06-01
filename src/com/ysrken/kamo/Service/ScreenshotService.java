@@ -1,10 +1,13 @@
 package com.ysrken.kamo.Service;
 
+import com.ysrken.kamo.Utility;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,7 +27,7 @@ public class ScreenshotService {
     /**
      * 枠線の色
      */
-    private  static int frameColor = 0;
+    private static int frameColor = 0;
 
     private static class ColorPoint{
         public int X;
@@ -47,7 +50,7 @@ public class ScreenshotService {
     /**
      * 自動座標取得を試みる(成功したらtrue)
      */
-    public static boolean trySearchGamePosition(){
+    public static boolean trySearchGamePosition(Consumer<String> addText){
         try {
             // グラフィックデバイスの情報を取得する
             final var allGD = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
@@ -74,6 +77,12 @@ public class ScreenshotService {
                         rectForCheck = new Rectangle(x - 1, y - 1, width + 2, height + 2);
                         // 枠線の色も記憶しておく
                         frameColor = imageData.getRGB((int)selectRect.getX() - 1, (int)selectRect.getY() - 1);
+                        // 特殊なスクリーンショットルーチンが使えるかを判定しておく
+                        if(SettingsStore.SpecialGetPosFlg.get() && Utility.isWindows()){
+                            if(SpecialScreenShotService.initialize(rect, rectForCheck, frameColor)){
+                                addText.accept("※特殊な座標取得手法が有効になっています");
+                            }
+                        }
                         return true;
                     }
                 }
@@ -262,7 +271,11 @@ public class ScreenshotService {
      * スクリーンショットを取得する
      */
     public static BufferedImage getScreenshot(){
-        return robot.createScreenCapture(rect);
+        if(SettingsStore.SpecialGetPosFlg.get() && Utility.isWindows() && SpecialScreenShotService.canSpecialScreenShot()){
+            return SpecialScreenShotService.getScreenshot();
+        }else {
+            return robot.createScreenCapture(rect);
+        }
     }
     /**
      * ゲーム画面の位置が動いたならtrue
@@ -270,12 +283,18 @@ public class ScreenshotService {
      */
     public static boolean isMovedPosition(){
         // スクショを取得し、枠線の色が正しいかを確認する
-        final var sampleImage = robot.createScreenCapture(rectForCheck);
+        BufferedImage sampleImage = null;
+        if(SettingsStore.SpecialGetPosFlg.get() && Utility.isWindows() && SpecialScreenShotService.canSpecialScreenShot()){
+            sampleImage = SpecialScreenShotService.getScreenshotForCheck();
+        }else{
+            sampleImage = robot.createScreenCapture(rectForCheck);
+        }
         final var x2 = sampleImage.getWidth() - 1;
         final var y2 = sampleImage.getHeight() - 1;
-        return (IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage.getRGB(x, 0) != frameColor)
-        || IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage.getRGB(x, y2) != frameColor)
-        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage.getRGB(0, y) != frameColor)
-        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage.getRGB(x2, y) != frameColor));
+        final var sampleImage_ = sampleImage;
+        return (IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage_.getRGB(x, 0) != frameColor)
+        || IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage_.getRGB(x, y2) != frameColor)
+        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage_.getRGB(0, y) != frameColor)
+        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage_.getRGB(x2, y) != frameColor));
     }
 }
