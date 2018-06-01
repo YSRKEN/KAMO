@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class SettingsStore {
     public static BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
+    public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
 
     /** 設定をJSONから読み込み
      * 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
@@ -32,8 +33,11 @@ public class SettingsStore {
                     final var json = (ScriptObjectMirror) engine.eval("JSON");
                     final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
                     final var m = (Map<?, ?>)result;
+
                     AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg")));
                     BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg")));
+                    SpecialGetPosFlg.set(Boolean.class.cast(m.get("SpecialGetPosFlg")));
+
                 } catch (IOException | ScriptException e) {
                     e.printStackTrace();
                 }
@@ -48,8 +52,11 @@ public class SettingsStore {
             final var osw = new OutputStreamWriter(fos, Charset.forName("UTF-8"));
             final var bw = new BufferedWriter(osw)){
             final var m = (ScriptObjectMirror)engine.eval("new Object()");
+
             m.put("AutoGetPositionFlg", AutoGetPositionFlg.get());
             m.put("BlindNameTextFlg", BlindNameTextFlg.get());
+            m.put("SpecialGetPosFlg", SpecialGetPosFlg.get());
+
             final var json = (ScriptObjectMirror) engine.eval("JSON");
             final var result = (String)json.callMember("stringify", m);
             bw.write(result);
@@ -67,5 +74,6 @@ public class SettingsStore {
         // 変更時のセーブ設定
         AutoGetPositionFlg.addListener((s, o, n) -> saveSettings());
         BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
+        SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());
     }
 }

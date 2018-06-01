@@ -50,6 +50,7 @@ public class MainModel {
      */
     public BooleanProperty AutoGetPositionFlg = SettingsStore.AutoGetPositionFlg;
     public BooleanProperty BlindNameTextFlg = SettingsStore.BlindNameTextFlg;
+    public BooleanProperty SpecialGetPosFlg = SettingsStore.SpecialGetPosFlg;
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
