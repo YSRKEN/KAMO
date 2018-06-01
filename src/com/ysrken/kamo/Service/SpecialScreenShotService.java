@@ -1,20 +1,14 @@
 package com.ysrken.kamo.Service;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.Raster;
-import java.io.File;
-import java.io.IOException;
-
-import com.sun.jna.Memory;
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.*;
+import com.sun.jna.platform.win32.GDI32Util;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.W32APIOptions;
 
-import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DirectColorModel;
 
 /** WinAPIを叩くための準備*/
 interface User32Ex extends W32APIOptions {
