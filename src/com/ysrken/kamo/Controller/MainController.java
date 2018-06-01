@@ -88,6 +88,7 @@ public class MainController {
         MessageLogTextArea.textProperty().bind(this.logText);
         // 使えない設定をdisableする
         OpenPicFolderMenu.setDisable(!Utility.isWindows());
+        SpecialGetPosMenu.setDisable(!Utility.isWindows());
         // スクショ用のクラスを初期化する
         try {
             ScreenshotService.initialize();
