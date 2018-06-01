@@ -40,8 +40,8 @@ public class SpecialScreenShotService {
             SCREENSHOT_COLOR_MODEL.getBlueMask()
     };
 
-    /** 初期化コード */
-    public static void initialize(Rectangle rect, Rectangle rectForCheck, int frameColor){
+    /** 初期化コード(成功したらtrue) */
+    public static boolean initialize(Rectangle rect, Rectangle rectForCheck, int frameColor){
         windowHandle = null;
         try{
             // WinAPIを叩き、対象ゲーム画面のウィンドウハンドルを取得する
@@ -72,7 +72,7 @@ public class SpecialScreenShotService {
             // とりあえず撮影してみて、真っ黒じゃないかによって取得可能かを判定する
             final var image = GDI32Util.getScreenshot(hwnd)
                     .getSubimage(rect.x - windowRect.left, rect.y - windowRect.top, rect.width, rect.height);
-            if(image.getRGB(0, 0) != Color.black.getRGB()){
+            if(image.getRGB(0, 0) != Color.black.getRGB()) {
                 windowHandle = hwnd;
                 SpecialScreenShotService.rect = new Rectangle(
                         rect.x - windowRect.left, rect.y - windowRect.top,
@@ -80,9 +80,13 @@ public class SpecialScreenShotService {
                 SpecialScreenShotService.rectForCheck = new Rectangle(
                         rect.x - windowRect.left - 1, rect.y - windowRect.top - 1,
                         rect.width + 2, rect.height + 2);
+                return true;
+            }else{
+                return false;
             }
         }catch(Exception e){
             e.printStackTrace();
+            return false;
         }
     }
     /** 特殊なスクリーンショットを撮影できるか？ */

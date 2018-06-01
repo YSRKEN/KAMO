@@ -132,7 +132,7 @@ public class MainModel {
     public void getPositionCommand(){
         addLogText.accept("【座標取得】");
         // 取得操作を行う
-        final var getPositionFlg = ScreenshotService.trySearchGamePosition();
+        final var getPositionFlg = ScreenshotService.trySearchGamePosition(addLogText);
         // 取得に成功したか否かで処理を分ける
         if(getPositionFlg){
             // ゲーム座標を取得する
