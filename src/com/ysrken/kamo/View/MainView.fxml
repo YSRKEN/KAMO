@@ -22,6 +22,7 @@
                 <Menu text="ウィンドウ(_W)">
                     <items>
                         <MenuItem fx:id="OpenBattleSceneReflectionMenu" text="戦闘振り返り(_B)" />
+                        <MenuItem fx:id="OpenTimerMenu" text="各種タイマー(_T)" />
                         <MenuItem fx:id="OpenSceneHelperMenu" text="画像認識支援(_R)" visible="false"/>
                     </items>
                 </Menu>

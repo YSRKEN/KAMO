@@ -32,14 +32,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MainModel {
-    /**
-     * スクリーンショットボタンを押せるかどうかのフラグ
-     */
+    /** スクリーンショットボタンを押せるかどうかのフラグ */
     public BooleanProperty DisableSaveScreenshotFlg = new SimpleBooleanProperty(true);
-    /**
-     * 戦闘振り返り画面を開いているかどうかのフラグ
-     */
+    /** 戦闘振り返り画面を開いているかどうかのフラグ */
     public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    /** 各種タイマー画面を開いているかどうかのフラグ */
+    public BooleanProperty OpenTimerFlg = new SimpleBooleanProperty(false);
     /**
      * 画像認識支援画面を開いているかどうかのフラグ
      */
@@ -148,9 +146,7 @@ public class MainModel {
             DisableSaveScreenshotFlg.set(true);
         }
     }
-    /**
-     * スクリーンショットを取得・保存する
-     */
+    /** スクリーンショットを取得・保存する */
     public void saveScreenshotCommand(){
         addLogText.accept("【スクリーンショット】");
         if(ScreenshotService.canGetScreenshot()){
@@ -181,9 +177,7 @@ public class MainModel {
             Utility.showDialog("picフォルダを開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
-    /**
-     * 戦闘振り返り画面を開く
-     */
+    /** 戦闘振り返り画面を開く */
     public void openBattleSceneReflectionCommand(){
         try {
             // 新しいウインドウを生成
@@ -217,6 +211,38 @@ public class MainModel {
         } catch (IOException e) {
             e.printStackTrace();
             Utility.showDialog("戦闘振り返り画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
+        }
+    }
+    /** 各種タイマー画面を開く */
+    public void openTimerCommand(){
+        try {
+            // 新しいウインドウを生成
+            final var stage = new Stage();
+            // ウィンドウの中身をFXMLから読み込み
+            final var loader = new FXMLLoader(
+                    ClassLoader.getSystemResource("com/ysrken/kamo/View/TimerView.fxml"));
+            final Parent root = loader.load();
+            // タイトルを設定
+            stage.setTitle("各種タイマー画面");
+            // 大きさを設定
+            stage.setScene(new Scene(root, 500, 300));
+            // 最小の大きさを設定
+            stage.setMinWidth(350);
+            stage.setMinHeight(200);
+            // 最前面設定
+            stage.setAlwaysOnTop(true);
+            // ×ボタンを押した際の設定
+            stage.setOnCloseRequest(req -> {
+                OpenTimerFlg.set(false);
+                this.setImage = null;
+                this.setText = null;
+            });
+            // 新しいウインドウを表示
+            stage.show();
+            OpenTimerFlg.set(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utility.showDialog("各種タイマー画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
     /**
