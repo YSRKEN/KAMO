@@ -56,10 +56,7 @@ public class Main extends Application {
                 board.getFiles().forEach(file -> {
                     try {
                         final var image = ImageIO.read(file);
-                        final var scene = SceneRecognitionService.judgeScene(image);
-                        final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(image);
-                        final var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
-                        Utility.showDialog(contentText, "画像認識結果");
+                        SceneRecognitionService.testSceneRecognition(image);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

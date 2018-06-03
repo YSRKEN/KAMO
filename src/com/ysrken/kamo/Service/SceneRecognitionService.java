@@ -1,7 +1,9 @@
 package com.ysrken.kamo.Service;
 
+import com.ysrken.kamo.Utility;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
+import javax.imageio.ImageIO;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.awt.*;
@@ -317,5 +319,11 @@ public class SceneRecognitionService {
      */
     public static boolean isNearlyHomeScene(BufferedImage frame){
         return Arrays.stream(nearlyHomeScene).allMatch(se -> se.isMatchImage(frame));
+    }
+    public static void testSceneRecognition(BufferedImage image){
+        final var scene = SceneRecognitionService.judgeScene(image);
+        final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(image);
+        final var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
+        Utility.showDialog(contentText, "画像認識結果");
     }
 }
