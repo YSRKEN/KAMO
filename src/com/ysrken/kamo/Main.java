@@ -57,7 +57,8 @@ public class Main extends Application {
                     try {
                         final var image = ImageIO.read(file);
                         final var scene = SceneRecognitionService.judgeScene(image);
-                        final var contentText = String.format("シーン判定：%s", scene.isEmpty() ? "不明" : scene);
+                        final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(image);
+                        final var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
                         Utility.showDialog(contentText, "画像認識結果");
                     } catch (IOException e) {
                         e.printStackTrace();
