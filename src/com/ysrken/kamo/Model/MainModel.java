@@ -2,10 +2,7 @@ package com.ysrken.kamo.Model;
 
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
-import com.ysrken.kamo.Service.PictureProcessingService;
-import com.ysrken.kamo.Service.SceneRecognitionService;
-import com.ysrken.kamo.Service.ScreenshotService;
-import com.ysrken.kamo.Service.SettingsStore;
+import com.ysrken.kamo.Service.*;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -106,7 +103,8 @@ public class MainModel {
                 // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
                 if(OpenTimerFlg.get()){
                     if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
-
+                        final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
+                        return;
                     }
                 }
             }
