@@ -1,6 +1,7 @@
 package com.ysrken.kamo.Service;
 
 import javax.imageio.ImageIO;
+import java.util.List;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -9,6 +10,8 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -68,7 +71,6 @@ public class CharacterRecognitionService {
         IntStream.range(0, tempImage2.getHeight()).boxed().forEach(y -> {
              IntStream.range(0, tempImage3.getWidth()).forEach(x -> {
                  int color = tempImage3.getRGB(x, y) & 0xFF;
-                 System.out.println("" + x + "," + y + " " + tempImage3.getRGB(x, y));
                  if(reverseFlg){
                      if(color <= threshold){
                          tempImage4.setRGB(x, y, Color.black.getRGB());
@@ -90,8 +92,25 @@ public class CharacterRecognitionService {
             e.printStackTrace();
         }
         // 区切る位置を検出する
-        
+        final var blackCount = IntStream.range(0, tempImage4.getWidth()).map(x -> {
+            return  (int)IntStream.range(0, tempImage4.getHeight()).filter(y -> (tempImage4.getRGB(x, y) & 0xFF) == 0).count();
+        }).toArray();
+        List<Rectangle> splitRectList = new ArrayList<>();
+        for(int xBegin = 0; xBegin < tempImage4.getWidth(); ++xBegin){
+            // まずは左端を検出する
+            if(blackCount[xBegin] == 0)
+                continue;
+            // 次に右端を検出する
+            final var temp = IntStream.range(xBegin + 1, tempImage4.getWidth()).filter(x -> blackCount[x] == 0).findFirst();
+            final var xEnd = temp.isPresent() ? temp.getAsInt() : tempImage4.getWidth();
+            splitRectList.add(new Rectangle(xBegin, 0, xEnd - xBegin, tempImage4.getHeight()));
+            xBegin = xEnd;
+        }
+        // それぞれの数値を読み取る
         final var digit = new int[6];
+        if(splitRectList.size() == 8){
+
+        }
         return digit;
     }
     /** 画像から遠征残り時間を取り出す*/
