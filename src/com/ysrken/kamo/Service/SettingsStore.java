@@ -22,26 +22,24 @@ public class SettingsStore {
      * 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
      */
     private static void loadSettings(){
-        Platform.runLater(() -> {
-            if(Files.exists(new File("settings.json").toPath())){
-                final var manager = new ScriptEngineManager();
-                final var engine = manager.getEngineByName("javascript");
-                try(final var fis = new FileInputStream("settings.json");
-                    final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-                    final var br = new BufferedReader(isr)) {
-                    final var json = (ScriptObjectMirror) engine.eval("JSON");
-                    final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
-                    final var m = (Map<?, ?>)result;
+        if(Files.exists(new File("settings.json").toPath())){
+            final var manager = new ScriptEngineManager();
+            final var engine = manager.getEngineByName("javascript");
+            try(final var fis = new FileInputStream("settings.json");
+                final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+                final var br = new BufferedReader(isr)) {
+                final var json = (ScriptObjectMirror) engine.eval("JSON");
+                final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
+                final var m = (Map<?, ?>)result;
 
-                    AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg")));
-                    BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg")));
-                    SpecialGetPosFlg.set(Boolean.class.cast(m.get("SpecialGetPosFlg")));
+                Platform.runLater(() -> AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg"))));
+                Platform.runLater(() -> BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg"))));
+                Platform.runLater(() -> SpecialGetPosFlg.set(Boolean.class.cast(m.get("SpecialGetPosFlg"))));
 
-                } catch (IOException | ScriptException e) {
-                    e.printStackTrace();
-                }
+            } catch (IOException | ScriptException e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
     /** 設定をJSONに保存 */
     private static void saveSettings(){

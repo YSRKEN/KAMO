@@ -42,12 +42,15 @@ public class MainModel {
      * 画像認識支援画面を開いているかどうかのフラグ
      */
     public BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
+    /** シーン情報 */
     public StringProperty NowSceneText = new SimpleStringProperty("シーン判定：[不明]");
     /**
      * 自動で座標を取得し直すか？
      */
     public BooleanProperty AutoGetPositionFlg = SettingsStore.AutoGetPositionFlg;
+    /** スクショで提督名を隠すか？ */
     public BooleanProperty BlindNameTextFlg = SettingsStore.BlindNameTextFlg;
+    /** 座標取得で特殊な方式を使用するか？ */
     public BooleanProperty SpecialGetPosFlg = SettingsStore.SpecialGetPosFlg;
 
     /**
@@ -85,24 +88,33 @@ public class MainModel {
         public void run(){
             // スクリーンショットが撮影可能な場合の処理
             if(ScreenshotService.canGetScreenshot()){
+                // 画像を取得
                 final var frame = ScreenshotService.getScreenshot();
+                // シーンを読み取り、結果をメイン画面に表示する
                 final var scene = SceneRecognitionService.judgeScene(frame);
                 final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(frame);
-                Platform.runLater(() -> NowSceneText.set(String.format(
-                        "シーン判定：%s%s",
+                setSceneText(String.format("シーン判定：%s%s",
                         scene.isEmpty() ? "[不明]" : scene,
-                        isNearlyHomeFlg ? "*" : ""))
-                );
+                        isNearlyHomeFlg ? "*" : ""));
+                // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(OpenBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
-                        Platform.runLater(() -> {
-                            setImage.accept(scene, frame);
-                            setText.accept(scene, Utility.getDateStringLong());
-                        });
+                        setImage.accept(scene, frame);
+                        setText.accept(scene, Utility.getDateStringLong());
+                    }
+                }
+                // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
+                if(OpenTimerFlg.get()){
+                    if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
+
                     }
                 }
             }
         }
+    }
+    /** シーン情報の表示を更新する */
+    private void setSceneText(String str){
+        Platform.runLater(() -> NowSceneText.set(str));
     }
 
     /**
