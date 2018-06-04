@@ -56,6 +56,100 @@ public class CharacterRecognitionService {
         return rect;
     }
 
+    /** 画像から割合(％)で画像を切り出す */
+    private static BufferedImage getSubimagePer(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
+        // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
+        final var rectX = (int)perToPixel(xPer, image.getWidth());
+        final var rectY = (int)perToPixel(yPer, image.getHeight());
+        final var rectW = (int)perToPixel(wPer, image.getWidth());
+        final var rectH = (int)perToPixel(hPer, image.getHeight());
+        // 画像をクロップ
+        return image.getSubimage(rectX, rectY, rectW, rectH);
+    }
+
+    /** 画像をリサイズする */
+    private static BufferedImage getScaledImage(BufferedImage image, int width, int height){
+        final var tempImage1 = image.getScaledInstance(width, height, SCALE_SMOOTH);
+        final var tempImage2 = new BufferedImage(tempImage1.getWidth(null), tempImage1.getHeight(null), image.getType());
+        tempImage2.getGraphics().drawImage(tempImage1, 0, 0, null);
+        return tempImage2;
+    }
+
+    /** 画像をグレースケールに変換する */
+    private static BufferedImage getGlayscaleImage(BufferedImage image){
+        final var colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+        return colorConvert.filter(image, null);
+    }
+
+    /** 画像をpng形式で保存する */
+    private static boolean saveImage(BufferedImage image, String path){
+        try {
+            ImageIO.write(image,"png", new File(path));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 画像を指定したしきい値で二値化する。
+     * ・色を反転しない際は、しきい値以上に明るい色を白色にする
+     * ・色を判定する際は、しきい値以下に暗い色を黒色にする
+     * @param image 画像
+     * @param threshold しきい値
+     * @param reverseFlg 色を反転させるか？
+     * @return
+     */
+    private static BufferedImage getThresholdImage(BufferedImage image, int threshold, boolean reverseFlg){
+        final var tempImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        IntStream.range(0, image.getHeight()).boxed().forEach(y -> {
+            IntStream.range(0, image.getWidth()).forEach(x -> {
+                int color = image.getRGB(x, y) & 0xFF;
+                if(reverseFlg){
+                    if(color <= threshold){
+                        tempImage.setRGB(x, y, Color.black.getRGB());
+                    }else{
+                        tempImage.setRGB(x, y, Color.white.getRGB());
+                    }
+                }else{
+                    if(color >= threshold){
+                        tempImage.setRGB(x, y, Color.white.getRGB());
+                    }else{
+                        tempImage.setRGB(x, y, Color.black.getRGB());
+                    }
+                }
+            });
+        });
+        return tempImage;
+    }
+
+    /**
+     * 画像を横方向に見て、区切れる場所で分割する
+     * @param image 画像
+     * @return 区切った後の画像群
+     */
+    private static List<Rectangle> getSplitRect(BufferedImage image){
+        // バッファを用意する
+        final var list = new ArrayList<Rectangle>();
+        // 水平方向のヒストグラムを割り出す
+        final var blackCountWidth = IntStream.range(0, image.getWidth()).map(x -> {
+            return  (int)IntStream.range(0, image.getHeight()).filter(y -> (image.getRGB(x, y) & 0xFF) == 0).count();
+        }).toArray();
+        // 切り出しつつ、最小枠を検出してバッファに保存する
+        for(int xBegin = 0; xBegin < image.getWidth(); ++xBegin){
+            // まずは左端を検出する
+            if(blackCountWidth[xBegin] == 0)
+                continue;
+            // 次に右端を検出する
+            final var temp = IntStream.range(xBegin + 1, image.getWidth()).filter(x -> blackCountWidth[x] == 0).findFirst();
+            final var xEnd = temp.isPresent() ? temp.getAsInt() : image.getWidth();
+            list.add(new Rectangle(xBegin, 0, xEnd - xBegin, image.getHeight()));
+            xBegin = xEnd;
+        }
+        return list;
+    }
+
     /**
      * 「00:00:00」形式の画像から、数字部分の位置を検出して正確に取り出す
      * @param image 画像
@@ -68,85 +162,26 @@ public class CharacterRecognitionService {
      * @return 時間の各数字を配列で
      */
     private static int[] getRemainingTime(BufferedImage image, double xPer, double yPer, double wPer, double hPer, int threshold, boolean reverseFlg) {
-        // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
-        final var rectX = (int)perToPixel(xPer, image.getWidth());
-        final var rectY = (int)perToPixel(yPer, image.getHeight());
-        final var rectW = (int)perToPixel(wPer, image.getWidth());
-        final var rectH = (int)perToPixel(hPer, image.getHeight());
+        final boolean debugFlg = true;
         // 画像をクロップし、縦幅を適当に引き伸ばしつつモノクロにする
-        // java.awt.Image
-        final var tempImage1 = image
-                    .getSubimage(rectX, rectY, rectW, rectH)
-                    .getScaledInstance(-1, ocrStretchHeight1, SCALE_SMOOTH);
-        final var tempImage2 = new BufferedImage(tempImage1.getWidth(null), tempImage1.getHeight(null), image.getType());
-        tempImage2.getGraphics().drawImage(tempImage1, 0, 0, null);
-        final var colorConvert = new ColorConvertOp(
-                ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
-        final var tempImage3 = colorConvert.filter(tempImage2, null);
-        try {
-            ImageIO.write(tempImage3,"png", new File("temp1.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final var tempImage1 = getGlayscaleImage(getScaledImage(getSubimagePer(image, xPer, yPer, wPer, hPer), -1, ocrStretchHeight1));
+        if(debugFlg) saveImage(tempImage1, "temp1.png");
         // 色の反転・二値化処理を行う
-        final var tempImage4 = new BufferedImage(tempImage3.getWidth(), tempImage3.getHeight(), tempImage3.getType());
-        IntStream.range(0, tempImage2.getHeight()).boxed().forEach(y -> {
-             IntStream.range(0, tempImage3.getWidth()).forEach(x -> {
-                 int color = tempImage3.getRGB(x, y) & 0xFF;
-                 if(reverseFlg){
-                     if(color <= threshold){
-                         tempImage4.setRGB(x, y, Color.black.getRGB());
-                     }else{
-                         tempImage4.setRGB(x, y, Color.white.getRGB());
-                     }
-                 }else{
-                     if(color >= threshold){
-                         tempImage4.setRGB(x, y, Color.white.getRGB());
-                     }else{
-                         tempImage4.setRGB(x, y, Color.black.getRGB());
-                     }
-                 }
-            });
-        });
-        try {
-            ImageIO.write(tempImage4, "png", new File("temp2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // 区切る位置を検出する
-        final var blackCount = IntStream.range(0, tempImage4.getWidth()).map(x -> {
-            return  (int)IntStream.range(0, tempImage4.getHeight()).filter(y -> (tempImage4.getRGB(x, y) & 0xFF) == 0).count();
-        }).toArray();
-        List<Rectangle> splitRectList = new ArrayList<>();
-        for(int xBegin = 0; xBegin < tempImage4.getWidth(); ++xBegin){
-            // まずは左端を検出する
-            if(blackCount[xBegin] == 0)
-                continue;
-            // 次に右端を検出する
-            final var temp = IntStream.range(xBegin + 1, tempImage4.getWidth()).filter(x -> blackCount[x] == 0).findFirst();
-            final var xEnd = temp.isPresent() ? temp.getAsInt() : tempImage4.getWidth();
-            splitRectList.add(new Rectangle(xBegin, 0, xEnd - xBegin, tempImage4.getHeight()));
-            xBegin = xEnd;
-        }
+        final var tempImage2 = getThresholdImage(tempImage1, threshold, reverseFlg);
+        if(debugFlg) saveImage(tempImage2, "temp2.png");
+        // 画像を自動的に分割する
+        final var splitRectList = getSplitRect(tempImage2);
         // それぞれの数値を読み取る
         final var digit = IntStream.range(0, 6).map(i -> i == 5 ? -1 : 0).toArray();
         if(splitRectList.size() == 8){
             final var indexList = new int[]{0, 1, 3, 4, 6, 7};
             for(int i = 0; i < indexList.length; ++i){
-                final var rect = splitRectList.get(indexList[i]);
-                final var cropImage = tempImage4.getSubimage(rect.x, rect.y, rect.width, rect.height);
-                try {
-                    ImageIO.write(cropImage, "png", new File("temp3-" + (i + 1) + "-1.png"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                final var cropRect = getTrimmingRect(cropImage);
-                final var cropImage2 = cropImage.getSubimage(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
-                try {
-                    ImageIO.write(cropImage2, "png", new File("temp3-" + (i + 1) + "-2.png"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                final var splitRect = splitRectList.get(indexList[i]);
+                final var splitedImage = tempImage2.getSubimage(splitRect.x, splitRect.y, splitRect.width, splitRect.height);
+                if(debugFlg) saveImage(splitedImage, "temp3-" + (i + 1) + "-1.png");
+                final var cropRect = getTrimmingRect(splitedImage);
+                final var cropedImage = splitedImage.getSubimage(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
+                if(debugFlg) saveImage(cropedImage, "temp3-" + (i + 1) + "-2.png");
             }
         }
         return digit;
