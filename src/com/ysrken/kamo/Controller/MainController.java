@@ -1,6 +1,7 @@
 package com.ysrken.kamo.Controller;
 
 import com.ysrken.kamo.Model.MainModel;
+import com.ysrken.kamo.Service.CharacterRecognitionService;
 import com.ysrken.kamo.Service.SceneRecognitionService;
 import com.ysrken.kamo.Service.ScreenshotService;
 import com.ysrken.kamo.Service.SettingsStore;
@@ -101,6 +102,8 @@ public class MainController {
         }
         // 画像認識用のクラスを初期化する
         SceneRecognitionService.initialize();
+        // 文字認識用のクラスを初期化する
+        CharacterRecognitionService.initialize();
         // 起動時にバージョンチェックする
         model.checkVersionCommand();
     }

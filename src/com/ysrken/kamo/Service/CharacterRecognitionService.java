@@ -21,6 +21,7 @@ public class CharacterRecognitionService {
     private static int ocrStretchHeight1 = 64;
     /** 文字認識用に引き伸ばす縦幅 */
     private static int ocrStretchHeight2 = 32;
+    private static List<BufferedImage> template = new ArrayList<>();
 
     /**
      * ％表記の割合(A)と100％時のピクセル値(B)から、ピクセルを出力する
@@ -65,6 +66,11 @@ public class CharacterRecognitionService {
         final var rectH = (int)perToPixel(hPer, image.getHeight());
         // 画像をクロップ
         return image.getSubimage(rectX, rectY, rectW, rectH);
+    }
+
+    /** 画像からRectを参照して切り出す */
+    private static BufferedImage getSubimage(BufferedImage image, Rectangle rect){
+        return image.getSubimage(rect.x, rect.y, rect.width, rect.height);
     }
 
     /** 画像をリサイズする */
@@ -162,7 +168,7 @@ public class CharacterRecognitionService {
      * @return 時間の各数字を配列で
      */
     private static int[] getRemainingTime(BufferedImage image, double xPer, double yPer, double wPer, double hPer, int threshold, boolean reverseFlg) {
-        final boolean debugFlg = true;
+        final boolean debugFlg = false;
         // 画像をクロップし、縦幅を適当に引き伸ばしつつモノクロにする
         final var tempImage1 = getGlayscaleImage(getScaledImage(getSubimagePer(image, xPer, yPer, wPer, hPer), -1, ocrStretchHeight1));
         if(debugFlg) saveImage(tempImage1, "temp1.png");
@@ -176,16 +182,51 @@ public class CharacterRecognitionService {
         if(splitRectList.size() == 8){
             final var indexList = new int[]{0, 1, 3, 4, 6, 7};
             for(int i = 0; i < indexList.length; ++i){
+                // 分割操作
                 final var splitRect = splitRectList.get(indexList[i]);
-                final var splitedImage = tempImage2.getSubimage(splitRect.x, splitRect.y, splitRect.width, splitRect.height);
+                final var splitedImage = getSubimage(tempImage2, splitRect);
                 if(debugFlg) saveImage(splitedImage, "temp3-" + (i + 1) + "-1.png");
+                // 周囲をトリミング
                 final var cropRect = getTrimmingRect(splitedImage);
-                final var cropedImage = splitedImage.getSubimage(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
+                final var cropedImage = getSubimage(splitedImage, cropRect);
                 if(debugFlg) saveImage(cropedImage, "temp3-" + (i + 1) + "-2.png");
+                // 指定したサイズに拡大
+                final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
+                // テンプレと比較し、尤もらしい値を推定値とする
+                template.add(fixedImage);
             }
         }
         return digit;
     }
+
+    /** 初期化 */
+    public static void initialize(){
+        final boolean debugFlg = true;
+        // テンプレート情報を用意する
+        IntStream.range(0, 10).forEach(i -> {
+            // バッファを初期化
+            final var tempImage1 = new BufferedImage(ocrStretchHeight1 * 2, ocrStretchHeight1 * 2, BufferedImage.TYPE_3BYTE_BGR);
+            // バッファを白く塗りつぶす
+            final var graphics = tempImage1.getGraphics();
+            graphics.setColor(Color.white);
+            graphics.fillRect(0, 0, ocrStretchHeight1 * 2, ocrStretchHeight1 * 2);
+            // 黒色で数字を書く
+            graphics.setColor(Color.black);
+            graphics.setFont(new Font("", Font.PLAIN, ocrStretchHeight1));
+            graphics.drawString("" + i, ocrStretchHeight1 / 2, (ocrStretchHeight1 / 2 + ocrStretchHeight1));
+            if(debugFlg) saveImage(tempImage1, "tprt-" + i + "-1.png");
+            // 最小枠を検出して取り出す
+            final var cropRect = getTrimmingRect(tempImage1);
+            final var cropedImage = getSubimage(tempImage1, cropRect);
+            if(debugFlg) saveImage(cropedImage, "tprt-" + i + "-2.png");
+            // 指定したサイズに拡大
+            final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
+            if(debugFlg) saveImage(fixedImage, "tprt-" + i + "-3.png");
+            // 記憶
+
+        });
+    }
+
     /** 画像から遠征残り時間を取り出す*/
     public static Duration getExpeditionRemainingTime(BufferedImage image){
         // 画像の一部分から遠征残り時間を出す
