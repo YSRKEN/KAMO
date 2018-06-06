@@ -323,10 +323,11 @@ public class SceneRecognitionService {
     public static void testSceneRecognition(BufferedImage image){
         final var scene = SceneRecognitionService.judgeScene(image);
         final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(image);
-        final var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
+        var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
         if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
             final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
             System.out.println(duration);
+            contentText += String.format("%n残り時間：%02d:%02d:%02d", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
         }
         Utility.showDialog(contentText, "画像認識結果");
     }

@@ -156,6 +156,16 @@ public class CharacterRecognitionService {
         return list;
     }
 
+    /** 2枚の画像間のSSDを計算する */
+    private static int getImageSSDForTemplate(BufferedImage a, BufferedImage b){
+        return IntStream.range(0, ocrStretchHeight2).map(x -> {
+            return IntStream.range(0, ocrStretchHeight2).map(y -> {
+                int diff = (a.getRGB(x, y) & 0xFF) - (b.getRGB(x, y) & 0xFF);
+                return diff * diff;
+            }).sum();
+        }).sum();
+    }
+
     /**
      * 「00:00:00」形式の画像から、数字部分の位置を検出して正確に取り出す
      * @param image 画像
@@ -181,6 +191,7 @@ public class CharacterRecognitionService {
         final var digit = IntStream.range(0, 6).map(i -> i == 5 ? -1 : 0).toArray();
         if(splitRectList.size() == 8){
             final var indexList = new int[]{0, 1, 3, 4, 6, 7};
+            final var range = new int[]{8, 10, 6, 10, 6, 10};
             for(int i = 0; i < indexList.length; ++i){
                 // 分割操作
                 final var splitRect = splitRectList.get(indexList[i]);
@@ -193,7 +204,16 @@ public class CharacterRecognitionService {
                 // 指定したサイズに拡大
                 final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
                 // テンプレと比較し、尤もらしい値を推定値とする
-                template.add(fixedImage);
+                int minDiff = getImageSSDForTemplate(fixedImage, template.get(0));
+                int selectIndex = 0;
+                for(int j = 1; j < range[i]; ++j){
+                    int diff = getImageSSDForTemplate(fixedImage, template.get(j));
+                    if(minDiff > diff){
+                        minDiff = diff;
+                        selectIndex = j;
+                    }
+                }
+                digit[i] = selectIndex;
             }
         }
         return digit;
@@ -201,9 +221,21 @@ public class CharacterRecognitionService {
 
     /** 初期化 */
     public static void initialize(){
-        final boolean debugFlg = true;
+        final boolean debugFlg = false;
         // テンプレート情報を用意する
         IntStream.range(0, 10).forEach(i -> {
+            if(i == 1){
+                final var tempImage = new BufferedImage(ocrStretchHeight2, ocrStretchHeight2, BufferedImage.TYPE_3BYTE_BGR);
+                final var graphics = tempImage.getGraphics();
+                graphics.setColor(Color.white);
+                graphics.fillRect(0, 0, ocrStretchHeight2, ocrStretchHeight2);
+                graphics.setColor(Color.black);
+                graphics.fillRect(10, 0, 18, 32);
+                graphics.fillRect(0, 2, 15, 4);
+                if(debugFlg) saveImage(tempImage, "tprt-" + i + "-3.png");
+                template.add(tempImage);
+                return;
+            }
             // バッファを初期化
             final var tempImage1 = new BufferedImage(ocrStretchHeight1 * 2, ocrStretchHeight1 * 2, BufferedImage.TYPE_3BYTE_BGR);
             // バッファを白く塗りつぶす
@@ -217,13 +249,18 @@ public class CharacterRecognitionService {
             if(debugFlg) saveImage(tempImage1, "tprt-" + i + "-1.png");
             // 最小枠を検出して取り出す
             final var cropRect = getTrimmingRect(tempImage1);
+            //(「1」の場合だけ数字を自作する。横棒張り出しするフォント対策)
+            if(i == 1){
+                cropRect.x = cropRect.x + cropRect.width - cropRect.height / 3;
+                cropRect.width = cropRect.height / 3;
+            }
             final var cropedImage = getSubimage(tempImage1, cropRect);
             if(debugFlg) saveImage(cropedImage, "tprt-" + i + "-2.png");
             // 指定したサイズに拡大
             final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
             if(debugFlg) saveImage(fixedImage, "tprt-" + i + "-3.png");
             // 記憶
-
+            template.add(fixedImage);
         });
     }
 
@@ -231,6 +268,7 @@ public class CharacterRecognitionService {
     public static Duration getExpeditionRemainingTime(BufferedImage image){
         // 画像の一部分から遠征残り時間を出す
         final var digit = getRemainingTime(image, 719.0 / 8, 383.0 / 4.8, 70.0 / 8, 20.0 / 4.8, 185, false);
-        return Duration.parse("PT3H4M5S");
+        final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
+        return Duration.ofSeconds(second);
     }
 }
