@@ -265,10 +265,10 @@ public class CharacterRecognitionService {
     }
 
     /** 画像から遠征残り時間を取り出す*/
-    public static Duration getExpeditionRemainingTime(BufferedImage image){
+    public static long getExpeditionRemainingTime(BufferedImage image){
         // 画像の一部分から遠征残り時間を出す
         final var digit = getRemainingTime(image, 719.0 / 8, 383.0 / 4.8, 70.0 / 8, 20.0 / 4.8, 185, false);
         final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
-        return Duration.ofSeconds(second);
+        return second;
     }
 }

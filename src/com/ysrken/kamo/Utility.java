@@ -173,4 +173,10 @@ public class Utility {
         final var osName = System.getProperty("os.name").toLowerCase();
         return (osName.startsWith("windows"));
     }
+    public static String LongToDateStringShort(long x) {
+        long second = x % 60; x -= second; x /= 60;
+        long minute = x % 60; x -= minute; x /= 60;
+        long hour = x;
+        return String.format("%02d:%02d:%02d", hour, minute, second);
+    }
 }

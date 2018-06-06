@@ -2,6 +2,7 @@ package com.ysrken.kamo.Model;
 
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
+import com.ysrken.kamo.Controller.TimerController;
 import com.ysrken.kamo.Service.*;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
@@ -22,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -57,6 +59,7 @@ public class MainModel {
     private BiConsumer<String, BufferedImage> setImage = null;
     private BiConsumer<String, String> setText = null;
     private Set<String> battleSceneSet = null;
+    private BiConsumer<Date, Integer> setExpTimer = null;
 
     /**
      * 長い周期で行われるタスクを設定
@@ -104,7 +107,9 @@ public class MainModel {
                 if(OpenTimerFlg.get()){
                     if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
                         final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
-                        return;
+                        if(setExpTimer != null && duration >= 0){
+                            setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), 0);
+                        }
                     }
                 }
             }
@@ -232,6 +237,8 @@ public class MainModel {
             final var loader = new FXMLLoader(
                     ClassLoader.getSystemResource("com/ysrken/kamo/View/TimerView.fxml"));
             final Parent root = loader.load();
+            final TimerController controller = loader.getController();
+            setExpTimer = (date, index) -> controller.setExpTimer(date, index);
             // タイトルを設定
             stage.setTitle("各種タイマー画面");
             // 大きさを設定

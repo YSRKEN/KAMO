@@ -8,6 +8,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 
+import java.util.Date;
+
 public class TimerController {
     /** タブを登録するベース */
     @FXML private TabPane TimerTabs;
@@ -35,5 +37,9 @@ public class TimerController {
             }
             tabList.add(expTimerTab);
         }
+    }
+    /** 時刻をセットする */
+    public void setExpTimer(Date date, int index){
+        timerModel.setExpTimer(date, index);
     }
 }
