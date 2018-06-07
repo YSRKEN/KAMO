@@ -60,6 +60,7 @@ public class MainModel {
     private BiConsumer<String, String> setText = null;
     private Set<String> battleSceneSet = null;
     private BiConsumer<Date, Integer> setExpTimer = null;
+    private Runnable refreshExpTimerString = null;
 
     /**
      * 長い周期で行われるタスクを設定
@@ -110,6 +111,9 @@ public class MainModel {
                         if(setExpTimer != null && duration >= 0){
                             setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), 0);
                         }
+                    }
+                    if(refreshExpTimerString != null){
+                        refreshExpTimerString.run();
                     }
                 }
             }
@@ -239,6 +243,7 @@ public class MainModel {
             final Parent root = loader.load();
             final TimerController controller = loader.getController();
             setExpTimer = (date, index) -> controller.setExpTimer(date, index);
+            refreshExpTimerString = (() -> controller.refreshExpTimerString());
             // タイトルを設定
             stage.setTitle("各種タイマー画面");
             // 大きさを設定

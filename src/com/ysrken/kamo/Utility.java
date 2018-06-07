@@ -174,6 +174,9 @@ public class Utility {
         return (osName.startsWith("windows"));
     }
     public static String LongToDateStringShort(long x) {
+        if(x <= 0){
+            return "00:00:00";
+        }
         long second = x % 60; x -= second; x /= 60;
         long minute = x % 60; x -= minute; x /= 60;
         long hour = x;

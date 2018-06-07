@@ -15,7 +15,7 @@ public class TimerController {
     @FXML private TabPane TimerTabs;
 
     /** Model */
-    private TimerModel timerModel = new TimerModel();
+    private TimerModel timerModel;
 
     /** 初期化 */
     public void initialize(){
@@ -27,14 +27,16 @@ public class TimerController {
             final var grid = new GridPane();
             grid.setGridLinesVisible(true);
             int row = 0;
-            for(var stringproperty : timerModel.ExpTimerString){
+            timerModel = new TimerModel();
+            for(var stringProperty : timerModel.ExpTimerString){
                 final var label = new Label();
                 label.setFont(new Font("", 16));
-                label.textProperty().bind(stringproperty);
+                label.textProperty().bind(stringProperty);
                 grid.addRow(row);
                 grid.add(label, 0, row);
                 ++row;
             }
+            expTimerTab.setContent(grid);
             tabList.add(expTimerTab);
         }
     }
@@ -42,4 +44,6 @@ public class TimerController {
     public void setExpTimer(Date date, int index){
         timerModel.setExpTimer(date, index);
     }
+    /** 表示時間を更新する */
+    public void refreshExpTimerString(){ timerModel.refreshExpTimerString(); }
 }

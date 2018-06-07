@@ -1,6 +1,7 @@
 package com.ysrken.kamo.Model;
 
 import com.ysrken.kamo.Utility;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,25 +18,27 @@ public class TimerModel {
 
     /** 最大の遠征数 */
     private int expCount = 3;
-    private final List<ObjectProperty<Date>> ExpTimer = new ArrayList<>();
+    private final List<Date> ExpTimer = new ArrayList<>();
 
     /** コンストラクタ */
     public TimerModel(){
         // 遠征周りの初期化
         for(int i = 0; i < expCount; ++i){
             ExpTimerString.add(new SimpleStringProperty("00:00:00"));
-            ExpTimer.add(new SimpleObjectProperty<>(new Date()));
-        }
-        for(int i = 0; i < expCount; ++i){
-            final int ii = i;
-            ExpTimer.get(ii).addListener((ob, o, n) -> {
-                final var period = n.getTime() - new Date().getTime();
-                ExpTimerString.get(ii).set(Utility.LongToDateStringShort(period));
-            });
+            ExpTimer.add(new Date());
         }
     }
     /** 時刻をセットする */
     public void setExpTimer(Date date, int index){
-        ExpTimer.get(index).set(date);
+        ExpTimer.set(index, date);
+    }
+    /** 遠征の残時間表示を更新する */
+    public void refreshExpTimerString(){
+        for(int i = 0; i < expCount; ++i){
+            final var period = ExpTimer.get(i).getTime() - new Date().getTime();
+            final var ii = i;
+            Platform.runLater(() ->
+                    ExpTimerString.get(ii).set(Utility.LongToDateStringShort(period / 1000)));
+        }
     }
 }
