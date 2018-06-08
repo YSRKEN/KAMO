@@ -169,7 +169,7 @@ public class CharacterRecognitionService {
     }
 
     /**
-     * 「00:00:00」形式の画像から、数字部分の位置を検出して正確に取り出す
+     * 各桁の数字を読み取る
      * @param image 画像
      * @param xPer 左上座標(X)の割合％
      * @param yPer 左上座標(Y)の割合％
@@ -177,9 +177,10 @@ public class CharacterRecognitionService {
      * @param hPer 縦幅の割合％
      * @param threshold しきい値。未反転時ならこの値以上に明るい色を白色にし、反転時はこの値以下に暗い色を黒色にする
      * @param reverseFlg 色を反転させる場合はtrue(白文字用に使う)
+     * @param limit 各桁の数字の上限。「0」とするとその桁の数字を読み取らず、「X」とすると0～X-1に値を制限する
      * @return 時間の各数字を配列で
      */
-    private static int[] getRemainingTime(BufferedImage image, double xPer, double yPer, double wPer, double hPer, int threshold, boolean reverseFlg) {
+    private static int[] getNumberValue(BufferedImage image, double xPer, double yPer, double wPer, double hPer, int threshold, boolean reverseFlg, int[] limit){
         final boolean debugFlg = false;
         // 画像をクロップし、縦幅を適当に引き伸ばしつつモノクロにする
         final var tempImage1 = getGlayscaleImage(getScaledImage(getSubimagePer(image, xPer, yPer, wPer, hPer), -1, ocrStretchHeight1));
@@ -190,13 +191,13 @@ public class CharacterRecognitionService {
         // 画像を自動的に分割する
         final var splitRectList = getSplitRect(tempImage2);
         // それぞれの数値を読み取る
-        final var digit = IntStream.range(0, 6).map(i -> i == 5 ? -1 : 0).toArray();
-        if(splitRectList.size() == 8){
-            final var indexList = new int[]{0, 1, 3, 4, 6, 7};
-            final var range = new int[]{8, 10, 6, 10, 6, 10};
-            for(int i = 0; i < indexList.length; ++i){
+        final var digit = new ArrayList<Integer>();
+        if(splitRectList.size() == limit.length){
+            for(int i = 0; i < splitRectList.size(); ++i){
+                if(limit[i] == 0)
+                    continue;
                 // 分割操作
-                final var splitRect = splitRectList.get(indexList[i]);
+                final var splitRect = splitRectList.get(i);
                 final var splitedImage = getSubimage(tempImage2, splitRect);
                 if(debugFlg) saveImage(splitedImage, "temp3-" + (i + 1) + "-1.png");
                 // 周囲をトリミング
@@ -208,7 +209,7 @@ public class CharacterRecognitionService {
                 if(debugFlg) saveImage(fixedImage, "temp3-" + (i + 1) + "-3.png");
                 // テンプレと比較し、尤もらしい値を推定値とする
                 final var ii = i;
-                final var template_ = template.stream().filter(pair -> pair.getValue() < range[ii]).collect(Collectors.toList());
+                final var template_ = template.stream().filter(pair -> pair.getValue() < limit[ii]).collect(Collectors.toList());
                 int minDiff = getImageSSDForTemplate(fixedImage, template_.get(0).getKey());
                 int selectIndex = template_.get(0).getValue();
                 for(int j = 1; j < template_.size(); ++j){
@@ -218,49 +219,10 @@ public class CharacterRecognitionService {
                         selectIndex = template_.get(j).getValue();
                     }
                 }
-                digit[i] = selectIndex;
+                digit.add(selectIndex);
             }
         }
-        return digit;
-    }
-
-    private static int[] getNumberValue(BufferedImage image, double xPer, double yPer, double wPer, double hPer, int threshold, boolean reverseFlg){
-        final boolean debugFlg = false;
-        // 画像をクロップし、縦幅を適当に引き伸ばしつつモノクロにする
-        final var tempImage1 = getGlayscaleImage(getScaledImage(getSubimagePer(image, xPer, yPer, wPer, hPer), -1, ocrStretchHeight1));
-        if(debugFlg) saveImage(tempImage1, "temp1.png");
-        // 色の反転・二値化処理を行う
-        final var tempImage2 = getThresholdImage(tempImage1, threshold, reverseFlg);
-        if(debugFlg) saveImage(tempImage2, "temp2.png");
-        // 画像を自動的に分割する
-        final var splitRectList = getSplitRect(tempImage2);
-        // それぞれの数値を読み取る
-        final var digit = IntStream.range(0, splitRectList.size()).map(i -> -1).toArray();
-        for(int i = 0; i < splitRectList.size(); ++i){
-            // 分割操作
-            final var splitRect = splitRectList.get(i);
-            final var splitedImage = getSubimage(tempImage2, splitRect);
-            if(debugFlg) saveImage(splitedImage, "temp3-" + (i + 1) + "-1.png");
-            // 周囲をトリミング
-            final var cropRect = getTrimmingRect(splitedImage);
-            final var cropedImage = getSubimage(splitedImage, cropRect);
-            if(debugFlg) saveImage(cropedImage, "temp3-" + (i + 1) + "-2.png");
-            // 指定したサイズに拡大
-            final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
-            if(debugFlg) saveImage(fixedImage, "temp3-" + (i + 1) + "-3.png");
-            // テンプレと比較し、尤もらしい値を推定値とする
-            int minDiff = getImageSSDForTemplate(fixedImage, template.get(0).getKey());
-            int selectIndex = template.get(0).getValue();
-            for(int j = 1; j < template.size(); ++j){
-                int diff = getImageSSDForTemplate(fixedImage, template.get(j).getKey());
-                if(minDiff > diff){
-                    minDiff = diff;
-                    selectIndex = template.get(j).getValue();
-                }
-            }
-            digit[i] = selectIndex;
-        }
-        return digit;
+        return digit.stream().mapToInt(i -> i).toArray();
     }
 
     /** 初期化 */
@@ -319,7 +281,7 @@ public class CharacterRecognitionService {
     /** 画像から遠征残り時間を取り出す*/
     public static long getExpeditionRemainingTime(BufferedImage image){
         // 画像の一部分から遠征残り時間を出す
-        final var digit = getRemainingTime(image, 719.0 / 8, 383.0 / 4.8, 70.0 / 8, 20.0 / 4.8, 185, false);
+        final var digit = getNumberValue(image, 719.0 / 8, 383.0 / 4.8, 70.0 / 8, 20.0 / 4.8, 185, false, new int[]{8, 10, 0, 6, 10, 0, 6, 10});
         final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
         return second;
     }
@@ -328,7 +290,7 @@ public class CharacterRecognitionService {
     public static Map<Integer, String> getExpeditionFleetId(BufferedImage image){
         final var result = new HashMap<Integer, String>();
         // 左上の数字を読み取ることでオフセットを判断する
-        final var digit = getNumberValue(image, 121.0 / 8, 167.0 / 4.8, 21.0 / 8, 17.0 / 4.8, 180, false);
+        final var digit = getNumberValue(image, 121.0 / 8, 167.0 / 4.8, 21.0 / 8, 17.0 / 4.8, 180, false, new int[]{4, 10});
         System.out.println(Arrays.toString(digit));
         return result;
     }
