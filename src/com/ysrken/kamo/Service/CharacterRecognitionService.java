@@ -1,8 +1,9 @@
 package com.ysrken.kamo.Service;
 
+import javafx.util.Pair;
+
 import javax.imageio.ImageIO;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -10,8 +11,9 @@ import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.awt.Image.SCALE_SMOOTH;
@@ -21,7 +23,7 @@ public class CharacterRecognitionService {
     private static int ocrStretchHeight1 = 64;
     /** 文字認識用に引き伸ばす縦幅 */
     private static int ocrStretchHeight2 = 32;
-    private static List<BufferedImage> template = new ArrayList<>();
+    private static List<Pair<BufferedImage, Integer>>  template = new ArrayList<>();
 
     /**
      * ％表記の割合(A)と100％時のピクセル値(B)から、ピクセルを出力する
@@ -203,14 +205,17 @@ public class CharacterRecognitionService {
                 if(debugFlg) saveImage(cropedImage, "temp3-" + (i + 1) + "-2.png");
                 // 指定したサイズに拡大
                 final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
+                if(debugFlg) saveImage(fixedImage, "temp3-" + (i + 1) + "-3.png");
                 // テンプレと比較し、尤もらしい値を推定値とする
-                int minDiff = getImageSSDForTemplate(fixedImage, template.get(0));
-                int selectIndex = 0;
-                for(int j = 1; j < range[i]; ++j){
-                    int diff = getImageSSDForTemplate(fixedImage, template.get(j));
+                final var ii = i;
+                final var template_ = template.stream().filter(pair -> pair.getValue() < range[ii]).collect(Collectors.toList());
+                int minDiff = getImageSSDForTemplate(fixedImage, template_.get(0).getKey());
+                int selectIndex = template_.get(0).getValue();
+                for(int j = 1; j < template_.size(); ++j){
+                    int diff = getImageSSDForTemplate(fixedImage, template_.get(j).getKey());
                     if(minDiff > diff){
                         minDiff = diff;
-                        selectIndex = j;
+                        selectIndex = template_.get(j).getValue();
                     }
                 }
                 digit[i] = selectIndex;
@@ -219,11 +224,50 @@ public class CharacterRecognitionService {
         return digit;
     }
 
+    private static int[] getNumberValue(BufferedImage image, double xPer, double yPer, double wPer, double hPer, int threshold, boolean reverseFlg){
+        final boolean debugFlg = false;
+        // 画像をクロップし、縦幅を適当に引き伸ばしつつモノクロにする
+        final var tempImage1 = getGlayscaleImage(getScaledImage(getSubimagePer(image, xPer, yPer, wPer, hPer), -1, ocrStretchHeight1));
+        if(debugFlg) saveImage(tempImage1, "temp1.png");
+        // 色の反転・二値化処理を行う
+        final var tempImage2 = getThresholdImage(tempImage1, threshold, reverseFlg);
+        if(debugFlg) saveImage(tempImage2, "temp2.png");
+        // 画像を自動的に分割する
+        final var splitRectList = getSplitRect(tempImage2);
+        // それぞれの数値を読み取る
+        final var digit = IntStream.range(0, splitRectList.size()).map(i -> -1).toArray();
+        for(int i = 0; i < splitRectList.size(); ++i){
+            // 分割操作
+            final var splitRect = splitRectList.get(i);
+            final var splitedImage = getSubimage(tempImage2, splitRect);
+            if(debugFlg) saveImage(splitedImage, "temp3-" + (i + 1) + "-1.png");
+            // 周囲をトリミング
+            final var cropRect = getTrimmingRect(splitedImage);
+            final var cropedImage = getSubimage(splitedImage, cropRect);
+            if(debugFlg) saveImage(cropedImage, "temp3-" + (i + 1) + "-2.png");
+            // 指定したサイズに拡大
+            final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
+            if(debugFlg) saveImage(fixedImage, "temp3-" + (i + 1) + "-3.png");
+            // テンプレと比較し、尤もらしい値を推定値とする
+            int minDiff = getImageSSDForTemplate(fixedImage, template.get(0).getKey());
+            int selectIndex = template.get(0).getValue();
+            for(int j = 1; j < template.size(); ++j){
+                int diff = getImageSSDForTemplate(fixedImage, template.get(j).getKey());
+                if(minDiff > diff){
+                    minDiff = diff;
+                    selectIndex = template.get(j).getValue();
+                }
+            }
+            digit[i] = selectIndex;
+        }
+        return digit;
+    }
+
     /** 初期化 */
     public static void initialize(){
         final boolean debugFlg = false;
         // テンプレート情報を用意する
-        IntStream.range(0, 10).forEach(i -> {
+        IntStream.range(0, 11).forEach(i -> {
             if(i == 1){
                 final var tempImage = new BufferedImage(ocrStretchHeight2, ocrStretchHeight2, BufferedImage.TYPE_3BYTE_BGR);
                 final var graphics = tempImage.getGraphics();
@@ -233,7 +277,20 @@ public class CharacterRecognitionService {
                 graphics.fillRect(10, 0, 18, 32);
                 graphics.fillRect(0, 2, 15, 4);
                 if(debugFlg) saveImage(tempImage, "tprt-" + i + "-3.png");
-                template.add(tempImage);
+                template.add(new Pair<>(tempImage, 1));
+                return;
+            }
+            if(i == 10){
+                final var tempImage = new BufferedImage(ocrStretchHeight2, ocrStretchHeight2, BufferedImage.TYPE_3BYTE_BGR);
+                final var graphics = tempImage.getGraphics();
+                graphics.setColor(Color.white);
+                graphics.fillRect(0, 0, ocrStretchHeight2, ocrStretchHeight2);
+                graphics.setColor(Color.black);
+                graphics.fillRect(23, 0, 9, 32);
+                graphics.fillRect(0, 3, 23, 4);
+                graphics.fillRect(15, 0, 8, 6);
+                if(debugFlg) saveImage(tempImage, "tprt-" + i + "-3.png");
+                template.add(new Pair<>(tempImage, 1));
                 return;
             }
             // バッファを初期化
@@ -249,18 +306,13 @@ public class CharacterRecognitionService {
             if(debugFlg) saveImage(tempImage1, "tprt-" + i + "-1.png");
             // 最小枠を検出して取り出す
             final var cropRect = getTrimmingRect(tempImage1);
-            //(「1」の場合だけ数字を自作する。横棒張り出しするフォント対策)
-            if(i == 1){
-                cropRect.x = cropRect.x + cropRect.width - cropRect.height / 3;
-                cropRect.width = cropRect.height / 3;
-            }
             final var cropedImage = getSubimage(tempImage1, cropRect);
             if(debugFlg) saveImage(cropedImage, "tprt-" + i + "-2.png");
             // 指定したサイズに拡大
             final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
             if(debugFlg) saveImage(fixedImage, "tprt-" + i + "-3.png");
             // 記憶
-            template.add(fixedImage);
+            template.add(new Pair<>(fixedImage, i));
         });
     }
 
@@ -270,5 +322,14 @@ public class CharacterRecognitionService {
         final var digit = getRemainingTime(image, 719.0 / 8, 383.0 / 4.8, 70.0 / 8, 20.0 / 4.8, 185, false);
         final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
         return second;
+    }
+
+    /** 艦隊番号をKey、遠征IDをValueといった形式で取り出す */
+    public static Map<Integer, String> getExpeditionFleetId(BufferedImage image){
+        final var result = new HashMap<Integer, String>();
+        // 左上の数字を読み取ることでオフセットを判断する
+        final var digit = getNumberValue(image, 121.0 / 8, 167.0 / 4.8, 21.0 / 8, 17.0 / 4.8, 180, false);
+        System.out.println(Arrays.toString(digit));
+        return result;
     }
 }

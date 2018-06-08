@@ -328,6 +328,7 @@ public class SceneRecognitionService {
         if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
             final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
             contentText += String.format("%n残り時間：%s", Utility.LongToDateStringShort(duration));
+            final var result = CharacterRecognitionService.getExpeditionFleetId(image);
         }
         Utility.showDialog(contentText, "画像認識結果");
     }
