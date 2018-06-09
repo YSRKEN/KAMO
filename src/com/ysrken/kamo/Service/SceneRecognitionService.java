@@ -329,6 +329,12 @@ public class SceneRecognitionService {
             final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
             contentText += String.format("%n残り時間：%s", Utility.LongToDateStringShort(duration));
             final var result = CharacterRecognitionService.getExpeditionFleetId(image);
+            if(result.size() > 0){
+                contentText += String.format("%n遠征艦隊番号：");
+                for(var pair : result.entrySet()){
+                    contentText += String.format("%n　第%d艦隊→%s", pair.getKey(), pair.getValue());
+                }
+            }
         }
         Utility.showDialog(contentText, "画像認識結果");
     }

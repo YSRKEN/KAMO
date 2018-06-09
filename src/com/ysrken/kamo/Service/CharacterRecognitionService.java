@@ -1,5 +1,6 @@
 package com.ysrken.kamo.Service;
 
+import javafx.application.Platform;
 import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
@@ -36,6 +37,48 @@ public class CharacterRecognitionService {
         final var rawPixel = per * pixel / 100;
         final var roundPixel = Math.round(rawPixel);
         return Math.min(Math.max(roundPixel, 0), pixel - 1);
+    }
+
+    /**
+     * AverageColorを計算し、ラベルに反映する
+     */
+    private static Color calcAverageColor(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
+        // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
+        final var rectX = (int)perToPixel(xPer, image.getWidth());
+        final var rectY = (int)perToPixel(yPer, image.getHeight());
+        final var rectW = (int)perToPixel(wPer, image.getWidth());
+        final var rectH = (int)perToPixel(hPer, image.getHeight());
+        // 画素値の平均色を計算する
+        long rSum = 0, gSum = 0, bSum = 0;
+        for(int y = rectY; y < rectY + rectH; ++y) {
+            for (int x = rectX; x < rectX + rectW; ++x) {
+                final var color = image.getRGB(x, y);
+                rSum += (color >>> 16) & 0xFF;
+                gSum += (color >>> 8) & 0xFF;
+                bSum += color & 0xFF;
+            }
+        }
+        int rAve = (int)Math.round(1.0 * rSum / rectW / rectH);
+        int gAve = (int)Math.round(1.0 * gSum / rectW / rectH);
+        int bAve = (int)Math.round(1.0 * bSum / rectW / rectH);
+        // クロップ後に出力
+        rAve = (rAve < 0 ? 0 : rAve > 255 ? 255 : rAve);
+        gAve = (gAve < 0 ? 0 : gAve > 255 ? 255 : gAve);
+        bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
+        return new Color(rAve, gAve, bAve);
+    }
+
+    /**
+     * 色間のRGB色空間における距離を計算する
+     * @param a 色1
+     * @param b 色2
+     * @return 距離
+     */
+    private static int calcColorDistance(Color a, Color b){
+        final var rDiff = a.getRed() - b.getRed();
+        final var gDiff = a.getGreen() - b.getGreen();
+        final var bDiff = a.getBlue() - b.getBlue();
+        return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
     }
 
     /** 周囲から最小サイズを切り出すためにRectを割り出す */
@@ -288,9 +331,63 @@ public class CharacterRecognitionService {
 
     /** 艦隊番号をKey、遠征IDをValueといった形式で取り出す */
     public static Map<Integer, String> getExpeditionFleetId(BufferedImage image){
+        final boolean debugFlg = false;
         final var result = new HashMap<Integer, String>();
         // 左上の数字を読み取ることでオフセットを判断する
         final var digit = getNumberValue(image, 121.0 / 8, 167.0 / 4.8, 21.0 / 8, 17.0 / 4.8, 180, false, new int[]{4, 10});
+        final var offset = digit[0] * 10 + digit[1];
+        // 艦隊番号を読み取る
+        for(int i = 0; i < 8; ++i){
+            // フラッグが存在するかをざっくり判断する
+            final var pos1 = calcAverageColor(image, 533.0 / 8.0, (172.0 + 30.0 * i) / 4.8, 1.0 / 8.0, 1.0 / 4.8);
+            final var temp1 = new Color(241, 234, 221); //背景
+            final var temp2 = new Color(35, 159, 160);  //緑
+            final var temp3 = new Color(255, 246, 242);  //白
+            final var dist1 = calcColorDistance(pos1, temp1);   //背景からの距離
+            final var dist2 = calcColorDistance(pos1, temp2);   //緑からの距離
+            if(dist1 <= dist2)
+                continue;
+            final var num = offset + i;
+            var numStr = (num < 10 ? "0" : "") + num;
+            if(offset <= 2 && num > 8){
+                numStr = "A" + (num - 8);
+            }else if(offset <= 10 && num > 16){
+                numStr = "B" + (num - 16);
+            }
+            // 艦隊番号を判断する
+            final var crop  = getSubimagePer(image, 517.0 / 8.0, (165.0 + 30.0 * i) / 4.8,18.0 / 8.0, 22.0 / 4.8);
+            if(debugFlg) saveImage(crop, "temp-exp" + i + "-1.png");
+            for(int y = 0; y < crop.getHeight(); ++y){
+                for(int x = 0; x < crop.getWidth(); ++x){
+                    final var color = new Color(crop.getRGB(x, y));
+                    if(calcColorDistance(color, temp3) < 320){
+                        crop.setRGB(x, y, Color.black.getRGB());
+                    }else{
+                        crop.setRGB(x, y, Color.white.getRGB());
+                    }
+                }
+            }
+            if(debugFlg) saveImage(crop, "temp-exp" + i + "-2.png");
+            // 数字認識を行う
+            // 周囲をトリミング
+            final var cropedImage = getSubimage(crop, getTrimmingRect(crop));
+            if(debugFlg) saveImage(cropedImage, "temp-exp-" + i + "-3.png");
+            // 指定したサイズに拡大
+            final var fixedImage = getScaledImage(cropedImage, ocrStretchHeight2, ocrStretchHeight2);
+            if(debugFlg) saveImage(fixedImage, "temp-exp-" + i + "-4.png");
+            // テンプレと比較し、尤もらしい値を推定値とする
+            final var template_ = template.stream().filter(pair -> pair.getValue() >= 2 && pair.getValue() <= 4).collect(Collectors.toList());
+            int minDiff = getImageSSDForTemplate(fixedImage, template_.get(0).getKey());
+            int selectIndex = template_.get(0).getValue();
+            for(int j = 1; j < template_.size(); ++j){
+                int diff = getImageSSDForTemplate(fixedImage, template_.get(j).getKey());
+                if(minDiff > diff){
+                    minDiff = diff;
+                    selectIndex = template_.get(j).getValue();
+                }
+            }
+            result.put(selectIndex, numStr);
+        }
         System.out.println(Arrays.toString(digit));
         return result;
     }
