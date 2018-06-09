@@ -327,7 +327,11 @@ public class SceneRecognitionService {
         var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
         if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
             final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
-            contentText += String.format("%n残り時間：%s", Utility.LongToDateStringShort(duration));
+            if(duration >= 0) {
+                contentText += String.format("%n残り時間：%s", Utility.LongToDateStringShort(duration));
+            }else{
+                contentText += "%n残り時間：不明";
+            }
             final var result = CharacterRecognitionService.getExpeditionFleetId(image);
             if(result.size() > 0){
                 contentText += String.format("%n遠征艦隊番号：");

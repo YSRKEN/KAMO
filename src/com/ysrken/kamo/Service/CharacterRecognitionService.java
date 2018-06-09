@@ -386,8 +386,12 @@ public class CharacterRecognitionService {
     public static long getExpeditionRemainingTime(BufferedImage image){
         // 画像の一部分から遠征残り時間を出す
         final var digit = getNumberValue(image, 719.0 / 8, 383.0 / 4.8, 70.0 / 8, 20.0 / 4.8, 185, false, new int[]{8, 10, 0, 6, 10, 0, 6, 10});
-        final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
-        return second;
+        if(digit.length >= 6) {
+            final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
+            return second;
+        }else{
+            return -1;
+        }
     }
     /** 艦隊番号をKey、遠征IDをValueといった形式で取り出す */
     public static Map<Integer, String> getExpeditionFleetId(BufferedImage image){
@@ -409,9 +413,9 @@ public class CharacterRecognitionService {
                 continue;
             final var num = offset + i;
             var numStr = (num < 10 ? "0" : "") + num;
-            if(offset <= 2 && num > 8){
+            if(offset <= 4 && num > 8){
                 numStr = "A" + (num - 8);
-            }else if(offset <= 10 && num > 16){
+            }else if(offset <= 11 && num > 16){
                 numStr = "B" + (num - 16);
             }
             // 艦隊番号を判断する
