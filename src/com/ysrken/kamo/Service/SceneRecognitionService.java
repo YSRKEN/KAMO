@@ -1,7 +1,9 @@
 package com.ysrken.kamo.Service;
 
+import com.ysrken.kamo.Utility;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
+import javax.imageio.ImageIO;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.awt.*;
@@ -317,5 +319,29 @@ public class SceneRecognitionService {
      */
     public static boolean isNearlyHomeScene(BufferedImage frame){
         return Arrays.stream(nearlyHomeScene).allMatch(se -> se.isMatchImage(frame));
+    }
+    /** 画像の情報を算出して返す */
+    public static void testSceneRecognition(BufferedImage image){
+        final var scene = SceneRecognitionService.judgeScene(image);
+        final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(image);
+        var contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
+        if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
+            final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
+            if(duration >= 0) {
+                contentText += String.format("%n残り時間：%s", Utility.LongToDateStringShort(duration));
+            }else{
+                contentText += "%n残り時間：不明";
+            }
+            final var result = CharacterRecognitionService.getExpeditionFleetId(image);
+            if(result.size() > 0){
+                contentText += String.format("%n遠征艦隊番号：");
+                for(var pair : result.entrySet()){
+                    contentText += String.format("%n　第%d艦隊→%s", pair.getKey(), pair.getValue());
+                }
+            }
+            final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(image);
+            contentText += String.format("%n遠征ID：%s", expeditionId);
+        }
+        Utility.showDialog(contentText, "画像認識結果");
     }
 }

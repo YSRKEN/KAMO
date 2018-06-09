@@ -56,9 +56,7 @@ public class Main extends Application {
                 board.getFiles().forEach(file -> {
                     try {
                         final var image = ImageIO.read(file);
-                        final var scene = SceneRecognitionService.judgeScene(image);
-                        final var contentText = String.format("シーン判定：%s", scene.isEmpty() ? "不明" : scene);
-                        Utility.showDialog(contentText, "画像認識結果");
+                        SceneRecognitionService.testSceneRecognition(image);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

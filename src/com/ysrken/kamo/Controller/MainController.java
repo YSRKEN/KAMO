@@ -1,6 +1,7 @@
 package com.ysrken.kamo.Controller;
 
 import com.ysrken.kamo.Model.MainModel;
+import com.ysrken.kamo.Service.CharacterRecognitionService;
 import com.ysrken.kamo.Service.SceneRecognitionService;
 import com.ysrken.kamo.Service.ScreenshotService;
 import com.ysrken.kamo.Service.SettingsStore;
@@ -20,6 +21,7 @@ public class MainController {
     @FXML private MenuItem SaveScreenshotMenu;
     @FXML private MenuItem OpenPicFolderMenu;
     @FXML private MenuItem OpenBattleSceneReflectionMenu;
+    @FXML private MenuItem OpenTimerMenu;
     @FXML private MenuItem OpenSceneHelperMenu;
     @FXML private CheckMenuItem AutoGetPositionMenu;
     @FXML private CheckMenuItem BlindNameTextMenu;
@@ -71,6 +73,7 @@ public class MainController {
         SaveScreenshotMenu.setOnAction(e -> model.saveScreenshotCommand());
         OpenPicFolderMenu.setOnAction(e -> model.openPicFolderCommand());
         OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
+        OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
         OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());
         OpenWikiMenu.setOnAction(e -> model.openWikiCommand());
         AboutMenu.setOnAction(e -> model.aboutCommand());
@@ -80,6 +83,7 @@ public class MainController {
         SaveScreenshotMenu.disableProperty().bind(model.DisableSaveScreenshotFlg);
         OpenBattleSceneReflectionMenu.disableProperty().bind(model.OpenBattleSceneReflectionFlg);
         OpenSceneHelperMenu.disableProperty().bind(model.OpenSceneHelperFlg);
+        OpenTimerMenu.disableProperty().bind(model.OpenTimerFlg);
         AutoGetPositionMenu.selectedProperty().bindBidirectional(model.AutoGetPositionFlg);
         BlindNameTextMenu.selectedProperty().bindBidirectional(model.BlindNameTextFlg);
         SpecialGetPosMenu.selectedProperty().bindBidirectional(model.SpecialGetPosFlg);
@@ -98,6 +102,8 @@ public class MainController {
         }
         // 画像認識用のクラスを初期化する
         SceneRecognitionService.initialize();
+        // 文字認識用のクラスを初期化する
+        CharacterRecognitionService.initialize();
         // 起動時にバージョンチェックする
         model.checkVersionCommand();
     }

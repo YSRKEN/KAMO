@@ -1,7 +1,9 @@
 package com.ysrken.kamo.Controller;
 
 import com.ysrken.kamo.Model.SceneHelperModel;
+import com.ysrken.kamo.Service.ScreenshotService;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -20,6 +22,7 @@ public class SceneHelperController {
     @FXML private TextField AverageColorTextField;
     @FXML private ImageView SceneImageView;
     @FXML private BorderPane SceneBP;
+    @FXML private Button GetScreenShotImageButton;
 
     /**
      * Model
@@ -31,6 +34,13 @@ public class SceneHelperController {
      */
     public void initialize(){
         model = new SceneHelperModel();
+        //
+        GetScreenShotImageButton.setOnAction(e -> {
+            if(ScreenshotService.canGetScreenshot()) {
+                final var image = ScreenshotService.getScreenshot();
+                setImage(image);
+            }
+        });
         // Data Binding
         RectXPerTextField.textProperty().bindBidirectional(model.RectXPer);
         RectYPerTextField.textProperty().bindBidirectional(model.RectYPer);
