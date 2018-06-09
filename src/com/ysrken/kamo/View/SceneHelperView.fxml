@@ -32,12 +32,14 @@
                 <ColumnConstraints />
                 <ColumnConstraints />
                 <ColumnConstraints />
-                <ColumnConstraints />
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="40"/>
             </columnConstraints>
             <Label text="DifferenceHash：" GridPane.columnIndex="0"/>
             <TextField fx:id="DifferenceHashTextField" GridPane.columnIndex="1"/>
             <Label text="AverageColor：" GridPane.columnIndex="2"/>
             <TextField fx:id="AverageColorTextField" GridPane.columnIndex="3"/>
+            <Button fx:id="GetScreenShotImageButton" text="取込"  GridPane.columnIndex="4"/>
         </GridPane>
         <BorderPane fx:id="SceneBP" GridPane.rowIndex="2" minHeight="0.0" minWidth="0.0">
             <center>

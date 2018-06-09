@@ -335,6 +335,8 @@ public class SceneRecognitionService {
                     contentText += String.format("%n　第%d艦隊→%s", pair.getKey(), pair.getValue());
                 }
             }
+            final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(image);
+            contentText += String.format("%n遠征ID：%s", expeditionId);
         }
         Utility.showDialog(contentText, "画像認識結果");
     }

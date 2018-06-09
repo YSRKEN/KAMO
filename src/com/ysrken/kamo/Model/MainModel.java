@@ -109,6 +109,7 @@ public class MainModel {
                     if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
                         final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
                         if(setExpTimer != null && duration >= 0){
+                            final var fieetIds = CharacterRecognitionService.getExpeditionFleetId(frame);
                             setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), 0);
                         }
                     }

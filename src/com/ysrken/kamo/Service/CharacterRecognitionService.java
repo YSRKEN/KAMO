@@ -1,9 +1,11 @@
 package com.ysrken.kamo.Service;
 
-import javafx.application.Platform;
 import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -11,9 +13,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,7 +24,10 @@ public class CharacterRecognitionService {
     private static int ocrStretchHeight1 = 64;
     /** 文字認識用に引き伸ばす縦幅 */
     private static int ocrStretchHeight2 = 32;
+    /** 文字認識に使用するテンプレート */
     private static List<Pair<BufferedImage, Integer>>  template = new ArrayList<>();
+    /** 遠征情報を検索するマップ。遠征ID→(遠征名, ハッシュ値) */
+    private static Map<String, Pair<String, Long>> expeditionDataMap = new HashMap<>();
 
     /**
      * ％表記の割合(A)と100％時のピクセル値(B)から、ピクセルを出力する
@@ -38,10 +41,7 @@ public class CharacterRecognitionService {
         final var roundPixel = Math.round(rawPixel);
         return Math.min(Math.max(roundPixel, 0), pixel - 1);
     }
-
-    /**
-     * AverageColorを計算し、ラベルに反映する
-     */
+    /**　AverageColorを計算する */
     private static Color calcAverageColor(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
         // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
         final var rectX = (int)perToPixel(xPer, image.getWidth());
@@ -67,7 +67,6 @@ public class CharacterRecognitionService {
         bAve = (bAve < 0 ? 0 : bAve > 255 ? 255 : bAve);
         return new Color(rAve, gAve, bAve);
     }
-
     /**
      * 色間のRGB色空間における距離を計算する
      * @param a 色1
@@ -80,7 +79,59 @@ public class CharacterRecognitionService {
         final var bDiff = a.getBlue() - b.getBlue();
         return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
     }
-
+    /** DifferenceHashを計算する */
+    private static long calcDifferenceHash(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
+        // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
+        final var rectX = (int)perToPixel(xPer, image.getWidth());
+        final var rectY = (int)perToPixel(yPer, image.getHeight());
+        final var rectW = (int)perToPixel(wPer, image.getWidth());
+        final var rectH = (int)perToPixel(hPer, image.getHeight());
+        // 元画像を切り抜き、9x8ピクセルにリサイズ
+        final var tempImage = image
+                .getSubimage(rectX, rectY, rectW, rectH)
+                .getScaledInstance(9, 8, SCALE_SMOOTH);
+        // リサイズした画像を、グレースケール化しつつBufferedImageに書き出し
+        final var canvas = new BufferedImage(9, 8, BufferedImage.TYPE_BYTE_GRAY);
+        final var g = canvas.getGraphics();
+        g.drawImage(tempImage, 0, 0, null);
+        g.dispose();
+        // 隣接ピクセルとの比較結果を符号化する
+        long hash = 0;
+        for (var y = 0; y < 8; ++y){
+            for (var x = 0; x < 8; ++x){
+                hash <<= 1;
+                final var b1 = canvas.getRGB(x, y) & 0xFF;
+                final var b2 = canvas.getRGB(x + 1, y) & 0xFF;
+                if (b1 > b2)
+                    hash |= 1;
+            }
+        }
+        return hash;
+    }
+    /**
+     * ビットカウント
+     * 参考→http://developer.cybozu.co.jp/takesako/2006/11/binary_hacks.html
+     * @param x long型(64bit)の値
+     * @return ビットカウント後の数
+     */
+    private static long popcnt(long x) {
+        x = ((x & 0xaaaaaaaaaaaaaaaaL) >> 1) + (x & 0x5555555555555555L);
+        x = ((x & 0xccccccccccccccccL) >> 2) + (x & 0x3333333333333333L);
+        x = ((x & 0xf0f0f0f0f0f0f0f0L) >> 4) + (x & 0x0f0f0f0f0f0f0f0fL);
+        x = ((x & 0xff00ff00ff00ff00L) >> 8) + (x & 0x00ff00ff00ff00ffL);
+        x = ((x & 0xffff0000ffff0000L) >> 16) + (x & 0x0000ffff0000ffffL);
+        x = ((x & 0xffffffff00000000L) >> 32) + (x & 0x00000000ffffffffL);
+        return x;
+    }
+    /**
+     * ハミング距離を計算する
+     * @param a 値1
+     * @param b 値2
+     * @return ハミング距離
+     */
+    private static long calcHummingDistance(long a, long b) {
+        return popcnt(a ^ b);
+    }
     /** 周囲から最小サイズを切り出すためにRectを割り出す */
     private static Rectangle getTrimmingRect(BufferedImage image){
         // 水平方向から縦に見たヒストグラム
@@ -101,7 +152,6 @@ public class CharacterRecognitionService {
                 .findFirst().orElse(image.getHeight() - 1) - rect.y + 1;
         return rect;
     }
-
     /** 画像から割合(％)で画像を切り出す */
     private static BufferedImage getSubimagePer(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
         // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
@@ -112,12 +162,10 @@ public class CharacterRecognitionService {
         // 画像をクロップ
         return image.getSubimage(rectX, rectY, rectW, rectH);
     }
-
     /** 画像からRectを参照して切り出す */
     private static BufferedImage getSubimage(BufferedImage image, Rectangle rect){
         return image.getSubimage(rect.x, rect.y, rect.width, rect.height);
     }
-
     /** 画像をリサイズする */
     private static BufferedImage getScaledImage(BufferedImage image, int width, int height){
         final var tempImage1 = image.getScaledInstance(width, height, SCALE_SMOOTH);
@@ -125,13 +173,11 @@ public class CharacterRecognitionService {
         tempImage2.getGraphics().drawImage(tempImage1, 0, 0, null);
         return tempImage2;
     }
-
     /** 画像をグレースケールに変換する */
     private static BufferedImage getGlayscaleImage(BufferedImage image){
         final var colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
         return colorConvert.filter(image, null);
     }
-
     /** 画像をpng形式で保存する */
     private static boolean saveImage(BufferedImage image, String path){
         try {
@@ -142,7 +188,6 @@ public class CharacterRecognitionService {
             return false;
         }
     }
-
     /**
      * 画像を指定したしきい値で二値化する。
      * ・色を反転しない際は、しきい値以上に明るい色を白色にする
@@ -174,7 +219,6 @@ public class CharacterRecognitionService {
         });
         return tempImage;
     }
-
     /**
      * 画像を横方向に見て、区切れる場所で分割する
      * @param image 画像
@@ -200,7 +244,6 @@ public class CharacterRecognitionService {
         }
         return list;
     }
-
     /** 2枚の画像間のSSDを計算する */
     private static int getImageSSDForTemplate(BufferedImage a, BufferedImage b){
         return IntStream.range(0, ocrStretchHeight2).map(x -> {
@@ -210,7 +253,6 @@ public class CharacterRecognitionService {
             }).sum();
         }).sum();
     }
-
     /**
      * 各桁の数字を読み取る
      * @param image 画像
@@ -268,6 +310,7 @@ public class CharacterRecognitionService {
         return digit.stream().mapToInt(i -> i).toArray();
     }
 
+
     /** 初期化 */
     public static void initialize(){
         final boolean debugFlg = false;
@@ -319,8 +362,26 @@ public class CharacterRecognitionService {
             // 記憶
             template.add(new Pair<>(fixedImage, i));
         });
+        // 遠征情報を用意する
+        try(final var is = ClassLoader.getSystemResourceAsStream("com/ysrken/kamo/File/ExpeditionList.csv");
+            final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+            final var br = new BufferedReader(isr)) {
+            // テキストデータを用意し、1行ごとに処理を行う
+            br.lines().forEach(getLine -> {
+                // カンマで分割
+                final var split = getLine.split(",");
+                // 使わないデータを無視
+                if(split.length < 3)
+                    return;
+                if(split[0].equals("id"))
+                    return;
+                // 読み取り
+                expeditionDataMap.put(split[0], new Pair<>(split[1], Long.parseUnsignedLong(split[2], 16)));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
     /** 画像から遠征残り時間を取り出す*/
     public static long getExpeditionRemainingTime(BufferedImage image){
         // 画像の一部分から遠征残り時間を出す
@@ -328,7 +389,6 @@ public class CharacterRecognitionService {
         final long second = ((digit[0] * 10 + digit[1]) * 60 + digit[2] * 10 + digit[3]) * 60 + digit[4] * 10 + digit[5];
         return second;
     }
-
     /** 艦隊番号をKey、遠征IDをValueといった形式で取り出す */
     public static Map<Integer, String> getExpeditionFleetId(BufferedImage image){
         final boolean debugFlg = false;
@@ -390,5 +450,37 @@ public class CharacterRecognitionService {
         }
         System.out.println(Arrays.toString(digit));
         return result;
+    }
+
+    /** 選択されている遠征の遠征IDを取り出す */
+    public static String getSelectedExpeditionId(BufferedImage image){
+        final var hash = calcDifferenceHash(image, 577.0 / 8, 104.0 / 4.8, 103.0 / 8, 19.0 / 4.8);
+        /*final var keySet = expeditionDataMap.keySet();
+        for(var key1 : keySet){
+            String fleetId = "";
+            var minDiff = Long.MAX_VALUE;
+            final var hash1 = expeditionDataMap.get(key1).getValue();
+            for(var key2 : keySet){
+                if(key1.equals(key2))
+                    continue;
+                final var hash2 = expeditionDataMap.get(key2).getValue();
+                final var diff = calcHummingDistance(hash1, hash2);
+                if(minDiff > diff){
+                    fleetId = key2;
+                    minDiff = diff;
+                }
+            }
+            System.out.println( expeditionDataMap.get(key1).getKey() + " " +  expeditionDataMap.get(fleetId).getKey() + " " + minDiff);
+        }*/
+        String fleetId = "";
+        var minDiff = Long.MAX_VALUE;
+        for(var pair : expeditionDataMap.entrySet()){
+            final var diff = calcHummingDistance(hash, pair.getValue().getValue());
+            if(minDiff > diff){
+                fleetId = pair.getKey();
+                minDiff = diff;
+            }
+        }
+        return fleetId;
     }
 }
