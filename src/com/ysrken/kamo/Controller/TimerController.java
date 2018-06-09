@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 
@@ -28,23 +29,25 @@ public class TimerController {
             grid.setGridLinesVisible(true);
             grid.addColumn(0);
             grid.addColumn(1);
+            final var column1 = new ColumnConstraints();
+            final var column2 = new ColumnConstraints(210);
+            grid.getColumnConstraints().addAll(column1, column2);
             int row = 0;
             timerModel = new TimerModel();
             for(int i = 0; i < timerModel.ExpTimerString.size(); ++i){
                 grid.addRow(row);
                 final var label = new Label();
-                label.setFont(new Font("", 16));
-                label.setStyle("-fx-font-size: 20;");
+                label.setStyle("-fx-font-size: 20;-fx-padding: 5;");
                 label.textProperty().bind(timerModel.ExpTimerString.get(i));
                 grid.add(label, 0, row);
                 final var label2 = new Label();
-                label2.setFont(new Font("", 16));
-                label2.setStyle("-fx-font-size: 20;");
+                label2.setStyle("-fx-font-size: 20;-fx-padding: 5;");
                 label2.textProperty().bind(timerModel.ExpInfoString.get(i));
                 grid.add(label2, 1, row);
                 ++row;
             }
             expTimerTab.setContent(grid);
+            expTimerTab.getContent().setStyle("-fx-padding: 10;");
             tabList.add(expTimerTab);
         }
     }
