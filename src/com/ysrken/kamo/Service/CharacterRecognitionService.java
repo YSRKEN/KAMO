@@ -399,6 +399,9 @@ public class CharacterRecognitionService {
         final var result = new HashMap<Integer, String>();
         // 左上の数字を読み取ることでオフセットを判断する
         final var digit = getNumberValue(image, 121.0 / 8, 167.0 / 4.8, 21.0 / 8, 17.0 / 4.8, 180, false, new int[]{4, 10});
+        if(digit.length < 2){
+            return result;
+        }
         final var offset = digit[0] * 10 + digit[1];
         // 艦隊番号を読み取る
         for(int i = 0; i < 8; ++i){
