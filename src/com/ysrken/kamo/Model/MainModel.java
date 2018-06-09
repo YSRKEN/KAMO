@@ -60,6 +60,7 @@ public class MainModel {
     private BiConsumer<String, String> setText = null;
     private Set<String> battleSceneSet = null;
     private BiConsumer<Date, Integer> setExpTimer = null;
+    private BiConsumer<String, Integer> setExpInfo = null;
     private Runnable refreshExpTimerString = null;
 
     /**
@@ -108,12 +109,13 @@ public class MainModel {
                 if(OpenTimerFlg.get()){
                     if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
                         final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
-                        if(setExpTimer != null && duration >= 0){
+                        if(setExpTimer != null && setExpInfo != null && duration >= 0){
                             final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(frame);
                             final var fieetIds = CharacterRecognitionService.getExpeditionFleetId(frame);
                             for(var pair : fieetIds.entrySet()){
                                 if(pair.getValue().equals(expeditionId)){
                                     setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), pair.getKey() - 2);
+                                    setExpInfo.accept(CharacterRecognitionService.getExpeditionNameById(pair.getValue()), pair.getKey() - 2);
                                     break;
                                 }
                             }
@@ -250,6 +252,7 @@ public class MainModel {
             final Parent root = loader.load();
             final TimerController controller = loader.getController();
             setExpTimer = (date, index) -> controller.setExpTimer(date, index);
+            setExpInfo = (info, index) -> controller.setExpInfo(info, index);
             refreshExpTimerString = (() -> controller.refreshExpTimerString());
             // タイトルを設定
             stage.setTitle("各種タイマー画面");

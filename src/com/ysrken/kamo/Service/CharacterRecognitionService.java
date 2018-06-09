@@ -455,10 +455,8 @@ public class CharacterRecognitionService {
             }
             result.put(selectIndex, numStr);
         }
-        System.out.println(Arrays.toString(digit));
         return result;
     }
-
     /** 選択されている遠征の遠征IDを取り出す */
     public static String getSelectedExpeditionId(BufferedImage image){
         final var hash = calcDifferenceHash(image, 577.0 / 8, 104.0 / 4.8, 103.0 / 8, 19.0 / 4.8);
@@ -489,5 +487,12 @@ public class CharacterRecognitionService {
             }
         }
         return fleetId;
+    }
+    public static  String getExpeditionNameById(String id){
+        if(expeditionDataMap.containsKey(id)){
+            return expeditionDataMap.get(id).getKey();
+        }else{
+            return "？";
+        }
     }
 }
