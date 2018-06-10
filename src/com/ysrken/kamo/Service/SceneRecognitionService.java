@@ -3,7 +3,6 @@ package com.ysrken.kamo.Service;
 import com.ysrken.kamo.Utility;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
-import javax.imageio.ImageIO;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.awt.*;
