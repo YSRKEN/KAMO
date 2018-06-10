@@ -194,7 +194,6 @@ public class CharacterRecognitionService {
             }else if(offset <= 11 && num > 16){
                 numStr = "B" + (num - 16);
             }
-            System.out.println("" + i + " " + numStr);
             // 艦隊番号を判断する
             final var crop  = BitmapImage.of(image).crop(517.0 / 8.0, (165.0 + 30.0 * i) / 4.8,18.0 / 8.0, 22.0 / 4.8);
             if(debugFlg) crop.save("pic/temp-exp" + i + "-1.png");
