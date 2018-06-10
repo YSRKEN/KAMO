@@ -1,6 +1,7 @@
 package com.ysrken.kamo.Service;
 
 import com.ysrken.kamo.BitmapImage;
+import com.ysrken.kamo.JsonData;
 import com.ysrken.kamo.Utility;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
@@ -100,52 +101,37 @@ public class SceneRecognitionService {
     /** 初期化コード */
     public static void initialize(){
         // JSONを読み込む
-        // 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
-        final var manager = new ScriptEngineManager();
-        final var engine = manager.getEngineByName("javascript");
-        final BiFunction<ScriptObjectMirror, String, Double> toDouble = ((so, key) -> {
-            try {
-                return (Double)engine.eval((String)so.get(key));
-            } catch (ScriptException e) {
-                e.printStackTrace();
-                return 0.0;
-            }
-        });
         try(final var is = ClassLoader.getSystemResourceAsStream("com/ysrken/kamo/File/SceneParameter.json");
             final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
-            final var br = new BufferedReader(isr)){
-            // テキストデータを用意
-            final var jsonText = br.lines().collect(Collectors.joining());
-            // テキストデータをJSONとしてパース
-            final var json = (ScriptObjectMirror) engine.eval("JSON");
-            final var result = json.callMember("parse", jsonText);
-            // mapに変換
-            final var m =  (ScriptObjectMirror)result;
-            // 各シーン毎に処理
-            for(var pair : m.to(ScriptObjectMirror[].class)){
+            final var br = new BufferedReader(isr)) {
+            // テキストデータを用意してパース
+            final var jsonString = br.lines().collect(Collectors.joining());
+            final var jsonData = JsonData.of(jsonString);
+            // 各データを確認
+            for(var evidenceJsonData : jsonData.toJsonDataArray()){
                 final var evidenceList = new ArrayList<SceneEvidence>();
-                final var sceneName = (String)pair.get("name");
+                final var sceneName = evidenceJsonData.getString("name");
                 // DifferenceHashについての処理
-                final var differenceHashList = ((ScriptObjectMirror)pair.get("differenceHash")).to(ScriptObjectMirror[].class);
-                for(var differenceHash : differenceHashList){
-                    final var xPer = toDouble.apply(differenceHash, "xPer");
-                    final var yPer = toDouble.apply(differenceHash, "yPer");
-                    final var wPer = toDouble.apply(differenceHash, "wPer");
-                    final var hPer = toDouble.apply(differenceHash, "hPer");
-                    final var hash = Long.parseUnsignedLong((String)differenceHash.get("hash"), 16);
+                final var differenceHashList = evidenceJsonData.getJsonData("differenceHash").toJsonDataArray();
+                for(var differenceHash : differenceHashList) {
+                    final var xPer = differenceHash.getDoubleEval( "xPer");
+                    final var yPer = differenceHash.getDoubleEval( "yPer");
+                    final var wPer = differenceHash.getDoubleEval( "wPer");
+                    final var hPer = differenceHash.getDoubleEval( "hPer");
+                    final var hash = Long.parseUnsignedLong(differenceHash.getString("hash"), 16);
                     final var data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
                     evidenceList.add(data);
                 }
                 // AverageColorについての処理
-                final var averageColorList =  ((ScriptObjectMirror)pair.get("averageColor")).to(ScriptObjectMirror[].class);
+                final var averageColorList = evidenceJsonData.getJsonData("averageColor").toJsonDataArray();
                 for(var averageColor : averageColorList){
-                    final var xPer = toDouble.apply(averageColor, "xPer");
-                    final var yPer = toDouble.apply(averageColor, "yPer");
-                    final var wPer = toDouble.apply(averageColor, "wPer");
-                    final var hPer = toDouble.apply(averageColor, "hPer");
-                    final var r = (Integer)averageColor.get("r");
-                    final var g = (Integer)averageColor.get("g");
-                    final var b = (Integer)averageColor.get("b");
+                    final var xPer = averageColor.getDoubleEval( "xPer");
+                    final var yPer = averageColor.getDoubleEval( "yPer");
+                    final var wPer = averageColor.getDoubleEval( "wPer");
+                    final var hPer = averageColor.getDoubleEval( "hPer");
+                    final var r = averageColor.getInt("r");
+                    final var g = averageColor.getInt("g");
+                    final var b = averageColor.getInt("b");
                     final var data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
                     evidenceList.add(data);
                 }
@@ -156,10 +142,7 @@ public class SceneRecognitionService {
                     sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        } catch (ScriptException e) {
+        } catch (IOException | ScriptException e) {
             e.printStackTrace();
         }
     }
