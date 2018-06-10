@@ -194,18 +194,19 @@ public class CharacterRecognitionService {
             }else if(offset <= 11 && num > 16){
                 numStr = "B" + (num - 16);
             }
+            System.out.println("" + i + " " + numStr);
             // 艦隊番号を判断する
             final var crop  = BitmapImage.of(image).crop(517.0 / 8.0, (165.0 + 30.0 * i) / 4.8,18.0 / 8.0, 22.0 / 4.8);
-            if(debugFlg) crop.save("temp-exp" + i + "-1.png");
+            if(debugFlg) crop.save("pic/temp-exp" + i + "-1.png");
             final var threshold = crop.threshold(temp3, 320);
-            if(debugFlg) threshold.save("temp-exp" + i + "-2.png");
+            if(debugFlg) threshold.save("pic/temp-exp" + i + "-2.png");
             // 数字認識を行う
             // 周囲をトリミング
-            final var crop2 = crop.crop(crop.calcTrimmingRect());
-            if(debugFlg) crop2.save("temp-exp-" + i + "-3.png");
+            final var crop2 = threshold.crop(threshold.calcTrimmingRect());
+            if(debugFlg) crop2.save("pic/temp-exp-" + i + "-3.png");
             // 指定したサイズに拡大
             final var fixed = crop2.resize(ocrStretchHeight2, ocrStretchHeight2);
-            if(debugFlg) fixed.save("temp-exp-" + i + "-4.png");
+            if(debugFlg) fixed.save("pic/temp-exp-" + i + "-4.png");
             // テンプレと比較し、尤もらしい値を推定値とする
             final var template_ = template.stream().filter(pair -> pair.getValue() >= 2 && pair.getValue() <= 4).collect(Collectors.toList());
             int minDiff = fixed.getSSD(template_.get(0).getKey());
