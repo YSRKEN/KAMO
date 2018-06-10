@@ -47,9 +47,10 @@ public class BitmapImage {
      * @return リサイズ後の画像
      */
     public BitmapImage resize(int x, int y){
-        final var buffered = new BufferedImage(x, y, image.getType());
+        final var instance = image.getScaledInstance(x, y, Image.SCALE_SMOOTH);
+        final var buffered = new BufferedImage(instance.getWidth(null), instance.getHeight(null), image.getType());
         final var g = buffered.getGraphics();
-        g.drawImage(image.getScaledInstance(x, y, Image.SCALE_SMOOTH), 0, 0, null);
+        g.drawImage(instance, 0, 0, null);
         g.dispose();
         return BitmapImage.of(buffered);
     }
