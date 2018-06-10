@@ -257,10 +257,10 @@ public class MainModel {
             // タイトルを設定
             stage.setTitle("各種タイマー画面");
             // 大きさを設定
-            stage.setScene(new Scene(root, 500, 300));
+            stage.setScene(new Scene(root, 310, 160));
             // 最小の大きさを設定
-            stage.setMinWidth(350);
-            stage.setMinHeight(200);
+            stage.setMinWidth(330);
+            stage.setMinHeight(210);
             // 最前面設定
             stage.setAlwaysOnTop(true);
             // ×ボタンを押した際の設定

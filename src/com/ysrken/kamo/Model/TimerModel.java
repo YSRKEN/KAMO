@@ -23,7 +23,7 @@ public class TimerModel {
         // 遠征周りの初期化
         for(int i = 0; i < expCount; ++i){
             ExpTimerString.add(new SimpleStringProperty("00:00:00"));
-            ExpInfoString.add(new SimpleStringProperty("南西方面航空偵察作戦"));
+            ExpInfoString.add(new SimpleStringProperty("？"));
             ExpTimer.add(new Date());
         }
     }
