@@ -23,6 +23,26 @@ public class BitmapImage {
         return bitmap;
     }
 
+    /** 画像の横幅 */
+    public int getWidth(){
+        return image.getWidth();
+    }
+
+    /** 画像の縦幅 */
+    public int getHeight(){
+        return image.getHeight();
+    }
+
+    /** 画像の縦幅 */
+    public int getType(){
+        return image.getType();
+    }
+
+    /** 画像部分を取り出す */
+    public  BufferedImage getImage(){
+        return image;
+    }
+
     /** 指定した位置・サイズに切り抜く */
     public BitmapImage crop(int x, int y, int w, int h){
         return BitmapImage.of(image.getSubimage(x, y, w, h));
@@ -51,6 +71,16 @@ public class BitmapImage {
         final var buffered = new BufferedImage(instance.getWidth(null), instance.getHeight(null), image.getType());
         final var g = buffered.getGraphics();
         g.drawImage(instance, 0, 0, null);
+        g.dispose();
+        return BitmapImage.of(buffered);
+    }
+
+    /** 画像を指定した位置に貼り付ける */
+    public BitmapImage paste(BitmapImage other, int x, int y){
+        final var buffered = new BufferedImage(this.getWidth(), this.getHeight(), this.getType());
+        final var g = buffered.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.drawImage(other.image, x, y, null);
         g.dispose();
         return BitmapImage.of(buffered);
     }
