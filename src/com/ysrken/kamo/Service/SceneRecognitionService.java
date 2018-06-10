@@ -104,9 +104,10 @@ public class SceneRecognitionService {
         try(final var is = ClassLoader.getSystemResourceAsStream("com/ysrken/kamo/File/SceneParameter.json");
             final var isr = new InputStreamReader(is, Charset.forName("UTF-8"));
             final var br = new BufferedReader(isr)) {
-            // テキストデータを用意
+            // テキストデータを用意してパース
             final var jsonString = br.lines().collect(Collectors.joining());
             final var jsonData = JsonData.of(jsonString);
+            // 各データを確認
             for(var evidenceJsonData : jsonData.toJsonDataArray()){
                 final var evidenceList = new ArrayList<SceneEvidence>();
                 final var sceneName = evidenceJsonData.getString("name");
@@ -141,9 +142,7 @@ public class SceneRecognitionService {
                     sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ScriptException e) {
+        } catch (IOException | ScriptException e) {
             e.printStackTrace();
         }
     }

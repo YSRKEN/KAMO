@@ -18,6 +18,13 @@ public class JsonData {
     /** JSONを解釈するためのスクリプトエンジン */
     final private static ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("javascript");
 
+    /** 空のデータを作成 */
+    public static JsonData of() throws ScriptException {
+        final var jsonData = new JsonData();
+        jsonData.scriptObject = (ScriptObjectMirror)scriptEngine.eval("new Object()");
+        return jsonData;
+    }
+
     /** JSON文字列から作成 */
     public static JsonData of(String jsonString) throws ScriptException {
         final var jsonData = new JsonData();
@@ -55,5 +62,26 @@ public class JsonData {
     /** 文字列をキーにintを取得 */
     public int getInt(String key) {
         return (int)scriptObject.get(key);
+    }
+
+    /** 文字列をキーにbooleanを取得 */
+    public boolean getBoolean(String key){
+        return (boolean)scriptObject.get(key);
+    }
+
+    /** 文字列をキーにbooleanを書き込む */
+    public void setBoolean(String key, boolean bool){
+        scriptObject.put(key , bool);
+    }
+
+    /** 文字列化 */
+    @Override
+    public String toString(){
+        try {
+            return (String)((ScriptObjectMirror) scriptEngine.eval("JSON")).callMember("stringify", scriptObject);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

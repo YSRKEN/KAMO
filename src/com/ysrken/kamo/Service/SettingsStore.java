@@ -1,5 +1,6 @@
 package com.ysrken.kamo.Service;
 
+import com.ysrken.kamo.JsonData;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -18,24 +19,19 @@ public class SettingsStore {
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
 
-    /** 設定をJSONから読み込み
-     * 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
-     */
+    /** 設定をJSONから読み込み */
     private static void loadSettings(){
         if(Files.exists(new File("settings.json").toPath())){
-            final var manager = new ScriptEngineManager();
-            final var engine = manager.getEngineByName("javascript");
             try(final var fis = new FileInputStream("settings.json");
                 final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
                 final var br = new BufferedReader(isr)) {
-                final var json = (ScriptObjectMirror) engine.eval("JSON");
-                final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
-                final var m = (Map<?, ?>)result;
-
-                Platform.runLater(() -> AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg"))));
-                Platform.runLater(() -> BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg"))));
-                Platform.runLater(() -> SpecialGetPosFlg.set(Boolean.class.cast(m.get("SpecialGetPosFlg"))));
-
+                // テキストデータを用意してパース
+                final var jsonString = br.lines().collect(Collectors.joining());
+                final var jsonData = JsonData.of(jsonString);
+                // 各設定項目を読み取る
+                Platform.runLater(() -> AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg")));
+                Platform.runLater(() -> BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg")));
+                Platform.runLater(() -> SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg")));
             } catch (IOException | ScriptException e) {
                 e.printStackTrace();
             }
@@ -43,20 +39,17 @@ public class SettingsStore {
     }
     /** 設定をJSONに保存 */
     private static void saveSettings(){
-        final var manager = new ScriptEngineManager();
-        final var engine = manager.getEngineByName("javascript");
         try(final var fos = new FileOutputStream("settings.json");
             final var osw = new OutputStreamWriter(fos, Charset.forName("UTF-8"));
             final var bw = new BufferedWriter(osw)){
-            final var m = (ScriptObjectMirror)engine.eval("new Object()");
-
-            m.put("AutoGetPositionFlg", AutoGetPositionFlg.get());
-            m.put("BlindNameTextFlg", BlindNameTextFlg.get());
-            m.put("SpecialGetPosFlg", SpecialGetPosFlg.get());
-
-            final var json = (ScriptObjectMirror) engine.eval("JSON");
-            final var result = (String)json.callMember("stringify", m);
-            bw.write(result);
+            final var jsonData = JsonData.of();
+            // 各設定項目を書き込み
+            jsonData.setBoolean("AutoGetPositionFlg", AutoGetPositionFlg.get());
+            jsonData.setBoolean("BlindNameTextFlg", BlindNameTextFlg.get());
+            jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
+            // JSON文字列に変換
+            final var jsonString = jsonData.toString();
+            bw.write(jsonString);
             System.out.println("Save Settings.");
         } catch (ScriptException | IOException e) {
             e.printStackTrace();
