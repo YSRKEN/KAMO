@@ -1,22 +1,12 @@
 package com.ysrken.kamo.Service;
 
+import com.ysrken.kamo.BitmapImage;
+
 import java.awt.image.BufferedImage;
 
 import static java.awt.Image.SCALE_SMOOTH;
 
 public class PictureProcessingService {
-    /**
-     * ％表記の割合(A)と100％時のピクセル値(B)から、ピクセルを出力する
-     * ただし出力値は、[0, B - 1]にクロップされる
-     * @param per 割合
-     * @param pixel ピクセル
-     * @return 割合値のピクセル
-     */
-    private static long perToPixel(double per, int pixel){
-        final var rawPixel = per * pixel / 100;
-        final var roundPixel = Math.round(rawPixel);
-        return Math.min(Math.max(roundPixel, 0), pixel - 1);
-    }
     /**
      * 画像データの一部分を、一部分を選択した部分を拡大することによって覆い隠す
      * wPerが負数の場合、左から右ではなく右から左に上書きする
@@ -29,26 +19,18 @@ public class PictureProcessingService {
      */
     private static BufferedImage blindImageByAreaStretch(BufferedImage image, double xPer, double yPer, double wPer, double hPer){
         final var reverseFlg = (wPer < 0.0);
-        // 画像の選択範囲(％)を選択範囲(ピクセル)に変換
-        final var rectX = (int)perToPixel(xPer, image.getWidth());
-        final var rectY = (int)perToPixel(yPer, image.getHeight());
-        final var rectW = (int)perToPixel((reverseFlg ? -wPer : wPer), image.getWidth());
-        final var rectH = (int)perToPixel(hPer, image.getHeight());
-        // 元画像から領域を選択してリサイズした画像を用意
-        final var tempImage = image
-                .getSubimage(rectX, rectY, 1, rectH)
-                .getScaledInstance(rectW, rectH, SCALE_SMOOTH);
-        // リサイズした画像を別のBufferedImageに書き出し
-        final var canvas = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-        final var g = canvas.getGraphics();
-        g.drawImage(image, 0, 0, null);
+        // 元画像から領域を切り取ってリサイズした画像を用意する
+        final var rectX = (int)Math.round(Math.abs(xPer) * image.getWidth() / 100);
+        final var rectY = (int)Math.round(Math.abs(yPer) * image.getHeight() / 100);
+        final var rectW = (int)Math.round(Math.abs(wPer) * image.getWidth() / 100);
+        final var rectH = (int)Math.round(Math.abs(hPer) * image.getHeight() / 100);
+        final var blind = BitmapImage.of(image).crop(rectX, rectY, 1, rectH).resize(rectW, rectH);
+        // 画像を貼り付ける
         if(reverseFlg) {
-            g.drawImage(tempImage, rectX - rectW, rectY, null);
+            return BitmapImage.of(image).paste(blind, rectX - rectW, rectY).getImage();
         }else{
-            g.drawImage(tempImage, rectX, rectY, null);
+            return BitmapImage.of(image).paste(blind, rectX, rectY).getImage();
         }
-        g.dispose();
-        return canvas;
     }
     /**
      * 画像データから名前部分を隠した画像を返す
