@@ -18,6 +18,7 @@ public class SettingsStore {
     public static BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
+    public static BooleanProperty SaveWindowPositionFlg = new SimpleBooleanProperty(false);
 
     /** 設定をJSONから読み込み */
     private static void loadSettings(){
@@ -32,6 +33,7 @@ public class SettingsStore {
                 Platform.runLater(() -> AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg")));
                 Platform.runLater(() -> BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg")));
                 Platform.runLater(() -> SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg")));
+                Platform.runLater(() -> SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg")));
             } catch (IOException | ScriptException e) {
                 e.printStackTrace();
             }
@@ -47,6 +49,7 @@ public class SettingsStore {
             jsonData.setBoolean("AutoGetPositionFlg", AutoGetPositionFlg.get());
             jsonData.setBoolean("BlindNameTextFlg", BlindNameTextFlg.get());
             jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
+            jsonData.setBoolean("SaveWindowPositionFlg", SaveWindowPositionFlg.get());
             // JSON文字列に変換
             final var jsonString = jsonData.toString();
             bw.write(jsonString);
@@ -65,5 +68,6 @@ public class SettingsStore {
         AutoGetPositionFlg.addListener((s, o, n) -> saveSettings());
         BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
         SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());
+        SaveWindowPositionFlg.addListener((s, o, n) -> saveSettings());
     }
 }

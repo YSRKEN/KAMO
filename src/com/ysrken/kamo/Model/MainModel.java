@@ -51,6 +51,8 @@ public class MainModel {
     public BooleanProperty BlindNameTextFlg = SettingsStore.BlindNameTextFlg;
     /** 座標取得で特殊な方式を使用するか？ */
     public BooleanProperty SpecialGetPosFlg = SettingsStore.SpecialGetPosFlg;
+    /** ウィンドウの位置を記憶するか？ */
+    public BooleanProperty SaveWindowPositionFlg = SettingsStore.SaveWindowPositionFlg;
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
