@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SettingsStore {
+    public static BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    public static BooleanProperty OpenTimerFlg = new SimpleBooleanProperty(false);
+    public static BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
@@ -30,6 +33,9 @@ public class SettingsStore {
                 final var jsonString = br.lines().collect(Collectors.joining());
                 final var jsonData = JsonData.of(jsonString);
                 // 各設定項目を読み取る
+                Platform.runLater(() -> OpenBattleSceneReflectionFlg.set(jsonData.getBoolean("OpenBattleSceneReflectionFlg")));
+                Platform.runLater(() -> OpenTimerFlg.set(jsonData.getBoolean("OpenTimerFlg")));
+                Platform.runLater(() -> OpenSceneHelperFlg.set(jsonData.getBoolean("OpenSceneHelperFlg")));
                 Platform.runLater(() -> AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg")));
                 Platform.runLater(() -> BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg")));
                 Platform.runLater(() -> SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg")));
@@ -46,6 +52,9 @@ public class SettingsStore {
             final var bw = new BufferedWriter(osw)){
             final var jsonData = JsonData.of();
             // 各設定項目を書き込み
+            jsonData.setBoolean("OpenBattleSceneReflectionFlg", OpenBattleSceneReflectionFlg.get());
+            jsonData.setBoolean("OpenTimerFlg", OpenTimerFlg.get());
+            jsonData.setBoolean("OpenSceneHelperFlg", OpenSceneHelperFlg.get());
             jsonData.setBoolean("AutoGetPositionFlg", AutoGetPositionFlg.get());
             jsonData.setBoolean("BlindNameTextFlg", BlindNameTextFlg.get());
             jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
@@ -65,6 +74,9 @@ public class SettingsStore {
         // 最初の読み込み
         loadSettings();
         // 変更時のセーブ設定
+        OpenBattleSceneReflectionFlg.addListener((s, o, n) -> saveSettings());
+        OpenTimerFlg.addListener((s, o, n) -> saveSettings());
+        OpenSceneHelperFlg.addListener((s, o, n) -> saveSettings());
         AutoGetPositionFlg.addListener((s, o, n) -> saveSettings());
         BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
         SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());

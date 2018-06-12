@@ -34,13 +34,13 @@ public class MainModel {
     /** スクリーンショットボタンを押せるかどうかのフラグ */
     public BooleanProperty DisableSaveScreenshotFlg = new SimpleBooleanProperty(true);
     /** 戦闘振り返り画面を開いているかどうかのフラグ */
-    public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty OpenBattleSceneReflectionFlg = SettingsStore.OpenBattleSceneReflectionFlg;
     /** 各種タイマー画面を開いているかどうかのフラグ */
-    public BooleanProperty OpenTimerFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty OpenTimerFlg = SettingsStore.OpenTimerFlg;
     /**
      * 画像認識支援画面を開いているかどうかのフラグ
      */
-    public BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty OpenSceneHelperFlg = SettingsStore.OpenSceneHelperFlg;
     /** シーン情報 */
     public StringProperty NowSceneText = new SimpleStringProperty("シーン判定：[不明]");
     /**
