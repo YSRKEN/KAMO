@@ -69,10 +69,27 @@ public class JsonData {
         return (boolean)scriptObject.get(key);
     }
 
+    /** 文字列をキーにdoubleを取得 */
+    public double getDouble(String key){
+        // 座標が整数値だった際の対策
+        final var val = scriptObject.get(key);
+        if(val instanceof Integer){
+            return 1.0 * ((Integer)val);
+        }else {
+            return (Double)val;
+        }
+    }
+
     /** 文字列をキーにbooleanを書き込む */
     public void setBoolean(String key, boolean bool){
         scriptObject.put(key , bool);
     }
+
+    /** 文字列をキーにdoubleを書き込む */
+    public void setDouble(String key, double dbl){
+        scriptObject.put(key , dbl);
+    }
+
 
     /** 文字列化 */
     @Override

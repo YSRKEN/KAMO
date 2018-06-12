@@ -147,6 +147,16 @@ public class MainModel {
         // 短周期で実行されるタイマー
         final var shortIntervalTimer = new Timer();
         shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 200);
+        // ウィンドウを開いておく
+        if(OpenBattleSceneReflectionFlg.get()){
+            openBattleSceneReflectionCommand();
+        }
+        if(OpenTimerFlg.get()){
+            openTimerCommand();
+        }
+        if(OpenSceneHelperFlg.get()){
+            openSceneHelperCommand();
+        }
     }
     /**
      * 終了コマンド

@@ -2,8 +2,7 @@ package com.ysrken.kamo.Service;
 
 import com.ysrken.kamo.JsonData;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import javax.script.ScriptEngineManager;
@@ -22,6 +21,11 @@ public class SettingsStore {
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty SaveWindowPositionFlg = new SimpleBooleanProperty(false);
+    //
+    public static DoubleProperty MainViewX = new SimpleDoubleProperty(Double.MAX_VALUE);
+    public static DoubleProperty MainViewY = new SimpleDoubleProperty(Double.MAX_VALUE);
+    public static DoubleProperty MainViewW = new SimpleDoubleProperty(Double.MAX_VALUE);
+    public static DoubleProperty MainViewH = new SimpleDoubleProperty(Double.MAX_VALUE);
 
     /** 設定をJSONから読み込み */
     private static void loadSettings(){
@@ -33,13 +37,23 @@ public class SettingsStore {
                 final var jsonString = br.lines().collect(Collectors.joining());
                 final var jsonData = JsonData.of(jsonString);
                 // 各設定項目を読み取る
-                Platform.runLater(() -> OpenBattleSceneReflectionFlg.set(jsonData.getBoolean("OpenBattleSceneReflectionFlg")));
-                Platform.runLater(() -> OpenTimerFlg.set(jsonData.getBoolean("OpenTimerFlg")));
-                Platform.runLater(() -> OpenSceneHelperFlg.set(jsonData.getBoolean("OpenSceneHelperFlg")));
-                Platform.runLater(() -> AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg")));
-                Platform.runLater(() -> BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg")));
-                Platform.runLater(() -> SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg")));
-                Platform.runLater(() -> SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg")));
+                OpenBattleSceneReflectionFlg.set(jsonData.getBoolean("OpenBattleSceneReflectionFlg"));
+                OpenTimerFlg.set(jsonData.getBoolean("OpenTimerFlg"));
+                OpenSceneHelperFlg.set(jsonData.getBoolean("OpenSceneHelperFlg"));
+                AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg"));
+                BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg"));
+                SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg"));
+                SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg"));
+                MainViewX.set(jsonData.getDouble("MainViewX"));
+                MainViewY.set(jsonData.getDouble("MainViewY"));
+                MainViewW.set(jsonData.getDouble("MainViewW"));
+                MainViewH.set(jsonData.getDouble("MainViewH"));
+                // 特殊処理(座標記憶を設定してない際に詰まないようにする)
+                if(!SaveWindowPositionFlg.get()){
+                    OpenBattleSceneReflectionFlg.set(false);
+                    OpenTimerFlg.set(false);
+                    OpenSceneHelperFlg.set(false);
+                }
             } catch (IOException | ScriptException e) {
                 e.printStackTrace();
             }
@@ -59,6 +73,10 @@ public class SettingsStore {
             jsonData.setBoolean("BlindNameTextFlg", BlindNameTextFlg.get());
             jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
             jsonData.setBoolean("SaveWindowPositionFlg", SaveWindowPositionFlg.get());
+            jsonData.setDouble("MainViewX", MainViewX.get());
+            jsonData.setDouble("MainViewY", MainViewY.get());
+            jsonData.setDouble("MainViewW", MainViewW.get());
+            jsonData.setDouble("MainViewH", MainViewH.get());
             // JSON文字列に変換
             final var jsonString = jsonData.toString();
             bw.write(jsonString);
@@ -81,5 +99,9 @@ public class SettingsStore {
         BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
         SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());
         SaveWindowPositionFlg.addListener((s, o, n) -> saveSettings());
+        MainViewX.addListener((s, o, n) -> saveSettings());
+        MainViewY.addListener((s, o, n) -> saveSettings());
+        MainViewW.addListener((s, o, n) -> saveSettings());
+        MainViewH.addListener((s, o, n) -> saveSettings());
     }
 }
