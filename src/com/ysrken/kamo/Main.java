@@ -1,6 +1,8 @@
 package com.ysrken.kamo;
 
+import com.ysrken.kamo.Controller.MainController;
 import com.ysrken.kamo.Service.SceneRecognitionService;
+import com.ysrken.kamo.Service.SettingsStore;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +21,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         // FXMLファイルを読み込み
-        final Parent root = FXMLLoader.load(getClass().getResource("View/MainView.fxml"));
+        final var loader = new FXMLLoader(
+                ClassLoader.getSystemResource("com/ysrken/kamo/View/MainView.fxml"));
+        final Parent root = loader.load();
+        final MainController controller = loader.getController();
         // タイトルを設定
         primaryStage.setTitle(Utility.SOFTWARE_NAME);
         // 大きさを設定
@@ -66,6 +71,33 @@ public class Main extends Application {
                 event.setDropCompleted(false);
             }
         });
+        // ウィンドウの位置を復元
+        if(SettingsStore.SaveWindowPositionFlg.get()){
+            if(SettingsStore.MainViewX.get() != Double.MAX_VALUE){
+                primaryStage.setX(SettingsStore.MainViewX.get());
+            }else{
+                SettingsStore.MainViewX.set(primaryStage.getX());
+            }
+            if(SettingsStore.MainViewY.get() != Double.MAX_VALUE){
+                primaryStage.setY(SettingsStore.MainViewY.get());
+            }else{
+                SettingsStore.MainViewY.set(primaryStage.getY());
+            }
+            if(SettingsStore.MainViewW.get() != Double.MAX_VALUE){
+                primaryStage.setWidth(SettingsStore.MainViewW.get());
+            }else{
+                SettingsStore.MainViewW.set(primaryStage.getWidth());
+            }
+            if(SettingsStore.MainViewH.get() != Double.MAX_VALUE){
+                primaryStage.setHeight(SettingsStore.MainViewH.get());
+            }else{
+                SettingsStore.MainViewH.set(primaryStage.getHeight());
+            }
+        }
+        SettingsStore.MainViewX.bind(primaryStage.xProperty());
+        SettingsStore.MainViewY.bind(primaryStage.yProperty());
+        SettingsStore.MainViewW.bind(primaryStage.widthProperty());
+        SettingsStore.MainViewH.bind(primaryStage.heightProperty());
         // 表示
         primaryStage.show();
     }

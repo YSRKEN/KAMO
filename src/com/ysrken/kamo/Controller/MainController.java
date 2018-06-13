@@ -26,6 +26,7 @@ public class MainController {
     @FXML private CheckMenuItem AutoGetPositionMenu;
     @FXML private CheckMenuItem BlindNameTextMenu;
     @FXML private CheckMenuItem SpecialGetPosMenu;
+    @FXML private CheckMenuItem SaveWindowPositionMenu;
     @FXML private MenuItem OpenWikiMenu;
     @FXML private MenuItem CheckVersionMenu;
     @FXML private MenuItem AboutMenu;
@@ -87,6 +88,7 @@ public class MainController {
         AutoGetPositionMenu.selectedProperty().bindBidirectional(model.AutoGetPositionFlg);
         BlindNameTextMenu.selectedProperty().bindBidirectional(model.BlindNameTextFlg);
         SpecialGetPosMenu.selectedProperty().bindBidirectional(model.SpecialGetPosFlg);
+        SaveWindowPositionMenu.selectedProperty().bindBidirectional(model.SaveWindowPositionFlg);
         SaveScreenshotButton.disableProperty().bind(model.DisableSaveScreenshotFlg);
         NowSceneTextLabel.textProperty().bind(model.NowSceneText);
         MessageLogTextArea.textProperty().bind(this.logText);
