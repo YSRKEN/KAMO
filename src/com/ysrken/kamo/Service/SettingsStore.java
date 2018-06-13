@@ -1,8 +1,10 @@
 package com.ysrken.kamo.Service;
 
 import com.ysrken.kamo.JsonData;
+import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.scene.control.Alert;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import javax.script.ScriptEngineManager;
@@ -37,26 +39,38 @@ public class SettingsStore {
                 final var jsonString = br.lines().collect(Collectors.joining());
                 final var jsonData = JsonData.of(jsonString);
                 // 各設定項目を読み取る
-                OpenBattleSceneReflectionFlg.set(jsonData.getBoolean("OpenBattleSceneReflectionFlg"));
-                OpenTimerFlg.set(jsonData.getBoolean("OpenTimerFlg"));
-                OpenSceneHelperFlg.set(jsonData.getBoolean("OpenSceneHelperFlg"));
-                AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg"));
-                BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg"));
-                SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg"));
-                SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg"));
-                MainViewX.set(jsonData.getDouble("MainViewX"));
-                MainViewY.set(jsonData.getDouble("MainViewY"));
-                MainViewW.set(jsonData.getDouble("MainViewW"));
-                MainViewH.set(jsonData.getDouble("MainViewH"));
-                // 特殊処理(座標記憶を設定してない際に詰まないようにする)
-                if(!SaveWindowPositionFlg.get()){
-                    OpenBattleSceneReflectionFlg.set(false);
-                    OpenTimerFlg.set(false);
-                    OpenSceneHelperFlg.set(false);
-                }
+                if(jsonData.hasKey("OpenBattleSceneReflectionFlg"))
+                    OpenBattleSceneReflectionFlg.set(jsonData.getBoolean("OpenBattleSceneReflectionFlg"));
+                if(jsonData.hasKey("OpenTimerFlg"))
+                    OpenTimerFlg.set(jsonData.getBoolean("OpenTimerFlg"));
+                if(jsonData.hasKey("OpenSceneHelperFlg"))
+                    OpenSceneHelperFlg.set(jsonData.getBoolean("OpenSceneHelperFlg"));
+                if(jsonData.hasKey("AutoGetPositionFlg"))
+                    AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg"));
+                if(jsonData.hasKey("BlindNameTextFlg"))
+                    BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg"));
+                if(jsonData.hasKey("SpecialGetPosFlg"))
+                    SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg"));
+                if(jsonData.hasKey("SaveWindowPositionFlg"))
+                    SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg"));
+                if(jsonData.hasKey("MainViewX"))
+                    MainViewX.set(jsonData.getDouble("MainViewX"));
+                if(jsonData.hasKey("MainViewY"))
+                    MainViewY.set(jsonData.getDouble("MainViewY"));
+                if(jsonData.hasKey("MainViewW"))
+                    MainViewW.set(jsonData.getDouble("MainViewW"));
+                if(jsonData.hasKey("MainViewH"))
+                    MainViewH.set(jsonData.getDouble("MainViewH"));
             } catch (IOException | ScriptException e) {
                 e.printStackTrace();
+                Utility.showDialog(String.format("設定ファイルを開けませんでした。%nデフォルト設定で起動します。"), "IOエラー", Alert.AlertType.ERROR);
             }
+        }
+        // 特殊処理(座標記憶を設定してない際に詰まないようにする)
+        if(!SaveWindowPositionFlg.get()){
+            OpenBattleSceneReflectionFlg.set(false);
+            OpenTimerFlg.set(false);
+            OpenSceneHelperFlg.set(false);
         }
     }
     /** 設定をJSONに保存 */

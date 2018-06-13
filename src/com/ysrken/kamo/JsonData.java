@@ -44,6 +44,11 @@ public class JsonData {
         return Arrays.stream(scriptObject.to(ScriptObjectMirror[].class)).map(s -> JsonData.of(s)).collect(Collectors.toList());
     }
 
+    /** 指定したキーが有るかを判定する */
+    public boolean hasKey(String key){
+        return scriptObject.containsKey(key);
+    }
+
     /** 文字列をキーに文字列を取得 */
     public String getString(String key){
         return (String)scriptObject.get(key);
