@@ -12,6 +12,7 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.IOException;
 
 public class Main extends Application {
@@ -73,31 +74,40 @@ public class Main extends Application {
         });
         // ウィンドウの位置を復元
         if(SettingsStore.SaveWindowPositionFlg.get()){
-            if(SettingsStore.MainViewX.get() != Double.MAX_VALUE){
-                primaryStage.setX(SettingsStore.MainViewX.get());
+            final var rect = SettingsStore.MainView.get();
+            if(rect.x != Integer.MAX_VALUE){
+                primaryStage.setX(rect.x);
             }else{
-                SettingsStore.MainViewX.set(primaryStage.getX());
+                rect.x = (int)primaryStage.getX();
             }
-            if(SettingsStore.MainViewY.get() != Double.MAX_VALUE){
-                primaryStage.setY(SettingsStore.MainViewY.get());
+            if(rect.y != Double.MAX_VALUE){
+                primaryStage.setY(rect.y);
             }else{
-                SettingsStore.MainViewY.set(primaryStage.getY());
+                rect.y = (int)primaryStage.getY();
             }
-            if(SettingsStore.MainViewW.get() != Double.MAX_VALUE){
-                primaryStage.setWidth(SettingsStore.MainViewW.get());
+            if(rect.width != Double.MAX_VALUE){
+                primaryStage.setWidth(rect.width);
             }else{
-                SettingsStore.MainViewW.set(primaryStage.getWidth());
+                rect.width = (int)primaryStage.getWidth();
             }
-            if(SettingsStore.MainViewH.get() != Double.MAX_VALUE){
-                primaryStage.setHeight(SettingsStore.MainViewH.get());
+            if(rect.height != Double.MAX_VALUE){
+                primaryStage.setHeight(rect.height);
             }else{
-                SettingsStore.MainViewH.set(primaryStage.getHeight());
+                rect.height = (int)primaryStage.getHeight();
             }
         }
-        SettingsStore.MainViewX.bind(primaryStage.xProperty());
-        SettingsStore.MainViewY.bind(primaryStage.yProperty());
-        SettingsStore.MainViewW.bind(primaryStage.widthProperty());
-        SettingsStore.MainViewH.bind(primaryStage.heightProperty());
+        primaryStage.xProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
+        primaryStage.yProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
+        primaryStage.widthProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
+        primaryStage.heightProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
         // 表示
         primaryStage.show();
     }

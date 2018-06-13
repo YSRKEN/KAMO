@@ -5,6 +5,8 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +87,13 @@ public class JsonData {
         }
     }
 
+    /** 文字列をキーにgetRectangleを取得 */
+    public Rectangle getRectangle(String key){
+        final var temp = (ScriptObjectMirror)scriptObject.get(key);
+        Integer[] list = temp.to(Integer[].class);
+        return new Rectangle(list[0], list[1], list[2], list[3]);
+    }
+
     /** 文字列をキーにbooleanを書き込む */
     public void setBoolean(String key, boolean bool){
         scriptObject.put(key , bool);
@@ -94,6 +103,17 @@ public class JsonData {
     public void setDouble(String key, double dbl){
         scriptObject.put(key , dbl);
     }
+
+    /** 文字列をキーにRectangleを書き込む */
+    public void setRectangle(String key, Rectangle rect) throws ScriptException {
+        ScriptObjectMirror list = (ScriptObjectMirror)scriptEngine.eval("new Array()");
+        list.callMember("push", rect.x);
+        list.callMember("push", rect.y);
+        list.callMember("push", rect.width);
+        list.callMember("push", rect.height);
+        scriptObject.put(key, list);
+    }
+
 
 
     /** 文字列化 */

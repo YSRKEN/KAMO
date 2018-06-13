@@ -1,6 +1,7 @@
 package com.ysrken.kamo.Service;
 
 import com.ysrken.kamo.JsonData;
+import com.ysrken.kamo.Main;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -9,6 +10,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -24,10 +26,7 @@ public class SettingsStore {
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty SaveWindowPositionFlg = new SimpleBooleanProperty(false);
     //
-    public static DoubleProperty MainViewX = new SimpleDoubleProperty(Double.MAX_VALUE);
-    public static DoubleProperty MainViewY = new SimpleDoubleProperty(Double.MAX_VALUE);
-    public static DoubleProperty MainViewW = new SimpleDoubleProperty(Double.MAX_VALUE);
-    public static DoubleProperty MainViewH = new SimpleDoubleProperty(Double.MAX_VALUE);
+    public static ObjectProperty<Rectangle> MainView = new SimpleObjectProperty<>(new Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
 
     /** 設定をJSONから読み込み */
     private static void loadSettings(){
@@ -53,14 +52,9 @@ public class SettingsStore {
                     SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg"));
                 if(jsonData.hasKey("SaveWindowPositionFlg"))
                     SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg"));
-                if(jsonData.hasKey("MainViewX"))
-                    MainViewX.set(jsonData.getDouble("MainViewX"));
-                if(jsonData.hasKey("MainViewY"))
-                    MainViewY.set(jsonData.getDouble("MainViewY"));
-                if(jsonData.hasKey("MainViewW"))
-                    MainViewW.set(jsonData.getDouble("MainViewW"));
-                if(jsonData.hasKey("MainViewH"))
-                    MainViewH.set(jsonData.getDouble("MainViewH"));
+                if(jsonData.hasKey("MainView")){
+                    MainView.set(jsonData.getRectangle("MainView"));
+                }
             } catch (IOException | ScriptException e) {
                 e.printStackTrace();
                 Utility.showDialog(String.format("設定ファイルを開けませんでした。%nデフォルト設定で起動します。"), "IOエラー", Alert.AlertType.ERROR);
@@ -87,10 +81,7 @@ public class SettingsStore {
             jsonData.setBoolean("BlindNameTextFlg", BlindNameTextFlg.get());
             jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
             jsonData.setBoolean("SaveWindowPositionFlg", SaveWindowPositionFlg.get());
-            jsonData.setDouble("MainViewX", MainViewX.get());
-            jsonData.setDouble("MainViewY", MainViewY.get());
-            jsonData.setDouble("MainViewW", MainViewW.get());
-            jsonData.setDouble("MainViewH", MainViewH.get());
+            jsonData.setRectangle("MainView", MainView.get());
             // JSON文字列に変換
             final var jsonString = jsonData.toString();
             bw.write(jsonString);
@@ -113,9 +104,6 @@ public class SettingsStore {
         BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
         SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());
         SaveWindowPositionFlg.addListener((s, o, n) -> saveSettings());
-        MainViewX.addListener((s, o, n) -> saveSettings());
-        MainViewY.addListener((s, o, n) -> saveSettings());
-        MainViewW.addListener((s, o, n) -> saveSettings());
-        MainViewH.addListener((s, o, n) -> saveSettings());
+        MainView.addListener((s, o, n) -> saveSettings());
     }
 }
