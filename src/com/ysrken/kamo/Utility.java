@@ -28,11 +28,11 @@ public class Utility {
     /**
      * ソフトウェアのバージョン番号
      */
-    public static final String SOFTWARE_VER = "1.2.0";
+    public static final String SOFTWARE_VER = "1.3.0";
     /**
      * ソフトウェアのリビジョン番号
      */
-    public static final int SOFTWARE_REVISION = 3;
+    public static final int SOFTWARE_REVISION = 4;
     /**
      * ソフトウェアの作者名
      */
