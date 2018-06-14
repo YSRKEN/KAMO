@@ -123,10 +123,10 @@ public class MainModel {
                             }
                         }
                     }
-                    if(refreshExpTimerString != null){
-                        refreshExpTimerString.run();
-                    }
                 }
+            }
+            if(refreshExpTimerString != null){
+                refreshExpTimerString.run();
             }
         }
     }

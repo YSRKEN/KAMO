@@ -3,6 +3,7 @@ package com.ysrken.kamo.Service;
 import com.ysrken.kamo.JsonData;
 import com.ysrken.kamo.Main;
 import com.ysrken.kamo.Model.MainModel;
+import com.ysrken.kamo.Model.TimerModel;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -15,11 +16,10 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SettingsStore {
@@ -32,6 +32,20 @@ public class SettingsStore {
     public static BooleanProperty SaveWindowPositionFlg = new SimpleBooleanProperty(false);
     // メイン画面の座標・大きさ
     public static ObjectProperty<Rectangle> MainView = new SimpleObjectProperty<>(new Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    // 遠征タイマー
+    private static List<ObjectProperty<Date>> tempExpTimer = new ArrayList<>(){{
+        for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+            add(new SimpleObjectProperty<>(new Date()));
+        }
+    }};
+    public static List<ObjectProperty<Date>> ExpTimer = new ArrayList<>(tempExpTimer);
+    private static List<StringProperty> tempExpInfoString = new ArrayList<>(){{
+        for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+            add(new SimpleStringProperty("？"));
+        }
+    }};
+    public static List<StringProperty> ExpInfoString = new ArrayList<>(tempExpInfoString);
+
     // 最終保存日時
     private static Date lastSaveDate = new Date();
     // 保存するべきか？
@@ -64,7 +78,19 @@ public class SettingsStore {
                 if(jsonData.hasKey("MainView")){
                     MainView.set(jsonData.getRectangle("MainView"));
                 }
-            } catch (IOException | ScriptException e) {
+                if(jsonData.hasKey("ExpTimer")){
+                    final var temp = jsonData.getDateArray("ExpTimer");
+                    for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+                        ExpTimer.get(i).set(temp.get(i));
+                    }
+                }
+                if(jsonData.hasKey("ExpInfo")){
+                    final var temp = jsonData.getStringArray("ExpInfo");
+                    for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+                        ExpInfoString.get(i).set(temp.get(i));
+                    }
+                }
+            } catch (IOException | ScriptException | ParseException e) {
                 e.printStackTrace();
                 Utility.showDialog(String.format("設定ファイルを開けませんでした。%nデフォルト設定で起動します。"), "IOエラー", Alert.AlertType.ERROR);
             }
@@ -91,6 +117,8 @@ public class SettingsStore {
             jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
             jsonData.setBoolean("SaveWindowPositionFlg", SaveWindowPositionFlg.get());
             jsonData.setRectangle("MainView", MainView.get());
+            jsonData.setDateArray("ExpTimer", ExpTimer.stream().map(ob -> ob.get()).collect(Collectors.toList()));
+            jsonData.setStringArray("ExpInfo", ExpInfoString.stream().map(ob -> ob.get()).collect(Collectors.toList()));
             // JSON文字列に変換
             final var jsonString = jsonData.toString();
             bw.write(jsonString);
@@ -99,9 +127,7 @@ public class SettingsStore {
             e.printStackTrace();
         }
     }
-    /**
-     * 初期化
-     */
+    /** 初期化 */
     public static void initialize(){
         // 最初の読み込み
         loadSettings();
@@ -114,11 +140,16 @@ public class SettingsStore {
         SpecialGetPosFlg.addListener((s, o, n) -> saveFlg = true);
         SaveWindowPositionFlg.addListener((s, o, n) -> saveFlg = true);
         MainView.addListener((s, o, n) -> saveFlg = true);
+        for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+            ExpTimer.get(i).addListener((s, o, n) -> saveFlg = true);
+            ExpInfoString.get(i).addListener((s, o, n) -> saveFlg = true);
+        }
         // 自動セーブ設定
         final var saveTimer = new Timer();
         saveTimer.schedule(new SaveTask(), 0, 1000);
     }
 
+    /** 自動保存用のタスク */
     private static class SaveTask extends TimerTask {
         @Override
         public void run() {

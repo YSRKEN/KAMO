@@ -6,7 +6,11 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,6 +97,24 @@ public class JsonData {
         return new Rectangle(list[0], list[1], list[2], list[3]);
     }
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss-SSS");
+    /** 文字列をキーに時刻の配列を取得 */
+    public List<Date> getDateArray(String key) throws ParseException {
+        final var temp = (ScriptObjectMirror)scriptObject.get(key);
+        String[] list = temp.to(String[].class);
+        final var dateList = new ArrayList<Date>();
+        for(var dateString : list){
+            dateList.add(sdf.parse(dateString));
+        }
+        return dateList;
+    }
+    /** 文字列をキーに文字列の配列を取得 */
+    public List<String> getStringArray(String key)  {
+        final var temp = (ScriptObjectMirror)scriptObject.get(key);
+        String[] list = temp.to(String[].class);
+        return Arrays.stream(list).collect(Collectors.toList());
+    }
+
     /** 文字列をキーにbooleanを書き込む */
     public void setBoolean(String key, boolean bool){
         scriptObject.put(key , bool);
@@ -113,11 +135,29 @@ public class JsonData {
         scriptObject.put(key, list);
     }
 
+    /** 文字列をキーに時刻の配列を書き込む */
+    public void setDateArray(String key, List<Date> dateList) throws ScriptException {
+        ScriptObjectMirror list = (ScriptObjectMirror)scriptEngine.eval("new Array()");
+        for(var date : dateList){
+            list.callMember("push", sdf.format(date));
+        }
+        scriptObject.put(key, list);
+    }
+
+    /** 文字列をキーに文字列の配列を書き込む */
+    public void setStringArray(String key, List<String> stringList) throws ScriptException {
+        ScriptObjectMirror list = (ScriptObjectMirror)scriptEngine.eval("new Array()");
+        for(var str : stringList){
+            list.callMember("push", str);
+        }
+        scriptObject.put(key, list);
+    }
+
     /** 文字列化 */
     @Override
     public String toString(){
         try {
-            return (String)((ScriptObjectMirror) scriptEngine.eval("JSON")).callMember("stringify", scriptObject);
+            return (String)((ScriptObjectMirror) scriptEngine.eval("JSON")).callMember("stringify", scriptObject, null, 2);
         } catch (ScriptException e) {
             e.printStackTrace();
             return "";
