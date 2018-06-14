@@ -6,7 +6,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -113,8 +112,6 @@ public class JsonData {
         list.callMember("push", rect.height);
         scriptObject.put(key, list);
     }
-
-
 
     /** 文字列化 */
     @Override

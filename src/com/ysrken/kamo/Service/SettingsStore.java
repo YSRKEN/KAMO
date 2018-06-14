@@ -2,6 +2,7 @@ package com.ysrken.kamo.Service;
 
 import com.ysrken.kamo.JsonData;
 import com.ysrken.kamo.Main;
+import com.ysrken.kamo.Model.MainModel;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -14,7 +15,11 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 public class SettingsStore {
@@ -25,8 +30,12 @@ public class SettingsStore {
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty SaveWindowPositionFlg = new SimpleBooleanProperty(false);
-    //
+    // メイン画面の座標・大きさ
     public static ObjectProperty<Rectangle> MainView = new SimpleObjectProperty<>(new Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    // 最終保存日時
+    private static Date lastSaveDate = new Date();
+    // 保存するべきか？
+    private static boolean saveFlg = false;
 
     /** 設定をJSONから読み込み */
     private static void loadSettings(){
@@ -85,7 +94,7 @@ public class SettingsStore {
             // JSON文字列に変換
             final var jsonString = jsonData.toString();
             bw.write(jsonString);
-            System.out.println("Save Settings.");
+            System.out.println(Utility.getDateStringShort() + " Save Settings.");
         } catch (ScriptException | IOException e) {
             e.printStackTrace();
         }
@@ -97,13 +106,26 @@ public class SettingsStore {
         // 最初の読み込み
         loadSettings();
         // 変更時のセーブ設定
-        OpenBattleSceneReflectionFlg.addListener((s, o, n) -> saveSettings());
-        OpenTimerFlg.addListener((s, o, n) -> saveSettings());
-        OpenSceneHelperFlg.addListener((s, o, n) -> saveSettings());
-        AutoGetPositionFlg.addListener((s, o, n) -> saveSettings());
-        BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
-        SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());
-        SaveWindowPositionFlg.addListener((s, o, n) -> saveSettings());
-        MainView.addListener((s, o, n) -> saveSettings());
+        OpenBattleSceneReflectionFlg.addListener((s, o, n) -> saveFlg = true);
+        OpenTimerFlg.addListener((s, o, n) -> saveFlg = true);
+        OpenSceneHelperFlg.addListener((s, o, n) -> saveFlg = true);
+        AutoGetPositionFlg.addListener((s, o, n) -> saveFlg = true);
+        BlindNameTextFlg.addListener((s, o, n) -> saveFlg = true);
+        SpecialGetPosFlg.addListener((s, o, n) -> saveFlg = true);
+        SaveWindowPositionFlg.addListener((s, o, n) -> saveFlg = true);
+        MainView.addListener((s, o, n) -> saveFlg = true);
+        // 自動セーブ設定
+        final var saveTimer = new Timer();
+        saveTimer.schedule(new SaveTask(), 0, 1000);
+    }
+
+    private static class SaveTask extends TimerTask {
+        @Override
+        public void run() {
+            if(saveFlg && (new Date().getTime() - lastSaveDate.getTime() >= 1000)){
+                saveSettings();
+                saveFlg = false;
+            }
+        }
     }
 }
