@@ -2,10 +2,8 @@ package com.ysrken.kamo.Model;
 
 import com.ysrken.kamo.Controller.BattleSceneReflectionController;
 import com.ysrken.kamo.Controller.SceneHelperController;
-import com.ysrken.kamo.Service.PictureProcessingService;
-import com.ysrken.kamo.Service.SceneRecognitionService;
-import com.ysrken.kamo.Service.ScreenshotService;
-import com.ysrken.kamo.Service.SettingsStore;
+import com.ysrken.kamo.Controller.TimerController;
+import com.ysrken.kamo.Service.*;
 import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -25,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,25 +31,28 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MainModel {
-    /**
-     * スクリーンショットボタンを押せるかどうかのフラグ
-     */
+    /** スクリーンショットボタンを押せるかどうかのフラグ */
     public BooleanProperty DisableSaveScreenshotFlg = new SimpleBooleanProperty(true);
-    /**
-     * 戦闘振り返り画面を開いているかどうかのフラグ
-     */
-    public BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    /** 戦闘振り返り画面を開いているかどうかのフラグ */
+    public BooleanProperty OpenBattleSceneReflectionFlg = SettingsStore.OpenBattleSceneReflectionFlg;
+    /** 各種タイマー画面を開いているかどうかのフラグ */
+    public BooleanProperty OpenTimerFlg = SettingsStore.OpenTimerFlg;
     /**
      * 画像認識支援画面を開いているかどうかのフラグ
      */
-    public BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
+    public BooleanProperty OpenSceneHelperFlg = SettingsStore.OpenSceneHelperFlg;
+    /** シーン情報 */
     public StringProperty NowSceneText = new SimpleStringProperty("シーン判定：[不明]");
     /**
      * 自動で座標を取得し直すか？
      */
     public BooleanProperty AutoGetPositionFlg = SettingsStore.AutoGetPositionFlg;
+    /** スクショで提督名を隠すか？ */
     public BooleanProperty BlindNameTextFlg = SettingsStore.BlindNameTextFlg;
+    /** 座標取得で特殊な方式を使用するか？ */
     public BooleanProperty SpecialGetPosFlg = SettingsStore.SpecialGetPosFlg;
+    /** ウィンドウの位置を記憶するか？ */
+    public BooleanProperty SaveWindowPositionFlg = SettingsStore.SaveWindowPositionFlg;
 
     /**
      * MainViewのログ表示部分にログを追加するメソッド
@@ -59,6 +61,9 @@ public class MainModel {
     private BiConsumer<String, BufferedImage> setImage = null;
     private BiConsumer<String, String> setText = null;
     private Set<String> battleSceneSet = null;
+    private BiConsumer<Date, Integer> setExpTimer = null;
+    private BiConsumer<String, Integer> setExpInfo = null;
+    private Runnable refreshExpTimerString = null;
 
     /**
      * 長い周期で行われるタスクを設定
@@ -87,24 +92,47 @@ public class MainModel {
         public void run(){
             // スクリーンショットが撮影可能な場合の処理
             if(ScreenshotService.canGetScreenshot()){
+                // 画像を取得
                 final var frame = ScreenshotService.getScreenshot();
+                // シーンを読み取り、結果をメイン画面に表示する
                 final var scene = SceneRecognitionService.judgeScene(frame);
                 final var isNearlyHomeFlg = SceneRecognitionService.isNearlyHomeScene(frame);
-                Platform.runLater(() -> NowSceneText.set(String.format(
-                        "シーン判定：%s%s",
+                setSceneText(String.format("シーン判定：%s%s",
                         scene.isEmpty() ? "[不明]" : scene,
-                        isNearlyHomeFlg ? "*" : ""))
-                );
+                        isNearlyHomeFlg ? "*" : ""));
+                // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(OpenBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
-                        Platform.runLater(() -> {
-                            setImage.accept(scene, frame);
-                            setText.accept(scene, Utility.getDateStringLong());
-                        });
+                        setImage.accept(scene, frame);
+                        setText.accept(scene, Utility.getDateStringLong());
+                    }
+                }
+                // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
+                if(OpenTimerFlg.get()){
+                    if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
+                        final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
+                        if(setExpTimer != null && setExpInfo != null && duration >= 0){
+                            final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(frame);
+                            final var fieetIds = CharacterRecognitionService.getExpeditionFleetId(frame);
+                            for(var pair : fieetIds.entrySet()){
+                                if(pair.getValue().equals(expeditionId)){
+                                    setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), pair.getKey() - 2);
+                                    setExpInfo.accept(CharacterRecognitionService.getExpeditionNameById(pair.getValue()), pair.getKey() - 2);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
+            if(refreshExpTimerString != null){
+                refreshExpTimerString.run();
+            }
         }
+    }
+    /** シーン情報の表示を更新する */
+    private void setSceneText(String str){
+        Platform.runLater(() -> NowSceneText.set(str));
     }
 
     /**
@@ -119,6 +147,16 @@ public class MainModel {
         // 短周期で実行されるタイマー
         final var shortIntervalTimer = new Timer();
         shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 200);
+        // ウィンドウを開いておく
+        if(OpenBattleSceneReflectionFlg.get()){
+            openBattleSceneReflectionCommand();
+        }
+        if(OpenTimerFlg.get()){
+            openTimerCommand();
+        }
+        if(OpenSceneHelperFlg.get()){
+            openSceneHelperCommand();
+        }
     }
     /**
      * 終了コマンド
@@ -148,9 +186,7 @@ public class MainModel {
             DisableSaveScreenshotFlg.set(true);
         }
     }
-    /**
-     * スクリーンショットを取得・保存する
-     */
+    /** スクリーンショットを取得・保存する */
     public void saveScreenshotCommand(){
         addLogText.accept("【スクリーンショット】");
         if(ScreenshotService.canGetScreenshot()){
@@ -181,9 +217,7 @@ public class MainModel {
             Utility.showDialog("picフォルダを開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
-    /**
-     * 戦闘振り返り画面を開く
-     */
+    /** 戦闘振り返り画面を開く */
     public void openBattleSceneReflectionCommand(){
         try {
             // 新しいウインドウを生成
@@ -217,6 +251,42 @@ public class MainModel {
         } catch (IOException e) {
             e.printStackTrace();
             Utility.showDialog("戦闘振り返り画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
+        }
+    }
+    /** 各種タイマー画面を開く */
+    public void openTimerCommand(){
+        try {
+            // 新しいウインドウを生成
+            final var stage = new Stage();
+            // ウィンドウの中身をFXMLから読み込み
+            final var loader = new FXMLLoader(
+                    ClassLoader.getSystemResource("com/ysrken/kamo/View/TimerView.fxml"));
+            final Parent root = loader.load();
+            final TimerController controller = loader.getController();
+            setExpTimer = (date, index) -> controller.setExpTimer(date, index);
+            setExpInfo = (info, index) -> controller.setExpInfo(info, index);
+            refreshExpTimerString = (() -> controller.refreshExpTimerString());
+            // タイトルを設定
+            stage.setTitle("各種タイマー画面");
+            // 大きさを設定
+            stage.setScene(new Scene(root, 310, 160));
+            // 最小の大きさを設定
+            stage.setMinWidth(330);
+            stage.setMinHeight(210);
+            // 最前面設定
+            stage.setAlwaysOnTop(true);
+            // ×ボタンを押した際の設定
+            stage.setOnCloseRequest(req -> {
+                OpenTimerFlg.set(false);
+                this.setImage = null;
+                this.setText = null;
+            });
+            // 新しいウインドウを表示
+            stage.show();
+            OpenTimerFlg.set(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utility.showDialog("各種タイマー画面を開けませんでした。", "IOエラー", Alert.AlertType.ERROR);
         }
     }
     /**

@@ -9,6 +9,7 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,11 +28,11 @@ public class Utility {
     /**
      * ソフトウェアのバージョン番号
      */
-    public static final String SOFTWARE_VER = "1.2.0";
+    public static final String SOFTWARE_VER = "1.3.0";
     /**
      * ソフトウェアのリビジョン番号
      */
-    public static final int SOFTWARE_REVISION = 3;
+    public static final int SOFTWARE_REVISION = 4;
     /**
      * ソフトウェアの作者名
      */
@@ -165,12 +166,55 @@ public class Utility {
     public static String getDateStringShort(){
         return Utility.sdfShort.format(Calendar.getInstance().getTime());
     }
-    /**
-     * Windows OS上で動作しているかを判定
-     * @return
-     */
+    /** Windows OS上で動作しているかを判定 */
     public static boolean isWindows(){
         final var osName = System.getProperty("os.name").toLowerCase();
         return (osName.startsWith("windows"));
+    }
+    /** 秒数を時間の文字列に変換する */
+    public static String LongToDateStringShort(long x) {
+        if(x <= 0){
+            return "00:00:00";
+        }
+        long second = x % 60; x -= second; x /= 60;
+        long minute = x % 60; x -= minute; x /= 60;
+        long hour = x;
+        return String.format("%02d:%02d:%02d", hour, minute, second);
+    }
+    /**
+     * 色間のRGB色空間における距離を計算する
+     * @param a 色1
+     * @param b 色2
+     * @return 距離
+     */
+    public static int calcColorDistance(Color a, Color b){
+        final var rDiff = a.getRed() - b.getRed();
+        final var gDiff = a.getGreen() - b.getGreen();
+        final var bDiff = a.getBlue() - b.getBlue();
+        return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
+    }
+    /**
+     * ビットカウント
+     * 参考→http://developer.cybozu.co.jp/takesako/2006/11/binary_hacks.html
+     * @param x long型(64bit)の値
+     * @return ビットカウント後の数
+     */
+    private static long popcnt(long x) {
+        x = ((x & 0xaaaaaaaaaaaaaaaaL) >> 1) + (x & 0x5555555555555555L);
+        x = ((x & 0xccccccccccccccccL) >> 2) + (x & 0x3333333333333333L);
+        x = ((x & 0xf0f0f0f0f0f0f0f0L) >> 4) + (x & 0x0f0f0f0f0f0f0f0fL);
+        x = ((x & 0xff00ff00ff00ff00L) >> 8) + (x & 0x00ff00ff00ff00ffL);
+        x = ((x & 0xffff0000ffff0000L) >> 16) + (x & 0x0000ffff0000ffffL);
+        x = ((x & 0xffffffff00000000L) >> 32) + (x & 0x00000000ffffffffL);
+        return x;
+    }
+    /**
+     * ハミング距離を計算する
+     * @param a 値1
+     * @param b 値2
+     * @return ハミング距離
+     */
+    public static long calcHummingDistance(long a, long b) {
+        return popcnt(a ^ b);
     }
 }

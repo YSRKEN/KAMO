@@ -1,6 +1,8 @@
 package com.ysrken.kamo;
 
+import com.ysrken.kamo.Controller.MainController;
 import com.ysrken.kamo.Service.SceneRecognitionService;
+import com.ysrken.kamo.Service.SettingsStore;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,7 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.IOException;
 
 public class Main extends Application {
@@ -19,7 +22,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         // FXMLファイルを読み込み
-        final Parent root = FXMLLoader.load(getClass().getResource("View/MainView.fxml"));
+        final var loader = new FXMLLoader(
+                ClassLoader.getSystemResource("com/ysrken/kamo/View/MainView.fxml"));
+        final Parent root = loader.load();
+        final MainController controller = loader.getController();
         // タイトルを設定
         primaryStage.setTitle(Utility.SOFTWARE_NAME);
         // 大きさを設定
@@ -56,9 +62,7 @@ public class Main extends Application {
                 board.getFiles().forEach(file -> {
                     try {
                         final var image = ImageIO.read(file);
-                        final var scene = SceneRecognitionService.judgeScene(image);
-                        final var contentText = String.format("シーン判定：%s", scene.isEmpty() ? "不明" : scene);
-                        Utility.showDialog(contentText, "画像認識結果");
+                        SceneRecognitionService.testSceneRecognition(image);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -67,6 +71,42 @@ public class Main extends Application {
             } else {
                 event.setDropCompleted(false);
             }
+        });
+        // ウィンドウの位置を復元
+        if(SettingsStore.SaveWindowPositionFlg.get()){
+            final var rect = SettingsStore.MainView.get();
+            if(rect.x != Integer.MAX_VALUE){
+                primaryStage.setX(rect.x);
+            }else{
+                rect.x = (int)primaryStage.getX();
+            }
+            if(rect.y != Double.MAX_VALUE){
+                primaryStage.setY(rect.y);
+            }else{
+                rect.y = (int)primaryStage.getY();
+            }
+            if(rect.width != Double.MAX_VALUE){
+                primaryStage.setWidth(rect.width);
+            }else{
+                rect.width = (int)primaryStage.getWidth();
+            }
+            if(rect.height != Double.MAX_VALUE){
+                primaryStage.setHeight(rect.height);
+            }else{
+                rect.height = (int)primaryStage.getHeight();
+            }
+        }
+        primaryStage.xProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
+        primaryStage.yProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
+        primaryStage.widthProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
+        });
+        primaryStage.heightProperty().addListener((ob, o, n) -> {
+            SettingsStore.MainView.set(new Rectangle((int)primaryStage.getX(), (int)primaryStage.getY(), (int)primaryStage.getWidth(), (int)primaryStage.getHeight()));
         });
         // 表示
         primaryStage.show();

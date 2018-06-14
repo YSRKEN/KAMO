@@ -1,78 +1,162 @@
 package com.ysrken.kamo.Service;
 
+import com.ysrken.kamo.JsonData;
+import com.ysrken.kamo.Main;
+import com.ysrken.kamo.Model.MainModel;
+import com.ysrken.kamo.Model.TimerModel;
+import com.ysrken.kamo.Utility;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
+import javafx.scene.control.Alert;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Map;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SettingsStore {
+    public static BooleanProperty OpenBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
+    public static BooleanProperty OpenTimerFlg = new SimpleBooleanProperty(false);
+    public static BooleanProperty OpenSceneHelperFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty AutoGetPositionFlg = new SimpleBooleanProperty(false);
     public static BooleanProperty BlindNameTextFlg = new SimpleBooleanProperty(true);
     public static BooleanProperty SpecialGetPosFlg = new SimpleBooleanProperty(false);
+    public static BooleanProperty SaveWindowPositionFlg = new SimpleBooleanProperty(false);
+    // メイン画面の座標・大きさ
+    public static ObjectProperty<Rectangle> MainView = new SimpleObjectProperty<>(new Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    // 遠征タイマー
+    private static List<ObjectProperty<Date>> tempExpTimer = new ArrayList<>(){{
+        for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+            add(new SimpleObjectProperty<>(new Date()));
+        }
+    }};
+    public static List<ObjectProperty<Date>> ExpTimer = new ArrayList<>(tempExpTimer);
+    private static List<StringProperty> tempExpInfoString = new ArrayList<>(){{
+        for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+            add(new SimpleStringProperty("？"));
+        }
+    }};
+    public static List<StringProperty> ExpInfoString = new ArrayList<>(tempExpInfoString);
 
-    /** 設定をJSONから読み込み
-     * 参考→https://symfoware.blog.fc2.com/blog-entry-2094.html
-     */
+    // 最終保存日時
+    private static Date lastSaveDate = new Date();
+    // 保存するべきか？
+    private static boolean saveFlg = false;
+
+    /** 設定をJSONから読み込み */
     private static void loadSettings(){
-        Platform.runLater(() -> {
-            if(Files.exists(new File("settings.json").toPath())){
-                final var manager = new ScriptEngineManager();
-                final var engine = manager.getEngineByName("javascript");
-                try(final var fis = new FileInputStream("settings.json");
-                    final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-                    final var br = new BufferedReader(isr)) {
-                    final var json = (ScriptObjectMirror) engine.eval("JSON");
-                    final var result = json.callMember("parse", br.lines().collect(Collectors.joining()));
-                    final var m = (Map<?, ?>)result;
-
-                    AutoGetPositionFlg.set(Boolean.class.cast(m.get("AutoGetPositionFlg")));
-                    BlindNameTextFlg.set(Boolean.class.cast(m.get("BlindNameTextFlg")));
-                    SpecialGetPosFlg.set(Boolean.class.cast(m.get("SpecialGetPosFlg")));
-
-                } catch (IOException | ScriptException e) {
-                    e.printStackTrace();
+        if(Files.exists(new File("settings.json").toPath())){
+            try(final var fis = new FileInputStream("settings.json");
+                final var isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+                final var br = new BufferedReader(isr)) {
+                // テキストデータを用意してパース
+                final var jsonString = br.lines().collect(Collectors.joining());
+                final var jsonData = JsonData.of(jsonString);
+                // 各設定項目を読み取る
+                if(jsonData.hasKey("OpenBattleSceneReflectionFlg"))
+                    OpenBattleSceneReflectionFlg.set(jsonData.getBoolean("OpenBattleSceneReflectionFlg"));
+                if(jsonData.hasKey("OpenTimerFlg"))
+                    OpenTimerFlg.set(jsonData.getBoolean("OpenTimerFlg"));
+                if(jsonData.hasKey("OpenSceneHelperFlg"))
+                    OpenSceneHelperFlg.set(jsonData.getBoolean("OpenSceneHelperFlg"));
+                if(jsonData.hasKey("AutoGetPositionFlg"))
+                    AutoGetPositionFlg.set(jsonData.getBoolean("AutoGetPositionFlg"));
+                if(jsonData.hasKey("BlindNameTextFlg"))
+                    BlindNameTextFlg.set(jsonData.getBoolean("BlindNameTextFlg"));
+                if(jsonData.hasKey("SpecialGetPosFlg"))
+                    SpecialGetPosFlg.set(jsonData.getBoolean("SpecialGetPosFlg"));
+                if(jsonData.hasKey("SaveWindowPositionFlg"))
+                    SaveWindowPositionFlg.set(jsonData.getBoolean("SaveWindowPositionFlg"));
+                if(jsonData.hasKey("MainView")){
+                    MainView.set(jsonData.getRectangle("MainView"));
                 }
+                if(jsonData.hasKey("ExpTimer")){
+                    final var temp = jsonData.getDateArray("ExpTimer");
+                    for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+                        ExpTimer.get(i).set(temp.get(i));
+                    }
+                }
+                if(jsonData.hasKey("ExpInfo")){
+                    final var temp = jsonData.getStringArray("ExpInfo");
+                    for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+                        ExpInfoString.get(i).set(temp.get(i));
+                    }
+                }
+            } catch (IOException | ScriptException | ParseException e) {
+                e.printStackTrace();
+                Utility.showDialog(String.format("設定ファイルを開けませんでした。%nデフォルト設定で起動します。"), "IOエラー", Alert.AlertType.ERROR);
             }
-        });
+        }
+        // 特殊処理(座標記憶を設定してない際に詰まないようにする)
+        if(!SaveWindowPositionFlg.get()){
+            OpenBattleSceneReflectionFlg.set(false);
+            OpenTimerFlg.set(false);
+            OpenSceneHelperFlg.set(false);
+        }
     }
     /** 設定をJSONに保存 */
     private static void saveSettings(){
-        final var manager = new ScriptEngineManager();
-        final var engine = manager.getEngineByName("javascript");
         try(final var fos = new FileOutputStream("settings.json");
             final var osw = new OutputStreamWriter(fos, Charset.forName("UTF-8"));
             final var bw = new BufferedWriter(osw)){
-            final var m = (ScriptObjectMirror)engine.eval("new Object()");
-
-            m.put("AutoGetPositionFlg", AutoGetPositionFlg.get());
-            m.put("BlindNameTextFlg", BlindNameTextFlg.get());
-            m.put("SpecialGetPosFlg", SpecialGetPosFlg.get());
-
-            final var json = (ScriptObjectMirror) engine.eval("JSON");
-            final var result = (String)json.callMember("stringify", m);
-            bw.write(result);
-            System.out.println("Save Settings.");
+            final var jsonData = JsonData.of();
+            // 各設定項目を書き込み
+            jsonData.setBoolean("OpenBattleSceneReflectionFlg", OpenBattleSceneReflectionFlg.get());
+            jsonData.setBoolean("OpenTimerFlg", OpenTimerFlg.get());
+            jsonData.setBoolean("OpenSceneHelperFlg", OpenSceneHelperFlg.get());
+            jsonData.setBoolean("AutoGetPositionFlg", AutoGetPositionFlg.get());
+            jsonData.setBoolean("BlindNameTextFlg", BlindNameTextFlg.get());
+            jsonData.setBoolean("SpecialGetPosFlg", SpecialGetPosFlg.get());
+            jsonData.setBoolean("SaveWindowPositionFlg", SaveWindowPositionFlg.get());
+            jsonData.setRectangle("MainView", MainView.get());
+            jsonData.setDateArray("ExpTimer", ExpTimer.stream().map(ob -> ob.get()).collect(Collectors.toList()));
+            jsonData.setStringArray("ExpInfo", ExpInfoString.stream().map(ob -> ob.get()).collect(Collectors.toList()));
+            // JSON文字列に変換
+            final var jsonString = jsonData.toString();
+            bw.write(jsonString);
+            System.out.println(Utility.getDateStringShort() + " Save Settings.");
         } catch (ScriptException | IOException e) {
             e.printStackTrace();
         }
     }
-    /**
-     * 初期化
-     */
+    /** 初期化 */
     public static void initialize(){
         // 最初の読み込み
         loadSettings();
         // 変更時のセーブ設定
-        AutoGetPositionFlg.addListener((s, o, n) -> saveSettings());
-        BlindNameTextFlg.addListener((s, o, n) -> saveSettings());
-        SpecialGetPosFlg.addListener((s, o, n) -> saveSettings());
+        OpenBattleSceneReflectionFlg.addListener((s, o, n) -> saveFlg = true);
+        OpenTimerFlg.addListener((s, o, n) -> saveFlg = true);
+        OpenSceneHelperFlg.addListener((s, o, n) -> saveFlg = true);
+        AutoGetPositionFlg.addListener((s, o, n) -> saveFlg = true);
+        BlindNameTextFlg.addListener((s, o, n) -> saveFlg = true);
+        SpecialGetPosFlg.addListener((s, o, n) -> saveFlg = true);
+        SaveWindowPositionFlg.addListener((s, o, n) -> saveFlg = true);
+        MainView.addListener((s, o, n) -> saveFlg = true);
+        for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+            ExpTimer.get(i).addListener((s, o, n) -> saveFlg = true);
+            ExpInfoString.get(i).addListener((s, o, n) -> saveFlg = true);
+        }
+        // 自動セーブ設定
+        final var saveTimer = new Timer();
+        saveTimer.schedule(new SaveTask(), 0, 1000);
+    }
+
+    /** 自動保存用のタスク */
+    private static class SaveTask extends TimerTask {
+        @Override
+        public void run() {
+            if(saveFlg && (new Date().getTime() - lastSaveDate.getTime() >= 1000)){
+                saveSettings();
+                saveFlg = false;
+            }
+        }
     }
 }
