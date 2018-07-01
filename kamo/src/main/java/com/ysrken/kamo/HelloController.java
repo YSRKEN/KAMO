@@ -1,13 +1,13 @@
 package com.ysrken.kamo;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 @Component
 public class HelloController
@@ -26,7 +26,7 @@ public class HelloController
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
 
-        messageLabel.setText(testService.joinName(firstName, lastName, log));
+        messageLabel.setText(testService.joinName(firstName, lastName));
     }
 
 }

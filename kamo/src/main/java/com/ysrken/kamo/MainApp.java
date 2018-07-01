@@ -1,40 +1,55 @@
 package com.ysrken.kamo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan
 public class MainApp extends Application {
 
-    private static final Logger log = LoggerFactory.getLogger(MainApp.class);
+	@Autowired
+	private LoggerService loggerService;
 
     private static ConfigurableApplicationContext context;
     
+    /**
+     * main関数
+     * @param args コマンドライン引数
+     * @throws Exception 実行時例外
+     */
     public static void main(String[] args) throws Exception {
     	context = new AnnotationConfigApplicationContext(MainApp.class);
         launch(args);
     }
 
+    /**
+     * JavaFXの起動処理
+     * @param stage Stage情報
+     * @throws Exception 実行時例外
+     */
     public void start(Stage stage) throws Exception {
 
-        log.info("Starting Hello JavaFX and Maven demonstration application");
+    	//loggerService.info("Starting Hello JavaFX and Maven demonstration application");
 
         String fxmlFile = "/fxml/hello.fxml";
-        log.debug("Loading FXML for main view from: {}", fxmlFile);
+        //loggerService.debug("Loading FXML for main view from: {}", fxmlFile);
         FXMLLoader loader = new FXMLLoader();
         loader.setControllerFactory(context::getBean);
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
 
-        log.debug("Showing JFX scene");
+        //loggerService.debug("Showing JFX scene");
         Scene scene = new Scene(rootNode, 400, 200);
         scene.getStylesheets().add("/styles/styles.css");
 
@@ -43,6 +58,10 @@ public class MainApp extends Application {
         stage.show();
     }
     
+    /**
+     * JavaFXの終了処理
+     * @throws Exception 実行時例外
+     */
     @Override
     public void stop() throws Exception {
         context.close();
