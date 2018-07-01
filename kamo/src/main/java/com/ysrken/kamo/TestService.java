@@ -2,7 +2,9 @@ package com.ysrken.kamo;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TestService {
 	public String joinName(String firstName, String lastName, Logger log) {
         StringBuilder builder = new StringBuilder();
