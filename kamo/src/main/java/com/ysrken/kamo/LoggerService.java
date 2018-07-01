@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * ƒƒMƒ“ƒOˆ—‚ÌBean
+ * ãƒ­ã‚®ãƒ³ã‚°å‡¦ç†ã®Bean
  * @author ysrke
  */
 @Component
@@ -13,7 +13,7 @@ public class LoggerService {
 	private final Logger log = LoggerFactory.getLogger(MainApp.class);
 	
 	/**
-	 * ƒfƒoƒbƒOƒƒbƒZ[ƒW‚ðŽc‚·
+	 * ãƒ‡ãƒãƒƒã‚°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ®‹ã™
 	 * @param message
 	 */
 	public void debug(String message) {
@@ -21,7 +21,7 @@ public class LoggerService {
 	}
 	
 	/**
-	 * ƒCƒ“ƒtƒHƒ[ƒVƒ‡ƒ“ƒƒbƒZ[ƒW‚ðŽc‚·
+	 * ã‚¤ãƒ³ãƒ•ã‚©ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ®‹ã™
 	 * @param message
 	 */
 	public void info(String message) {
@@ -29,7 +29,7 @@ public class LoggerService {
 	}
 
 	/**
-	 * ƒfƒoƒbƒOƒƒbƒZ[ƒW‚ðŽc‚·
+	 * ãƒ‡ãƒãƒƒã‚°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ®‹ã™
 	 * @param arg0
 	 * @param arg1
 	 */

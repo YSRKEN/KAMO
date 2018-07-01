@@ -16,6 +16,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * èµ·å‹•ç”¨ã‚¯ãƒ©ã‚¹
+ */
 @ComponentScan
 public class MainApp extends Application {
 
@@ -25,9 +28,9 @@ public class MainApp extends Application {
     private static ConfigurableApplicationContext context;
     
     /**
-     * mainŠÖ”
-     * @param args ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”
-     * @throws Exception Às—áŠO
+     * mainé–¢æ•°
+     * @param args ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°
+     * @throws Exception å®Ÿè¡Œæ™‚ä¾‹å¤–
      */
     public static void main(String[] args) throws Exception {
     	context = new AnnotationConfigApplicationContext(MainApp.class);
@@ -35,9 +38,9 @@ public class MainApp extends Application {
     }
 
     /**
-     * JavaFX‚Ì‹N“®ˆ—
-     * @param stage Stageî•ñ
-     * @throws Exception Às—áŠO
+     * JavaFXã®èµ·å‹•å‡¦ç†
+     * @param stage Stageæƒ…å ±
+     * @throws Exception å®Ÿè¡Œæ™‚ä¾‹å¤–
      */
     public void start(Stage stage) throws Exception {
 
@@ -59,8 +62,8 @@ public class MainApp extends Application {
     }
     
     /**
-     * JavaFX‚ÌI—¹ˆ—
-     * @throws Exception Às—áŠO
+     * JavaFXã®çµ‚äº†å‡¦ç†
+     * @throws Exception å®Ÿè¡Œæ™‚ä¾‹å¤–
      */
     @Override
     public void stop() throws Exception {

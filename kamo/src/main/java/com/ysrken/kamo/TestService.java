@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * ƒT[ƒrƒX‚ÌƒTƒ“ƒvƒ‹
+ * ã‚µãƒ¼ãƒ“ã‚¹ã®ã‚µãƒ³ãƒ—ãƒ«
  * @author ysrke
  */
 @Component
@@ -15,10 +15,10 @@ public class TestService {
 	private LoggerService loggerService;
 	
 	/**
-	 * –¼•\¦—p‚É•¶š—ñ‚ğŒ‹‡‚·‚é
-	 * @param firstName –¼‘O
-	 * @param lastName –¼š
-	 * @return Œ‹‡‚µ‚½Œã‚Ì•¶š—ñ
+	 * æ°åè¡¨ç¤ºç”¨ã«æ–‡å­—åˆ—ã‚’çµåˆã™ã‚‹
+	 * @param firstName åå‰
+	 * @param lastName åå­—
+	 * @return çµåˆã—ãŸå¾Œã®æ–‡å­—åˆ—
 	 */
 	public String joinName(String firstName, String lastName) {
         StringBuilder builder = new StringBuilder();
