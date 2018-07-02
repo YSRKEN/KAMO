@@ -33,5 +33,4 @@ public class HelloController
 
         messageLabel.setText(testService.joinName(firstName, lastName));
     }
-
 }
