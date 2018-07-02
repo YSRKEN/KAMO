@@ -1,9 +1,11 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.ysrken.kamo.service.TestService;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

@@ -1,4 +1,4 @@
-package com.ysrken.kamo;
+package com.ysrken.kamo.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
