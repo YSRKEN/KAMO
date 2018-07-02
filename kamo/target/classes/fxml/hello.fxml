@@ -17,6 +17,7 @@
     <Label text="Last Name:" />	<TextField fx:id="lastNameField" prefColumnCount="30" MigPane.cc="growx, wrap" />
 
     <Button text="Say Hello" onAction="#sayHello" MigPane.cc="skip, gap :push, gaptop 15, wrap" />
+    <Button text="Add Window" onAction="#addWindow" MigPane.cc="skip, gap :push, gaptop 15, wrap" />
 
     <Label fx:id="messageLabel" styleClass="hello-message" MigPane.cc="span, growx, gaptop 15" />
 
