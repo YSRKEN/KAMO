@@ -1,9 +1,14 @@
-package com.ysrken.kamo.control;
+package com.ysrken.kamo.service;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.MainApp;
 
@@ -17,8 +22,13 @@ import javafx.stage.Stage;
  * @author ysrken
  *
  */
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ExtraStage {
 	private Stage stage;
+	
+	@Autowired
+	private LoggerService logger;
 	
 	/**
 	 * コンストラクタ
@@ -38,6 +48,16 @@ public class ExtraStage {
         Scene scene = new Scene(rootNode);
         scene.getStylesheets().add("/styles/styles.css");
         this.stage.setScene(scene);
+        
+        // ウィンドウが移動・リサイズした際のイベントを登録する
+        stage.xProperty().addListener((ob, o, n) -> showWindowRect());
+        stage.yProperty().addListener((ob, o, n) -> showWindowRect());
+        stage.widthProperty().addListener((ob, o, n) -> showWindowRect());
+        stage.heightProperty().addListener((ob, o, n) -> showWindowRect());
+	}
+	
+	private void showWindowRect() {
+		//logger.debug("Rect→(" + stage.getX() + "," + stage.getY() + ")-" + stage.getWidth() + "x" + stage.getHeight());
 	}
 	
 	/**

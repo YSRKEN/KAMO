@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
-import com.ysrken.kamo.control.ExtraStage;
+import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.LoggerService;
 
 import javafx.application.Application;

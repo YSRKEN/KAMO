@@ -5,12 +5,14 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.MainApp;
-import com.ysrken.kamo.control.ExtraStage;
+import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.TestService;
 
 import javafx.fxml.FXML;
@@ -25,14 +27,13 @@ import javafx.stage.Stage;
  * Helloコントローラー
  */
 @Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class HelloController
 {
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
     @FXML private Label messageLabel;
 
-    private static final Logger log = LoggerFactory.getLogger(HelloController.class);
-    
     @Autowired
     private TestService testService;
     
