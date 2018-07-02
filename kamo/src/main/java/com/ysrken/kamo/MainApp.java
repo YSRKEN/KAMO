@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
+import com.ysrken.kamo.control.ExtraStage;
 import com.ysrken.kamo.service.LoggerService;
 
 import javafx.application.Application;
@@ -46,20 +47,14 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
 
     	loggerService.info("Starting Hello JavaFX and Maven demonstration application");
-
         String fxmlFile = "/fxml/hello.fxml";
         loggerService.debug("Loading FXML for main view from: {}", fxmlFile);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(context::getBean);
-        Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
-
-        loggerService.debug("Showing JFX scene");
-        Scene scene = new Scene(rootNode, 400, 200);
-        scene.getStylesheets().add("/styles/styles.css");
-
-        stage.setTitle("Hello JavaFX and Maven");
-        stage.setScene(scene);
-        stage.show();
+        ExtraStage mainStage = new ExtraStage(stage, fxmlFile) {{
+        	setTitle("Hello JavaFX and Maven");
+        	setWidth(400);
+        	setHeight(300);
+        }};
+        mainStage.show();
     }
     
     /**
