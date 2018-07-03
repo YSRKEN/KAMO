@@ -1,22 +1,13 @@
 package com.ysrken.kamo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.LoggerService;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -49,11 +40,10 @@ public class MainApp extends Application {
     	loggerService.info("Starting Hello JavaFX and Maven demonstration application");
         String fxmlFile = "/fxml/hello.fxml";
         loggerService.debug("Loading FXML for main view from: {}", fxmlFile);
-        ExtraStage mainStage = new ExtraStage(stage, fxmlFile) {{
-        	setTitle("Hello JavaFX and Maven");
-        	setWidth(400);
-        	setHeight(300);
-        }};
+        ExtraStage mainStage = ExtraStage.Factory(stage, fxmlFile);
+        mainStage.setTitle("Hello JavaFX and Maven");
+        mainStage.setWidth(400);
+        mainStage.setHeight(300);
         mainStage.show();
     }
     
