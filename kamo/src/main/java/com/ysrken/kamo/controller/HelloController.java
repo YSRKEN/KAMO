@@ -4,23 +4,20 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.ysrken.kamo.MainApp;
-import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.ExtraStageFactory;
+import com.ysrken.kamo.service.ExtraStageImpl;
 import com.ysrken.kamo.service.TestService;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 /**
  * Helloコントローラー
+ * @author ysrken
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -36,16 +33,21 @@ public class HelloController
     @Autowired
     private ExtraStageFactory factory;
     
+    /**
+     * ボタン操作1
+     */
     public void sayHello() {
-
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
-
         messageLabel.setText(testService.joinName(firstName, lastName));
     }
     
+    /**
+     * ボタン操作2
+     * @throws IOException FXMLファイルを読み込めない際に発生
+     */
     public void addWindow() throws IOException {
-		ExtraStage slaveStage = factory.create(new Stage(), "/fxml/hello.fxml");
+		ExtraStageImpl slaveStage = factory.create("/fxml/hello.fxml");
     	slaveStage.setTitle("Slave Window");
     	slaveStage.setWidth(400);
     	slaveStage.setHeight(300);

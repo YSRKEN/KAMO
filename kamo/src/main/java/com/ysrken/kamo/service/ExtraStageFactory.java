@@ -6,10 +6,29 @@ import com.ysrken.kamo.MainApp;
 
 import javafx.stage.Stage;
 
+/**
+ * ExtraStageクラスのファクトリクラス
+ * @author ysrken
+ */
 @Component
 public class ExtraStageFactory {
 	
-	public ExtraStage create(Stage stage, String fxmlPath) {
+	/**
+	 * ExtraStageクラスのインスタンスを生成
+	 * @param stage 元となるStage
+	 * @param fxmlPath FXMLファイルのパス
+	 * @return ExtraStageクラスのインスタンス
+	 */
+	public ExtraStageImpl create(Stage stage, String fxmlPath) {
 		return MainApp.getApplicationContext().getBean(ExtraStage.class, stage, fxmlPath);
+	}
+	
+	/**
+	 * ExtraStageクラスのインスタンスを生成
+	 * @param fxmlPath FXMLファイルのパス
+	 * @return ExtraStageクラスのインスタンス
+	 */
+	public ExtraStageImpl create(String fxmlPath) {
+		return create(new Stage(), fxmlPath);
 	}
 }

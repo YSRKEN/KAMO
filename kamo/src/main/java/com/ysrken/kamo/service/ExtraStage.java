@@ -17,13 +17,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Stageを拡張したクラス
+ * ExtraStageImplの実装クラス
  * @author ysrken
  *
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ExtraStage {
+public class ExtraStage implements ExtraStageImpl {
 	private Stage stage;
 	
 	@Autowired
@@ -55,39 +55,41 @@ public class ExtraStage {
         stage.heightProperty().addListener((ob, o, n) -> showWindowRect());
 	}
 	
+	/**
+	 * ウィンドウのRectをロギング
+	 */
 	private void showWindowRect() {
-		if(logger != null)
-			logger.debug("Rect→(" + stage.getX() + "," + stage.getY() + ")-" + stage.getWidth() + "x" + stage.getHeight());
-		//System.out.println("Rect→(" + stage.getX() + "," + stage.getY() + ")-" + stage.getWidth() + "x" + stage.getHeight());
+		logger.debug("Rect→(" + stage.getX() + "," + stage.getY() + ")-" + stage.getWidth() + "x" + stage.getHeight());
 	}
 	
-	/**
-	 * ウィンドウを表示する
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStageImpl#show()
 	 */
+	@Override
 	public void show() {
 		stage.show();
 	}
 	
-	/**
-	 * タイトルを設定する
-	 * @param title
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStageImpl#setTitle(java.lang.String)
 	 */
+	@Override
 	public void setTitle(String title) {
 		stage.setTitle(title);
 	}
 	
-	/**
-	 * 横幅を設定する
-	 * @param width
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStageImpl#setWidth(double)
 	 */
+	@Override
 	public void setWidth(double width) {
 		this.stage.setWidth(width);
 	}
 	
-	/**
-	 * 縦幅を設定する
-	 * @param height
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStageImpl#setHeight(double)
 	 */
+	@Override
 	public void setHeight(double height) {
 		this.stage.setHeight(height);
 	}
