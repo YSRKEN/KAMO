@@ -30,18 +30,6 @@ public class ExtraStage {
 	private LoggerService logger;
 	
 	/**
-	 * 自動的にDIするためのヘルパーメソッド
-	 * @param stage 食わせるStage型のインスタンス
-	 * @param fxmlPath FXMLファイルへのパス
-	 * @return ExtraStage型のインスタンス
-	 */
-	public static ExtraStage Factory(Stage stage, String fxmlPath) {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(MainApp.class);
-		ExtraStage es = context.getBean(ExtraStage.class, stage, fxmlPath);
-		return es;
-	}
-	
-	/**
 	 * コンストラクタ
 	 * @param stage 食わせるStage型のインスタンス
 	 * @param fxmlPath FXMLファイルへのパス

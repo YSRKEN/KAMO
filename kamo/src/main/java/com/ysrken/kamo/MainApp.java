@@ -40,7 +40,7 @@ public class MainApp extends Application {
     	loggerService.info("Starting Hello JavaFX and Maven demonstration application");
         String fxmlFile = "/fxml/hello.fxml";
         loggerService.debug("Loading FXML for main view from: {}", fxmlFile);
-        ExtraStage mainStage = ExtraStage.Factory(stage, fxmlFile);
+		ExtraStage mainStage = context.getBean(ExtraStage.class, stage, fxmlFile);
         mainStage.setTitle("Hello JavaFX and Maven");
         mainStage.setWidth(400);
         mainStage.setHeight(300);

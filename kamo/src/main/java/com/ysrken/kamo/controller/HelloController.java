@@ -4,9 +4,12 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.ysrken.kamo.MainApp;
 import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.TestService;
 
@@ -38,7 +41,8 @@ public class HelloController
     }
     
     public void addWindow() throws IOException {
-    	ExtraStage slaveStage = ExtraStage.Factory(new Stage(), "/fxml/hello.fxml");
+    	ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(MainApp.class);
+		ExtraStage slaveStage = context.getBean(ExtraStage.class, new Stage(), "/fxml/hello.fxml");
     	slaveStage.setTitle("Slave Window");
     	slaveStage.setWidth(400);
     	slaveStage.setHeight(300);
