@@ -1,5 +1,6 @@
 package com.ysrken.kamo;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -45,6 +46,14 @@ public class MainApp extends Application {
         mainStage.setWidth(400);
         mainStage.setHeight(300);
         mainStage.show();
+    }
+    
+    /**
+     * ApplicationContextを引き回すために使用
+     * @return 共用するApplicationContext
+     */
+    public static ApplicationContext getApplicationContext() {
+    	return context;
     }
     
     /**

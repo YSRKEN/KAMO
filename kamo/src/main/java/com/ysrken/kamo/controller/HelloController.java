@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.MainApp;
 import com.ysrken.kamo.service.ExtraStage;
+import com.ysrken.kamo.service.ExtraStageFactory;
 import com.ysrken.kamo.service.TestService;
 
 import javafx.fxml.FXML;
@@ -32,6 +33,9 @@ public class HelloController
     @Autowired
     private TestService testService;
     
+    @Autowired
+    private ExtraStageFactory factory;
+    
     public void sayHello() {
 
         String firstName = firstNameField.getText();
@@ -41,8 +45,7 @@ public class HelloController
     }
     
     public void addWindow() throws IOException {
-    	ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(MainApp.class);
-		ExtraStage slaveStage = context.getBean(ExtraStage.class, new Stage(), "/fxml/hello.fxml");
+		ExtraStage slaveStage = factory.create(new Stage(), "/fxml/hello.fxml");
     	slaveStage.setTitle("Slave Window");
     	slaveStage.setWidth(400);
     	slaveStage.setHeight(300);
