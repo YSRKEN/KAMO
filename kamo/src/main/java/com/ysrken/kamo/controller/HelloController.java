@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.ysrken.kamo.service.SettingService;
 import com.ysrken.kamo.service.TestService;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
@@ -32,7 +33,7 @@ public class HelloController
     
     @Autowired
     private ExtraStageFactory factory;
-    
+        
     // 開かれる新規ウィンドウ
     private ExtraStage slaveStage = null;
     

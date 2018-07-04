@@ -1,5 +1,6 @@
 package com.ysrken.kamo.stage;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.MainApp;
 import com.ysrken.kamo.service.LoggerService;
+import com.ysrken.kamo.service.SettingService;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,6 +31,9 @@ public class ExtraStageImpl implements ExtraStage {
 	
 	@Autowired
 	private LoggerService logger;
+	
+    @Autowired
+    private SettingService settingService;
 	
 	/**
 	 * コンストラクタ
@@ -59,7 +64,11 @@ public class ExtraStageImpl implements ExtraStage {
 	 * ウィンドウのRectをロギング
 	 */
 	private void showWindowRect() {
-		logger.debug("Rect→(" + stage.getX() + "," + stage.getY() + ")-" + stage.getWidth() + "x" + stage.getHeight());
+		settingService.getSetting().setMainWindowRectX((int)stage.getX());
+		settingService.getSetting().setMainWindowRectY((int)stage.getY());
+		settingService.getSetting().setMainWindowRectW((int)stage.getWidth());
+		settingService.getSetting().setMainWindowRectH((int)stage.getHeight());
+		settingService.saveSetting();
 	}
 	
 	/* (非 Javadoc)
