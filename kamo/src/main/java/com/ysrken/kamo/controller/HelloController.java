@@ -33,6 +33,9 @@ public class HelloController
     @Autowired
     private ExtraStageFactory factory;
     
+    // 開かれる新規ウィンドウ
+    private ExtraStage slaveStage = null;
+    
     /**
      * ボタン操作1
      */
@@ -47,10 +50,12 @@ public class HelloController
      * @throws IOException FXMLファイルを読み込めない際に発生
      */
     public void addWindow() throws IOException {
-		ExtraStage slaveStage = factory.create("/fxml/hello.fxml");
-    	slaveStage.setTitle("Slave Window");
-    	slaveStage.setWidth(400);
-    	slaveStage.setHeight(300);
-        slaveStage.show();
+    	if(slaveStage == null) {
+    		slaveStage = factory.create("/fxml/hello.fxml");
+    		slaveStage.setTitle("Slave Window");
+    		slaveStage.setWidth(400);
+    		slaveStage.setHeight(300);
+    		slaveStage.show();
+    	}
     }
 }
