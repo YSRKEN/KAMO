@@ -5,8 +5,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.ExtraStageImpl;
+import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.LoggerService;
 
 import javafx.application.Application;
@@ -42,7 +42,7 @@ public class MainApp extends Application {
     	loggerService.info("Starting Hello JavaFX and Maven demonstration application");
         String fxmlFile = "/fxml/hello.fxml";
         loggerService.debug("Loading FXML for main view from: {}", fxmlFile);
-		ExtraStageImpl mainStage = context.getBean(ExtraStage.class, stage, fxmlFile);
+		ExtraStage mainStage = context.getBean(ExtraStageImpl.class, stage, fxmlFile);
         mainStage.setTitle("Hello JavaFX and Maven");
         mainStage.setWidth(400);
         mainStage.setHeight(300);

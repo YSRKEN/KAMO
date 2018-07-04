@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.service.ExtraStageFactory;
-import com.ysrken.kamo.service.ExtraStageImpl;
+import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.TestService;
 
 import javafx.fxml.FXML;
@@ -47,7 +47,7 @@ public class HelloController
      * @throws IOException FXMLファイルを読み込めない際に発生
      */
     public void addWindow() throws IOException {
-		ExtraStageImpl slaveStage = factory.create("/fxml/hello.fxml");
+		ExtraStage slaveStage = factory.create("/fxml/hello.fxml");
     	slaveStage.setTitle("Slave Window");
     	slaveStage.setWidth(400);
     	slaveStage.setHeight(300);

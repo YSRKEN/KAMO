@@ -1,32 +1,96 @@
 package com.ysrken.kamo.service;
 
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.ysrken.kamo.MainApp;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 /**
- * Stageを拡張したクラス用のインターフェース
+ * ExtraStageImplの実装クラス
  * @author ysrken
+ *
  */
-public interface ExtraStageImpl {
-
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class ExtraStageImpl implements ExtraStage {
+	private Stage stage;
+	
+	@Autowired
+	private LoggerService logger;
+	
 	/**
-	 * ウィンドウを表示する
+	 * コンストラクタ
+	 * @param stage 食わせるStage型のインスタンス
+	 * @param fxmlPath FXMLファイルへのパス
+	 * @throws IOException 
 	 */
-	void show();
-
+	public ExtraStageImpl(Stage stage, String fxmlPath) throws IOException {
+		// Stage情報を記録する
+		this.stage = stage;
+		
+		// FXMLを読み込み、Stageに設定する
+		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(MainApp.class);
+		FXMLLoader loader = new FXMLLoader();
+        loader.setControllerFactory(context::getBean);
+        Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlPath));
+        Scene scene = new Scene(rootNode);
+        scene.getStylesheets().add("/styles/styles.css");
+        this.stage.setScene(scene);
+        
+        // ウィンドウが移動・リサイズした際のイベントを登録する
+        stage.xProperty().addListener((ob, o, n) -> showWindowRect());
+        stage.yProperty().addListener((ob, o, n) -> showWindowRect());
+        stage.widthProperty().addListener((ob, o, n) -> showWindowRect());
+        stage.heightProperty().addListener((ob, o, n) -> showWindowRect());
+	}
+	
 	/**
-	 * タイトルを設定する
-	 * @param title
+	 * ウィンドウのRectをロギング
 	 */
-	void setTitle(String title);
-
-	/**
-	 * 横幅を設定する
-	 * @param width
+	private void showWindowRect() {
+		logger.debug("Rect→(" + stage.getX() + "," + stage.getY() + ")-" + stage.getWidth() + "x" + stage.getHeight());
+	}
+	
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#show()
 	 */
-	void setWidth(double width);
-
-	/**
-	 * 縦幅を設定する
-	 * @param height
+	@Override
+	public void show() {
+		stage.show();
+	}
+	
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#setTitle(java.lang.String)
 	 */
-	void setHeight(double height);
-
+	@Override
+	public void setTitle(String title) {
+		stage.setTitle(title);
+	}
+	
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#setWidth(double)
+	 */
+	@Override
+	public void setWidth(double width) {
+		this.stage.setWidth(width);
+	}
+	
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#setHeight(double)
+	 */
+	@Override
+	public void setHeight(double height) {
+		this.stage.setHeight(height);
+	}
 }
