@@ -1,4 +1,4 @@
-package com.ysrken.kamo.service;
+package com.ysrken.kamo.stage;
 
 import org.springframework.stereotype.Component;
 

@@ -5,9 +5,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.ysrken.kamo.service.ExtraStageImpl;
-import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.LoggerService;
+import com.ysrken.kamo.stage.ExtraStage;
+import com.ysrken.kamo.stage.ExtraStageImpl;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

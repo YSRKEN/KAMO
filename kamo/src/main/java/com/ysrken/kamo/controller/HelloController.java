@@ -7,9 +7,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.ysrken.kamo.service.ExtraStageFactory;
-import com.ysrken.kamo.service.ExtraStage;
 import com.ysrken.kamo.service.TestService;
+import com.ysrken.kamo.stage.ExtraStage;
+import com.ysrken.kamo.stage.ExtraStageFactory;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

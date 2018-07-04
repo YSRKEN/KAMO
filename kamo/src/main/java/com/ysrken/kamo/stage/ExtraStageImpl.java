@@ -1,4 +1,4 @@
-package com.ysrken.kamo.service;
+package com.ysrken.kamo.stage;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.MainApp;
+import com.ysrken.kamo.service.LoggerService;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,9 +41,8 @@ public class ExtraStageImpl implements ExtraStage {
 		this.stage = stage;
 		
 		// FXMLを読み込み、Stageに設定する
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(MainApp.class);
 		FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(context::getBean);
+        loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlPath));
         Scene scene = new Scene(rootNode);
         scene.getStylesheets().add("/styles/styles.css");
