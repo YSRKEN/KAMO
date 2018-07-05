@@ -19,8 +19,8 @@ public class ExtraStageFactory {
 	 * @param fxmlPath FXMLファイルのパス
 	 * @return ExtraStageクラスのインスタンス
 	 */
-	public ExtraStage create(Stage stage, String fxmlPath) {
-		return MainApp.getApplicationContext().getBean(ExtraStageImpl.class, stage, fxmlPath);
+	public ExtraStage create(Stage stage, String fxmlPath, String keyWord) {
+		return MainApp.getApplicationContext().getBean(ExtraStageImpl.class, stage, fxmlPath, keyWord);
 	}
 	
 	/**
@@ -28,7 +28,7 @@ public class ExtraStageFactory {
 	 * @param fxmlPath FXMLファイルのパス
 	 * @return ExtraStageクラスのインスタンス
 	 */
-	public ExtraStage create(String fxmlPath) {
-		return create(new Stage(), fxmlPath);
+	public ExtraStage create(String fxmlPath, String keyWord) {
+		return create(new Stage(), fxmlPath, keyWord);
 	}
 }

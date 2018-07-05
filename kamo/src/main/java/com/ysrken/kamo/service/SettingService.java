@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Supplier;
@@ -15,15 +17,13 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.ysrken.kamo.model.Setting;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Component
 public class SettingService {
-	@Getter
-	private Setting setting = new Setting();
+	private Map<String, Object> setting = new HashMap<>();
 
 	@Autowired
 	private LoggerService logger;
@@ -32,10 +32,10 @@ public class SettingService {
 	 * 最終保存日時
 	 */
     private Date lastSaveDate = new Date();
+
     /**
      * 保存するべきか？
      */
-    @Setter
     private boolean saveFlg = false;
 	
     /**
@@ -45,6 +45,14 @@ public class SettingService {
 		// 自動セーブ設定
         final Timer saveTimer = new Timer();
         saveTimer.schedule(new SaveTask(() -> saveSetting()), 0, 1000);
+	}
+	
+	/**
+	 * 設定を編集する
+	 */
+	public void setSetting(String key, Object value) {
+		setting.put(key, value);
+		saveFlg = true;
 	}
 	
 	/**

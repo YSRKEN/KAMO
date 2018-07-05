@@ -52,7 +52,7 @@ public class HelloController
      */
     public void addWindow() throws IOException {
     	if(slaveStage == null) {
-    		slaveStage = factory.create("/fxml/hello.fxml");
+    		slaveStage = factory.create("/fxml/hello.fxml", "SlaveWindow");
     		slaveStage.setTitle("Slave Window");
     		slaveStage.setWidth(400);
     		slaveStage.setHeight(300);

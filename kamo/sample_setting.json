@@ -1,6 +1,4 @@
 {
-  "mainWindowRectX" : 900,
-  "mainWindowRectY" : 196,
-  "mainWindowRectW" : 649,
-  "mainWindowRectH" : 243
+  "MainWindow" : [ 778.0, 93.0, 400.0, 300.0 ],
+  "SlaveWindow" : [ 1323.0, 158.0, 400.0, 300.0 ]
 }

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.ysrken.kamo.MainApp;
 import com.ysrken.kamo.service.LoggerService;
 import com.ysrken.kamo.service.SettingService;
@@ -27,7 +28,16 @@ import javafx.stage.Stage;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ExtraStageImpl implements ExtraStage {
+	
+	/**
+	 * Stage情報
+	 */
 	private Stage stage;
+	
+	/**
+	 * ウィンドウを一意に特定するためのキー
+	 */
+	private String keyWord;
 	
 	@Autowired
 	private LoggerService logger;
@@ -41,9 +51,11 @@ public class ExtraStageImpl implements ExtraStage {
 	 * @param fxmlPath FXMLファイルへのパス
 	 * @throws IOException 
 	 */
-	public ExtraStageImpl(Stage stage, String fxmlPath) throws IOException {
+	public ExtraStageImpl(Stage stage, String fxmlPath, String keyWord) throws IOException {
 		// Stage情報を記録する
 		this.stage = stage;
+		// キー情報を記録する
+		this.keyWord = keyWord;
 		
 		// FXMLを読み込み、Stageに設定する
 		FXMLLoader loader = new FXMLLoader();
@@ -64,11 +76,12 @@ public class ExtraStageImpl implements ExtraStage {
 	 * ウィンドウのRectをロギング
 	 */
 	private void showWindowRect() {
-		settingService.getSetting().setMainWindowRectX((int)stage.getX());
-		settingService.getSetting().setMainWindowRectY((int)stage.getY());
-		settingService.getSetting().setMainWindowRectW((int)stage.getWidth());
-		settingService.getSetting().setMainWindowRectH((int)stage.getHeight());
-		settingService.setSaveFlg(true);
+		settingService.setSetting(keyWord, new double[] {
+				stage.getX(),
+				stage.getY(),
+				stage.getWidth(),
+				stage.getHeight()
+		});
 	}
 	
 	/* (非 Javadoc)
