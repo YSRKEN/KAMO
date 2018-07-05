@@ -68,7 +68,7 @@ public class ExtraStageImpl implements ExtraStage {
 		settingService.getSetting().setMainWindowRectY((int)stage.getY());
 		settingService.getSetting().setMainWindowRectW((int)stage.getWidth());
 		settingService.getSetting().setMainWindowRectH((int)stage.getHeight());
-		settingService.saveSetting();
+		settingService.setSaveFlg(true);
 	}
 	
 	/* (非 Javadoc)
