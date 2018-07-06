@@ -36,10 +36,10 @@ public class MainApp extends Application {
      * @throws Exception 実行時例外
      */
     public void start(Stage stage) throws Exception {
-		ExtraStage mainStage = context.getBean(ExtraStageImpl.class, stage, "/fxml/hello.fxml", "MainWindow");
-        mainStage.setTitle("Hello JavaFX and Maven");
+		ExtraStage mainStage = context.getBean(ExtraStageImpl.class, stage, "/fxml/main.fxml", "MainWindow");
+        mainStage.setTitle("艦これモニタリングツール「KAMO」");
         mainStage.setWidth(400);
-        mainStage.setHeight(300);
+        mainStage.setHeight(250);
         mainStage.show();
     }
     
