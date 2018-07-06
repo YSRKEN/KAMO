@@ -39,9 +39,6 @@ public class ExtraStageImpl implements ExtraStage {
 	 */
 	private String keyWord;
 	
-	@Autowired
-	private LoggerService logger;
-	
     @Autowired
     private SettingService settingService;
 	
@@ -64,6 +61,9 @@ public class ExtraStageImpl implements ExtraStage {
         Scene scene = new Scene(rootNode);
         scene.getStylesheets().add("/styles/styles.css");
         this.stage.setScene(scene);
+        
+        // その他の情報を登録する
+        this.stage.setAlwaysOnTop(true);
         
         // ウィンドウが移動・リサイズした際のイベントを登録する
         stage.xProperty().addListener((ob, o, n) -> showWindowRect());
@@ -106,6 +106,7 @@ public class ExtraStageImpl implements ExtraStage {
 	@Override
 	public void setWidth(double width) {
 		this.stage.setWidth(width);
+		this.stage.setMinWidth(width);
 	}
 	
 	/* (非 Javadoc)
@@ -114,5 +115,14 @@ public class ExtraStageImpl implements ExtraStage {
 	@Override
 	public void setHeight(double height) {
 		this.stage.setHeight(height);
+		this.stage.setMinWidth(height);
+	}
+	
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#setOnCloseRequest(Runnable)
+	 */
+	@Override
+	public void setOnCloseRequest(Runnable func) {
+		this.stage.setOnCloseRequest(req -> func.run());
 	}
 }

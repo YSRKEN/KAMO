@@ -18,9 +18,6 @@ import javafx.stage.Stage;
  */
 @ComponentScan
 public class MainApp extends Application {
-
-	private LoggerService loggerService = new LoggerService();
-
     private static ConfigurableApplicationContext context;
     
     /**
@@ -39,10 +36,7 @@ public class MainApp extends Application {
      * @throws Exception 実行時例外
      */
     public void start(Stage stage) throws Exception {
-    	loggerService.info("Starting Hello JavaFX and Maven demonstration application");
-        String fxmlFile = "/fxml/hello.fxml";
-        loggerService.debug("Loading FXML for main view from: {}", fxmlFile);
-		ExtraStage mainStage = context.getBean(ExtraStageImpl.class, stage, fxmlFile, "MainWindow");
+		ExtraStage mainStage = context.getBean(ExtraStageImpl.class, stage, "/fxml/hello.fxml", "MainWindow");
         mainStage.setTitle("Hello JavaFX and Maven");
         mainStage.setWidth(400);
         mainStage.setHeight(300);

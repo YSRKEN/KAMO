@@ -12,7 +12,10 @@ import com.ysrken.kamo.service.TestService;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -27,6 +30,7 @@ public class HelloController
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
     @FXML private Label messageLabel;
+    @FXML private Button addWindowButton;
 
     @Autowired
     private TestService testService;
@@ -35,7 +39,16 @@ public class HelloController
     private ExtraStageFactory factory;
         
     // 開かれる新規ウィンドウ
-    private ExtraStage slaveStage = null;
+    private ObjectProperty<ExtraStage> slaveStage = new SimpleObjectProperty<>(null);
+    
+    /**
+     * コンストラクタ
+     */
+    public HelloController() {
+    	slaveStage.addListener((ob, o, n) -> {
+    		addWindowButton.disableProperty().set(n != null);
+    	});
+    }
     
     /**
      * ボタン操作1
@@ -51,12 +64,16 @@ public class HelloController
      * @throws IOException FXMLファイルを読み込めない際に発生
      */
     public void addWindow() throws IOException {
-    	if(slaveStage == null) {
-    		slaveStage = factory.create("/fxml/hello.fxml", "SlaveWindow");
-    		slaveStage.setTitle("Slave Window");
-    		slaveStage.setWidth(400);
-    		slaveStage.setHeight(300);
-    		slaveStage.show();
+    	if(slaveStage.get() == null) {
+    		slaveStage.set(factory.create("/fxml/hello.fxml", "SlaveWindow"));
+    		slaveStage.get().setTitle("Slave Window");
+    		slaveStage.get().setWidth(400);
+    		slaveStage.get().setHeight(300);
+    		addWindowButton.disableProperty().set(true);
+    		slaveStage.get().setOnCloseRequest(() -> {
+    			slaveStage.set(null);
+    		});
+    		slaveStage.get().show();
     	}
     }
 }

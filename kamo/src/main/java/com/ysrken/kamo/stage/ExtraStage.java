@@ -29,4 +29,9 @@ public interface ExtraStage {
 	 */
 	void setHeight(double height);
 
+	/**
+	 * ウィンドウの×ボタンを押した際の動きを指定する
+	 * @param func
+	 */
+	void setOnCloseRequest(Runnable func);
 }
