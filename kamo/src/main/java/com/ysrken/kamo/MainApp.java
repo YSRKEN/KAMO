@@ -5,9 +5,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.ysrken.kamo.service.LoggerService;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageImpl;
+import static com.ysrken.kamo.Constant.*;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -37,7 +37,7 @@ public class MainApp extends Application {
      */
     public void start(Stage stage) throws Exception {
 		ExtraStage mainStage = context.getBean(ExtraStageImpl.class, stage, "/fxml/main.fxml", "MainWindow");
-        mainStage.setTitle("艦これモニタリングツール「KAMO」");
+        mainStage.setTitle(SOFTWARE_NAME);
         mainStage.setWidth(400);
         mainStage.setHeight(250);
         mainStage.show();

@@ -1,18 +1,13 @@
 package com.ysrken.kamo.stage;
 
-import java.awt.Rectangle;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.ysrken.kamo.MainApp;
-import com.ysrken.kamo.service.LoggerService;
 import com.ysrken.kamo.service.SettingService;
 
 import javafx.fxml.FXMLLoader;
