@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.model.MainModel;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -54,6 +53,12 @@ public class MainController {
 	 */
 	public void initialize(){
 		// メソッドをコントロールに割り当てる
-		ExitMenu.setOnAction(EventHandler -> mainModel.exitCommand());
+		ExitMenu.setOnAction(e -> mainModel.exitCommand());
+		GetPositionMenu.setOnAction(e -> mainModel.getPositionCommand());
+		GetPositionButton.setOnAction(e -> mainModel.getPositionCommand());
+		
+		// プロパティをData Bindingさせる
+		SaveScreenshotMenu.disableProperty().bind(mainModel.getDisableSaveScreenshotFlg());
+		SaveScreenshotButton.disableProperty().bind(mainModel.getDisableSaveScreenshotFlg());
 	}
 }
