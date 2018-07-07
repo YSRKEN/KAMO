@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.model.MainModel;
+import com.ysrken.kamo.service.UtilityService;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -46,19 +48,29 @@ public class MainController {
 	 * Model情報
 	 */
 	@Autowired
-	MainModel mainModel;
+	MainModel model;
+	
+	/**
+	 * 各種サービス
+	 */
+	@Autowired
+	UtilityService utility;
 	
 	/**
 	 * 初期化
 	 */
 	public void initialize(){
 		// メソッドをコントロールに割り当てる
-		ExitMenu.setOnAction(e -> mainModel.exitCommand());
-		GetPositionMenu.setOnAction(e -> mainModel.getPositionCommand());
-		GetPositionButton.setOnAction(e -> mainModel.getPositionCommand());
+		ExitMenu.setOnAction(e -> model.exitCommand());
+		GetPositionMenu.setOnAction(e -> model.getPositionCommand());
+		GetPositionButton.setOnAction(e -> model.getPositionCommand());
 		
 		// プロパティをData Bindingさせる
-		SaveScreenshotMenu.disableProperty().bind(mainModel.getDisableSaveScreenshotFlg());
-		SaveScreenshotButton.disableProperty().bind(mainModel.getDisableSaveScreenshotFlg());
+		SaveScreenshotMenu.disableProperty().bind(model.getDisableSaveScreenshotFlg());
+		SaveScreenshotButton.disableProperty().bind(model.getDisableSaveScreenshotFlg());
+		
+		// 使えない設定をdisableする
+        OpenPicFolderMenu.setDisable(!utility.isWindows());
+        SpecialGetPosMenu.setDisable(!utility.isWindows());
 	}
 }
