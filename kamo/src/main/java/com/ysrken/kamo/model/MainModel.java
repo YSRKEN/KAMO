@@ -11,6 +11,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import lombok.Getter;
 
 /**
@@ -34,6 +36,24 @@ public class MainModel {
 	private BooleanProperty openTimerFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty openSceneHelperFlg = new SimpleBooleanProperty(false);
+	
+	/**
+	 * 各種設定項目
+	 */
+	@Getter
+	private BooleanProperty autoGetPositionFlg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty blindNameTextFlg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty specialGetPosFlg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty saveWindowPositionFlg = new SimpleBooleanProperty(false);
+	
+	/**
+	 * シーン情報
+	 */
+	@Getter
+	private StringProperty nowSceneText = new SimpleStringProperty("シーン判定：[不明]");
 	
 	/**
 	 * 各種画面

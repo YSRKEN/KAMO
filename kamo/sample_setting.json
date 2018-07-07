@@ -1,6 +1,3 @@
 {
-  "BattleSceneReflectionWindow" : [ 1274.0, 314.0, 400.0, 300.0 ],
-  "MainWindow" : [ 760.0, 256.0, 400.0, 250.0 ],
-  "SceneHelperWindow" : [ 426.0, 524.0, 400.0, 300.0 ],
-  "TimerWindow" : [ 880.0, 606.0, 400.0, 300.0 ]
+  "MainWindow" : [ 760.0, 256.0, 400.0, 250.0 ]
 }

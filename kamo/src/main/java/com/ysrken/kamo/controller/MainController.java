@@ -8,6 +8,7 @@ import com.ysrken.kamo.service.UtilityService;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
@@ -28,10 +29,10 @@ public class MainController {
 	@FXML private MenuItem OpenBattleSceneReflectionMenu;
 	@FXML private MenuItem OpenTimerMenu;
 	@FXML private MenuItem OpenSceneHelperMenu;
-	@FXML private MenuItem AutoGetPositionMenu;
-	@FXML private MenuItem BlindNameTextMenu;
-	@FXML private MenuItem SpecialGetPosMenu;
-	@FXML private MenuItem SaveWindowPositionMenu;
+	@FXML private CheckMenuItem AutoGetPositionMenu;
+	@FXML private CheckMenuItem BlindNameTextMenu;
+	@FXML private CheckMenuItem SpecialGetPosMenu;
+	@FXML private CheckMenuItem SaveWindowPositionMenu;
 	@FXML private MenuItem OpenWikiMenu;
 	@FXML private MenuItem CheckVersionMenu;
 	@FXML private MenuItem AboutMenu;
@@ -74,6 +75,11 @@ public class MainController {
 		OpenBattleSceneReflectionMenu.disableProperty().bind(model.getOpenBattleSceneReflectionFlg());
 		OpenTimerMenu.disableProperty().bind(model.getOpenTimerFlg());
 		OpenSceneHelperMenu.disableProperty().bind(model.getOpenSceneHelperFlg());
+		NowSceneTextLabel.textProperty().bind(model.getNowSceneText());
+		AutoGetPositionMenu.selectedProperty().bindBidirectional(model.getAutoGetPositionFlg());
+		BlindNameTextMenu.selectedProperty().bindBidirectional(model.getBlindNameTextFlg());
+		SpecialGetPosMenu.selectedProperty().bindBidirectional(model.getSpecialGetPosFlg());
+		SaveWindowPositionMenu.selectedProperty().bindBidirectional(model.getSaveWindowPositionFlg());
 		
 		// 使えない設定をdisableする
         OpenPicFolderMenu.setDisable(!utility.isWindows());
