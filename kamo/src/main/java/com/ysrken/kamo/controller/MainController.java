@@ -64,10 +64,16 @@ public class MainController {
 		ExitMenu.setOnAction(e -> model.exitCommand());
 		GetPositionMenu.setOnAction(e -> model.getPositionCommand());
 		GetPositionButton.setOnAction(e -> model.getPositionCommand());
+		OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
+		OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
+		OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());
 		
 		// プロパティをData Bindingさせる
 		SaveScreenshotMenu.disableProperty().bind(model.getDisableSaveScreenshotFlg());
 		SaveScreenshotButton.disableProperty().bind(model.getDisableSaveScreenshotFlg());
+		OpenBattleSceneReflectionMenu.disableProperty().bind(model.getOpenBattleSceneReflectionFlg());
+		OpenTimerMenu.disableProperty().bind(model.getOpenTimerFlg());
+		OpenSceneHelperMenu.disableProperty().bind(model.getOpenSceneHelperFlg());
 		
 		// 使えない設定をdisableする
         OpenPicFolderMenu.setDisable(!utility.isWindows());
