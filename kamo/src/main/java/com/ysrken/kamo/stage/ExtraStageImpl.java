@@ -35,7 +35,7 @@ public class ExtraStageImpl implements ExtraStage {
 	private String keyWord;
 	
     @Autowired
-    private SettingService settingService;
+    private SettingService setting;
 	
 	/**
 	 * コンストラクタ
@@ -71,7 +71,7 @@ public class ExtraStageImpl implements ExtraStage {
 	 * ウィンドウのRectをロギング
 	 */
 	private void showWindowRect() {
-		settingService.setSetting(keyWord, new double[] {
+		setting.setSetting(keyWord, new double[] {
 				stage.getX(),
 				stage.getY(),
 				stage.getWidth(),

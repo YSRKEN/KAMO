@@ -56,6 +56,50 @@ public class SettingService {
 	}
 	
 	/**
+	 * 設定を読み込む
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getSetting(String key) {
+		if(setting.containsKey(key)) {
+			return (T)setting.get(key);
+		}else {
+			//　デフォルト値を返す
+			switch(key) {
+			
+			// 各画面の座標・大きさ
+			case "MainWindow":
+				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
+			case "BattleSceneReflectionWindow":
+				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
+			case "TimerWindow":
+				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
+			case "SceneHelperWindow":
+				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
+
+			//　各画面の表示の有無
+			case "OpenBattleSceneReflectionFlg":
+				return (T)(Boolean.FALSE);
+			case "OpenTimerFlg":
+				return (T)(Boolean.FALSE);
+			case "OpenSceneHelperFlg":
+				return (T)(Boolean.FALSE);
+				
+			// その他設定項目
+			case "AutoGetPositionFlg":
+				return (T)(Boolean.FALSE);
+			case "BlindNameTextFlg":
+				return (T)(Boolean.FALSE);
+			case "SpecialGetPosFlg":
+				return (T)(Boolean.FALSE);
+			case "SaveWindowPositionFlg":
+				return (T)(Boolean.FALSE);
+			default:
+				throw new IllegalArgumentException();
+			}
+		}
+	}
+	
+	/**
 	 * 設定を保存する
 	 */
 	public void saveSetting() {

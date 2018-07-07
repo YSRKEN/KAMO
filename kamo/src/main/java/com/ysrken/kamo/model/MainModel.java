@@ -3,14 +3,13 @@ package com.ysrken.kamo.model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ysrken.kamo.service.SettingService;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
@@ -67,7 +66,23 @@ public class MainModel {
 	 */
     @Autowired
     private ExtraStageFactory factory;
+    @Autowired
+    private SettingService setting;
 	
+    /**
+     * コンストラクタ
+     */
+    public MainModel() {
+    	// 設定変更時に情報を記録する
+    	openBattleSceneReflectionFlg.addListener((ob, o, n) -> setting.setSetting("OpenBattleSceneReflectionFlg", n));
+    	openTimerFlg.addListener((ob, o, n) -> setting.setSetting("OpenTimerFlg", n));
+    	openSceneHelperFlg.addListener((ob, o, n) -> setting.setSetting("OpenSceneHelperFlg", n));
+    	autoGetPositionFlg.addListener((ob, o, n) -> setting.setSetting("AutoGetPositionFlg", n));
+    	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
+    	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
+    	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
+    }
+    
 	/**
      * 終了コマンド
      */
