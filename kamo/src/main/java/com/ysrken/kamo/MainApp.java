@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
-import com.ysrken.kamo.stage.ExtraStageImpl;
 import static com.ysrken.kamo.Constant.*;
 
 import javafx.application.Application;

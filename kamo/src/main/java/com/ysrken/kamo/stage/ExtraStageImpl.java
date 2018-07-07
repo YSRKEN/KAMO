@@ -110,7 +110,7 @@ public class ExtraStageImpl implements ExtraStage {
 	@Override
 	public void setHeight(double height) {
 		this.stage.setHeight(height);
-		this.stage.setMinWidth(height);
+		this.stage.setMinHeight(height);
 	}
 	
 	/* (非 Javadoc)
