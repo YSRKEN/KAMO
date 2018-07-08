@@ -208,7 +208,13 @@ public class MainModel {
 		addLogText("名称：戦闘振り返り画面");
 		
 		// ウィンドウのStageを作成する
-		battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
+		try {
+			battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
+		} catch (IOException e) {
+			addLogText("エラー：IOエラーが発生しました。");
+			e.printStackTrace();
+			return;
+		}
 
 		// タイトルを設定する
 		battleSceneReflectionStage.setTitle("戦闘振り返り画面");
@@ -241,7 +247,12 @@ public class MainModel {
 		addLogText("名称：各種タイマー画面");
 		
 		// ウィンドウのStageを作成する
-		timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
+		try {
+			timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
+		} catch (IOException e) {
+			addLogText("エラー：IOエラーが発生しました。");
+			e.printStackTrace();
+		}
 		
 		// タイトルを設定する
 		timerStage.setTitle("各種タイマー画面");
@@ -274,7 +285,12 @@ public class MainModel {
 		addLogText("名称：画像認識支援画面");
 		
 		// ウィンドウのStageを作成する
-		sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
+		try {
+			sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
+		} catch (IOException e) {
+			addLogText("エラー：IOエラーが発生しました。");
+			e.printStackTrace();
+		}
 		
 		// タイトルを設定する
 		sceneHelperStage.setTitle("画像認識支援画面");

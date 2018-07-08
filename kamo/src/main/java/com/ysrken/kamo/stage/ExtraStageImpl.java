@@ -39,13 +39,19 @@ public class ExtraStageImpl implements ExtraStage {
     @Autowired
     private SettingService setting;
 	
+    public ExtraStageImpl() {
+    	System.out.println("DEBUG MainApp - ExtraStageImpl#ExtraStageImpl");
+    }
+    
 	/**
-	 * コンストラクタ
+	 * 初期化する
 	 * @param stage 食わせるStage型のインスタンス
 	 * @param fxmlPath FXMLファイルへのパス
 	 * @throws IOException 
 	 */
-	public ExtraStageImpl(Stage stage, String fxmlPath, String keyWord) throws IOException {
+	public void initialize(Stage stage, String fxmlPath, String keyWord) throws IOException {
+		System.out.println("DEBUG MainApp - ExtraStageImpl#initialize");
+		
 		// Stage情報を記録する
 		this.stage = stage;
 		// キー情報を記録する
@@ -63,10 +69,6 @@ public class ExtraStageImpl implements ExtraStage {
         this.stage.setAlwaysOnTop(true);
         
         // ウィンドウの座標を指定する
-        if(setting == null) {
-        	System.out.println("※new SettingService() in ExtraStageImpl");
-        	setting = new SettingService();
-        }
         ArrayList<Double> rect = setting.<Boolean>getSetting("SaveWindowPositionFlg")
         		? setting.<ArrayList<Double>>getSetting(keyWord)
         		: setting.<ArrayList<Double>>getDefaultSetting(keyWord);

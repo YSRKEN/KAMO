@@ -67,6 +67,7 @@ public class MainController {
 	 */
 	public void initialize() throws JsonProcessingException, IOException{
 		System.out.println("DEBUG MainApp - MainController#initialize");
+		
 		// メソッドをコントロールに割り当てる
 		ExitMenu.setOnAction(e -> model.exitCommand());
 		GetPositionMenu.setOnAction(e -> model.getPositionCommand());

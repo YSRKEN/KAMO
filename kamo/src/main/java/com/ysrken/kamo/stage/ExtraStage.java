@@ -1,11 +1,20 @@
 package com.ysrken.kamo.stage;
 
+import java.io.IOException;
+
+import javafx.stage.Stage;
+
 /**
  * Stageを拡張したクラス用のインターフェース
  * @author ysrken
  */
 public interface ExtraStage {
 
+	/**
+	 * 初期化する
+	 */
+	void initialize(Stage stage, String fxmlPath, String keyWord) throws IOException;
+	
 	/**
 	 * ウィンドウを表示する
 	 */

@@ -133,6 +133,7 @@ public class SceneRecognitionService {
      */
     public void initialize() throws JsonProcessingException, IOException {
     	System.out.println("DEBUG MainApp - SceneRecognitionService#initialize");
+    	
     	// JSONを読み込む
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode root = mapper.readTree(new File("D:\\自作ソフトウェア\\艦これモニタリングツール「KAMO」\\repository\\kamo\\src\\main\\resources\\scene_parameter.json"));
