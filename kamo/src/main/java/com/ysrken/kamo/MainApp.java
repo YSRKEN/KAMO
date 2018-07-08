@@ -10,6 +10,7 @@ import com.ysrken.kamo.stage.ExtraStageFactory;
 import static com.ysrken.kamo.Constant.*;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -42,6 +43,10 @@ public class MainApp extends Application {
         mainStage.setTitle(SOFTWARE_NAME);
         mainStage.setWidth(400);
         mainStage.setHeight(250);
+        mainStage.setOnCloseRequest(() -> {
+        	Platform.exit();
+            System.exit(0);
+        });
         mainStage.show();
     }
     
