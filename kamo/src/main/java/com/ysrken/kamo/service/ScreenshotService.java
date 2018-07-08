@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import one.util.streamex.IntStreamEx;
+
 @Component
 public class ScreenshotService {
     /**
@@ -186,7 +188,7 @@ public class ScreenshotService {
             step1Stream.flatMap(point ->
                 // (a,y)から左方向に0～stepWidth-1ピクセル戻るが、画像の範囲からはみ出さない
                 // ということを表現するため、こうした中間操作になっている
-                IntStream.range(0, stepWidth).map(j -> point.X - j).filter(x -> x >= 0)
+                IntStreamEx.range(0, stepWidth).map(j -> point.X - j).filter(x -> x >= 0)
                     // (a,y)の画素色と共通の範囲までしか左に戻らない、ということを表現するため、
                     // Java9のtakeWhileを使用した
                     .takeWhile(x -> image.getRGB(x, point.Y) == point.Color)
@@ -227,12 +229,12 @@ public class ScreenshotService {
             // つまり、「左上座標から右にminGameWidth+1ピクセル進んだ位置」から
             // 「min(左上座標から右にmaxGameWidth + 1ピクセル進んだ位置, 画像の右端)」まで。
             // rangeメソッドは終端(第二引数)を含まないので、+1ではなく+2表記なことに注意
-            IntStream.range(point.X + minGameWidth + 1, Math.min(point.X + maxGameWidth + 2, image.getWidth()))
+        	IntStreamEx.range(point.X + minGameWidth + 1, Math.min(point.X + maxGameWidth + 2, image.getWidth()))
                 //　ここのtakeWhileは、右上座標を右に1つづつ見ていく際に、右上座標が枠線の色と
                 // 異なってしまった場合、それ以上探索するのは無駄ということから来ている
                 .takeWhile(x2 -> image.getRGB(x2, point.Y) == point.Color).filter(x2 -> {
                     // 左下候補のy座標
-                    final var y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
+                    final int y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
                     if(y2 >= image.getHeight())
                         return false;
                     
@@ -269,7 +271,7 @@ public class ScreenshotService {
                     return true;
             }).mapToObj(x2 -> {
                 // 最後にRecrangleに変換
-                final var y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
+                final int y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
                 return new Rectangle(point.X + 1, point.Y + 1, x2 - point.X - 1, y2 - point.Y - 1);
             })
         ).collect(Collectors.toList());
