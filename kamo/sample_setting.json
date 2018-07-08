@@ -1,3 +1,8 @@
 {
-  "MainWindow" : [ 760.0, 256.0, 400.0, 250.0 ]
+  "OpenTimerFlg" : true,
+  "BlindNameTextFlg" : true,
+  "AutoGetPositionFlg" : false,
+  "SpecialGetPosFlg" : true,
+  "MainWindow" : [ 760.0, 256.0, 400.0, 250.0 ],
+  "TimerWindow" : [ 1212.0, 388.0, 400.0, 300.0 ]
 }

@@ -83,6 +83,28 @@ public class MainModel {
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
     }
     
+    /**
+     * 初期化
+     */
+    public void initialize(){
+    	openBattleSceneReflectionFlg.set(setting.getSetting("OpenBattleSceneReflectionFlg"));
+    	openTimerFlg.set(setting.getSetting("OpenTimerFlg"));
+    	openSceneHelperFlg.set(setting.getSetting("OpenSceneHelperFlg"));
+    	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
+    	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
+    	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
+    	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));
+    	/*if(openBattleSceneReflectionFlg.get()) {
+    		openBattleSceneReflectionCommand();
+    	}
+    	if(openTimerFlg.get()) {
+    		openTimerCommand();
+    	}
+    	if(openSceneHelperFlg.get()) {
+    		openSceneHelperCommand();
+    	}*/
+    }
+    
 	/**
      * 終了コマンド
      */

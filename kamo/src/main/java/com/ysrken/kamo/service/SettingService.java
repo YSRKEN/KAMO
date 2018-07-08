@@ -1,12 +1,17 @@
 package com.ysrken.kamo.service;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,6 +20,7 @@ import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -42,6 +48,8 @@ public class SettingService {
      * コンストラクタ
      */
 	public SettingService() {
+		// 設定を読み込み
+		loadSetting();
 		// 自動セーブ設定
         final Timer saveTimer = new Timer();
         saveTimer.schedule(new SaveTask(() -> saveSetting()), 0, 1000);
@@ -96,6 +104,24 @@ public class SettingService {
 			default:
 				throw new IllegalArgumentException();
 			}
+		}
+	}
+	
+	/**
+	 * 設定を読み込む
+	 */
+	public void loadSetting() {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode root = mapper.readTree(new File("sample_setting.json"));
+			Iterator<String> keys = root.fieldNames();
+			while (keys.hasNext()) {
+	            String key = keys.next();
+	            JsonNode value = root.get(key);
+	            setting.put(key, mapper.readValue(value.toString(), Object.class));
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

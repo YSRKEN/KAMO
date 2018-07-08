@@ -1,6 +1,7 @@
 package com.ysrken.kamo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.model.MainModel;
@@ -60,7 +61,7 @@ public class MainController {
 	/**
 	 * 初期化
 	 */
-	public void initialize(){
+	public void initialize(){		
 		// メソッドをコントロールに割り当てる
 		ExitMenu.setOnAction(e -> model.exitCommand());
 		GetPositionMenu.setOnAction(e -> model.getPositionCommand());
@@ -84,5 +85,8 @@ public class MainController {
 		// 使えない設定をdisableする
         OpenPicFolderMenu.setDisable(!utility.isWindows());
         SpecialGetPosMenu.setDisable(!utility.isWindows());
+        
+		// Modelの初期化
+		model.initialize();
 	}
 }
