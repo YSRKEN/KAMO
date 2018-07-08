@@ -87,9 +87,9 @@ public class MainModel {
      * 初期化
      */
     public void initialize(){
-    	openBattleSceneReflectionFlg.set(setting.getSetting("OpenBattleSceneReflectionFlg"));
-    	openTimerFlg.set(setting.getSetting("OpenTimerFlg"));
-    	openSceneHelperFlg.set(setting.getSetting("OpenSceneHelperFlg"));
+    	//openBattleSceneReflectionFlg.set(setting.getSetting("OpenBattleSceneReflectionFlg"));
+    	//openTimerFlg.set(setting.getSetting("OpenTimerFlg"));
+    	//openSceneHelperFlg.set(setting.getSetting("OpenSceneHelperFlg"));
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
@@ -110,6 +110,7 @@ public class MainModel {
      */
 	public void exitCommand() {
 		Platform.exit();
+		System.exit(0);
 	}
 	
 	/**
