@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.SettingService;
@@ -120,13 +121,18 @@ public class MainModel {
     
     /**
      * 初期化
+     * @throws IOException 
+     * @throws JsonProcessingException 
      */
-    public void initialize(){
+    public void initialize() throws JsonProcessingException, IOException{
     	// 設定を読み込んだ上で画面に反映する
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
     	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));
+    	
+    	// Beanの初期化
+    	pictureProcessing.initialize();
     }
     
 	/**

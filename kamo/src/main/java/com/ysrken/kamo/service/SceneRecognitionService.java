@@ -123,14 +123,11 @@ public class SceneRecognitionService {
     private SceneEvidence[] nearlyHomeScene = new SceneEvidence[]{};
 
     /**
-     * コンストラクタ
+     * 初期化
      * @throws IOException 
      * @throws JsonProcessingException 
      */
-    public SceneRecognitionService() throws JsonProcessingException, IOException {
-    	if(utility == null) {
-    		utility = new UtilityService();
-    	}
+    public void initialize() throws JsonProcessingException, IOException {
     	// JSONを読み込む
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode root = mapper.readTree(new File("D:\\自作ソフトウェア\\艦これモニタリングツール「KAMO」\\repository\\kamo\\src\\main\\resources\\scene_parameter.json"));

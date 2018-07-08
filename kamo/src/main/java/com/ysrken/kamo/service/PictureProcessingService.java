@@ -1,10 +1,12 @@
 package com.ysrken.kamo.service;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ysrken.kamo.BitmapImage;
 
 @Component
@@ -79,6 +81,15 @@ public class PictureProcessingService {
         }
     }
 
+    /**
+     * 初期化
+     * @throws IOException 
+     * @throws JsonProcessingException 
+     */
+    public void initialize() throws JsonProcessingException, IOException {
+    	sceneRecognition.initialize();
+    }
+    
     /**
      * 画像処理後のイメージを取得する
      * @param image 処理前

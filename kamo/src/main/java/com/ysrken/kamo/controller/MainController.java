@@ -1,8 +1,11 @@
 package com.ysrken.kamo.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ysrken.kamo.model.MainModel;
 import com.ysrken.kamo.service.UtilityService;
 
@@ -59,8 +62,10 @@ public class MainController {
 	
 	/**
 	 * 初期化
+	 * @throws IOException 
+	 * @throws JsonProcessingException 
 	 */
-	public void initialize(){		
+	public void initialize() throws JsonProcessingException, IOException{		
 		// メソッドをコントロールに割り当てる
 		ExitMenu.setOnAction(e -> model.exitCommand());
 		GetPositionMenu.setOnAction(e -> model.getPositionCommand());
