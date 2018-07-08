@@ -76,14 +76,6 @@ public class SettingService {
 				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
 			case "SceneHelperWindow":
 				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
-
-			//　各画面の表示の有無
-			case "OpenBattleSceneReflectionFlg":
-				return (T)(Boolean.FALSE);
-			case "OpenTimerFlg":
-				return (T)(Boolean.FALSE);
-			case "OpenSceneHelperFlg":
-				return (T)(Boolean.FALSE);
 				
 			// その他設定項目
 			case "AutoGetPositionFlg":

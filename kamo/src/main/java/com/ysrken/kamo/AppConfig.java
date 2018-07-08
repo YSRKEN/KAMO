@@ -2,7 +2,9 @@ package com.ysrken.kamo;
 
 import java.io.IOException;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import com.ysrken.kamo.controller.HelloController;
 import com.ysrken.kamo.controller.MainController;
@@ -26,6 +28,7 @@ public class AppConfig {
 		return new HelloController();
 	}
 
+	@DependsOn(value = { "settingService" })
 	public MainModel getMainModel() {
 		return new MainModel();
 	}
@@ -34,6 +37,7 @@ public class AppConfig {
 		return new LoggerService();
 	}
 
+	@Bean("settingService")
 	public SettingService getSettingService() {
 		return new SettingService();
 	}

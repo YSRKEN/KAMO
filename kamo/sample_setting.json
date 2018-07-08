@@ -1,10 +1,7 @@
 {
-  "OpenTimerFlg" : false,
-  "BattleSceneReflectionWindow" : [ 1286.0, 410.0, 400.0, 300.0 ],
-  "OpenBattleSceneReflectionFlg" : false,
-  "BlindNameTextFlg" : true,
+  "BattleSceneReflectionWindow" : [ 831.0, 492.0, 400.0, 300.0 ],
   "AutoGetPositionFlg" : false,
-  "SpecialGetPosFlg" : true,
-  "MainWindow" : [ 760.0, 256.0, 400.0, 250.0 ],
-  "TimerWindow" : [ 1200.0, 372.0, 439.0, 368.0 ]
+  "MainWindow" : [ 1268.0, 344.0, 400.0, 250.0 ],
+  "SceneHelperWindow" : [ 719.0, 425.0, 466.0, 316.0 ],
+  "TimerWindow" : [ 774.0, 490.0, 400.0, 300.0 ]
 }

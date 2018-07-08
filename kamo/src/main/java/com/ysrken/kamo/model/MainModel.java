@@ -74,9 +74,6 @@ public class MainModel {
      */
     public MainModel() {
     	// 設定変更時に情報を記録する
-    	openBattleSceneReflectionFlg.addListener((ob, o, n) -> setting.setSetting("OpenBattleSceneReflectionFlg", n));
-    	openTimerFlg.addListener((ob, o, n) -> setting.setSetting("OpenTimerFlg", n));
-    	openSceneHelperFlg.addListener((ob, o, n) -> setting.setSetting("OpenSceneHelperFlg", n));
     	autoGetPositionFlg.addListener((ob, o, n) -> setting.setSetting("AutoGetPositionFlg", n));
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
@@ -87,22 +84,10 @@ public class MainModel {
      * 初期化
      */
     public void initialize(){
-    	//openBattleSceneReflectionFlg.set(setting.getSetting("OpenBattleSceneReflectionFlg"));
-    	//openTimerFlg.set(setting.getSetting("OpenTimerFlg"));
-    	//openSceneHelperFlg.set(setting.getSetting("OpenSceneHelperFlg"));
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
     	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));
-    	/*if(openBattleSceneReflectionFlg.get()) {
-    		openBattleSceneReflectionCommand();
-    	}
-    	if(openTimerFlg.get()) {
-    		openTimerCommand();
-    	}
-    	if(openSceneHelperFlg.get()) {
-    		openSceneHelperCommand();
-    	}*/
     }
     
 	/**
