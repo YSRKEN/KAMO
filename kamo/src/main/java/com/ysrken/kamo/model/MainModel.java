@@ -84,6 +84,7 @@ public class MainModel {
      * 初期化
      */
     public void initialize(){
+    	// 設定を読み込んだ上で画面に反映する
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
@@ -110,47 +111,86 @@ public class MainModel {
 	 * 戦闘振り返り画面を開くコマンド
 	 */
 	public void openBattleSceneReflectionCommand() {
-		if(battleSceneReflectionStage == null) {
-			battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
-			battleSceneReflectionStage.setTitle("戦闘振り返り画面");
-			openBattleSceneReflectionFlg.set(true);
-			battleSceneReflectionStage.setOnCloseRequest(() -> {
-				battleSceneReflectionStage = null;
-				openBattleSceneReflectionFlg.set(false);
-    		});
-			battleSceneReflectionStage.show();
-    	}
+		// nullでない＝既にそのウィンドウが開いている＝これ以上開く必要はない
+		if(battleSceneReflectionStage != null) {
+			return;
+		}
+		
+		// ウィンドウのStageを作成する
+		battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
+
+		// タイトルを設定する
+		battleSceneReflectionStage.setTitle("戦闘振り返り画面");
+		
+		// 既にウィンドウを表示した、というフラグを立てる
+		openBattleSceneReflectionFlg.set(true);
+
+		// ウィンドウが閉じられた際の処理を記述する
+		// (再度ウィンドウを開けるようにリセット)
+		battleSceneReflectionStage.setOnCloseRequest(() -> {
+			battleSceneReflectionStage = null;
+			openBattleSceneReflectionFlg.set(false);
+		});
+		
+		// ウィンドウを表示する
+		battleSceneReflectionStage.show();
 	}
 	
 	/**
 	 * 各種タイマー画面を開くコマンド
 	 */
 	public void openTimerCommand() {
-		if(timerStage == null) {
-			timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
-			timerStage.setTitle("各種タイマー画面");
-			openTimerFlg.set(true);
-			timerStage.setOnCloseRequest(() -> {
-				timerStage = null;
-				openTimerFlg.set(false);
-    		});
-			timerStage.show();
-    	}
+		// nullでない＝既にそのウィンドウが開いている＝これ以上開く必要はない
+		if(timerStage != null) {
+			return;
+		}
+		
+		// ウィンドウのStageを作成する
+		timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
+		
+		// タイトルを設定する
+		timerStage.setTitle("各種タイマー画面");
+		
+		// 既にウィンドウを表示した、というフラグを立てる
+		openTimerFlg.set(true);
+		
+		// ウィンドウが閉じられた際の処理を記述する
+		// (再度ウィンドウを開けるようにリセット)
+		timerStage.setOnCloseRequest(() -> {
+			timerStage = null;
+			openTimerFlg.set(false);
+		});
+		
+		// ウィンドウを表示する
+		timerStage.show();
 	}
 	
 	/**
 	 * 画像認識支援画面を開くコマンド
 	 */
 	public void openSceneHelperCommand() {
-		if(sceneHelperStage == null) {
-			sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
-			sceneHelperStage.setTitle("画像認識支援画面");
-			openSceneHelperFlg.set(true);
-			sceneHelperStage.setOnCloseRequest(() -> {
-				sceneHelperStage = null;
-				openSceneHelperFlg.set(false);
-    		});
-			sceneHelperStage.show();
-    	}
+		// nullでない＝既にそのウィンドウが開いている＝これ以上開く必要はない
+		if(sceneHelperStage != null) {
+			return;
+		}
+
+		// ウィンドウのStageを作成する
+		sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
+		
+		// タイトルを設定する
+		sceneHelperStage.setTitle("画像認識支援画面");
+		
+		// 既にウィンドウを表示した、というフラグを立てる
+		openSceneHelperFlg.set(true);
+		
+		// ウィンドウが閉じられた際の処理を記述する
+		// (再度ウィンドウを開けるようにリセット)
+		sceneHelperStage.setOnCloseRequest(() -> {
+			sceneHelperStage = null;
+			openSceneHelperFlg.set(false);
+		});
+		
+		// ウィンドウを表示する
+		sceneHelperStage.show();
 	}
 }

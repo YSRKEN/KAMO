@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.ysrken.kamo.Constant;
 
 @Component
 public class SettingService {
@@ -45,16 +46,20 @@ public class SettingService {
 	public SettingService() {
 		// 設定を読み込み
 		loadSetting();
+		
 		// 自動セーブ設定
         final Timer saveTimer = new Timer();
-        saveTimer.schedule(new SaveTask(() -> saveSetting()), 0, 1000);
+        saveTimer.schedule(new SaveTask(() -> saveSetting()), 0, Constant.SAVE_SETTING_INTERVAL);
 	}
 	
 	/**
 	 * 設定を編集する
 	 */
 	public void setSetting(String key, Object value) {
+		// 書き込む
 		setting.put(key, value);
+		
+		// セーブフラグを立てておく
 		saveFlg = true;
 	}
 	
@@ -64,8 +69,10 @@ public class SettingService {
 	@SuppressWarnings("unchecked")
 	public <T> T getSetting(String key) {
 		if(setting.containsKey(key)) {
+			// 既にその設定項目が存在する部分は、その値を読み込む
 			return (T)setting.get(key);
 		}else {
+			// その設定項目が存在しない部分は、デフォルト値を読み込む
 			return getDefaultSetting(key);
 		}
 	}
@@ -106,8 +113,11 @@ public class SettingService {
 	 */
 	public void loadSetting() {
 		try {
+			// ファイルを読み込む
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode root = mapper.readTree(new File("sample_setting.json"));
+			
+			// 各項目を読み込み、Mapに登録する
 			Iterator<String> keys = root.fieldNames();
 			while (keys.hasNext()) {
 	            String key = keys.next();
@@ -127,6 +137,7 @@ public class SettingService {
 				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 				BufferedWriter writer = new BufferedWriter(osw)) {
 
+			// ファイルに書き込む
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.enable(SerializationFeature.INDENT_OUTPUT);
 			mapper.writeValue(writer, setting);
@@ -156,8 +167,11 @@ public class SettingService {
     	 */
         @Override
         public void run() {
+        	// 現在時刻を取得する
         	Date date = new Date();
-            if(saveFlg && (date.getTime() - lastSaveDate.getTime() >= 1000)){
+        	
+        	// セーブフラグが立っており、最後に保存した時刻からSAVE_SETTING_INTERVALミリ秒以上経過していれば保存する
+            if(saveFlg && (date.getTime() - lastSaveDate.getTime() >= Constant.SAVE_SETTING_INTERVAL)){
                 saveSettings.run();
                 saveFlg = false;
                 lastSaveDate = date;
