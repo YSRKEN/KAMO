@@ -18,18 +18,6 @@ public interface ExtraStage {
 	void setTitle(String title);
 
 	/**
-	 * 横幅を設定する
-	 * @param width
-	 */
-	void setWidth(double width);
-
-	/**
-	 * 縦幅を設定する
-	 * @param height
-	 */
-	void setHeight(double height);
-
-	/**
 	 * ウィンドウの×ボタンを押した際の動きを指定する
 	 * @param func
 	 */

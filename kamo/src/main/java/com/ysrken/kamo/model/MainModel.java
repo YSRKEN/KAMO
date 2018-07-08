@@ -113,8 +113,6 @@ public class MainModel {
 		if(battleSceneReflectionStage == null) {
 			battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
 			battleSceneReflectionStage.setTitle("戦闘振り返り画面");
-			battleSceneReflectionStage.setWidth(400);
-			battleSceneReflectionStage.setHeight(300);
 			openBattleSceneReflectionFlg.set(true);
 			battleSceneReflectionStage.setOnCloseRequest(() -> {
 				battleSceneReflectionStage = null;
@@ -131,8 +129,6 @@ public class MainModel {
 		if(timerStage == null) {
 			timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
 			timerStage.setTitle("各種タイマー画面");
-			timerStage.setWidth(400);
-			timerStage.setHeight(300);
 			openTimerFlg.set(true);
 			timerStage.setOnCloseRequest(() -> {
 				timerStage = null;
@@ -149,8 +145,6 @@ public class MainModel {
 		if(sceneHelperStage == null) {
 			sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
 			sceneHelperStage.setTitle("画像認識支援画面");
-			sceneHelperStage.setWidth(400);
-			sceneHelperStage.setHeight(300);
 			openSceneHelperFlg.set(true);
 			sceneHelperStage.setOnCloseRequest(() -> {
 				sceneHelperStage = null;

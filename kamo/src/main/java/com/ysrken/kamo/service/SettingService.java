@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,31 +66,38 @@ public class SettingService {
 		if(setting.containsKey(key)) {
 			return (T)setting.get(key);
 		}else {
-			//　デフォルト値を返す
-			switch(key) {
+			return getDefaultSetting(key);
+		}
+	}
+	
+	/**
+	 * デフォルト設定を返す
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getDefaultSetting(String key) {
+		switch(key) {
+		
+		// 各画面の座標・大きさ
+		case "MainWindow":
+			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 250.0)));
+		case "BattleSceneReflectionWindow":
+			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
+		case "TimerWindow":
+			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
+		case "SceneHelperWindow":
+			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
 			
-			// 各画面の座標・大きさ
-			case "MainWindow":
-				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
-			case "BattleSceneReflectionWindow":
-				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
-			case "TimerWindow":
-				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
-			case "SceneHelperWindow":
-				return (T)(new double[] {0.0, 0.0, 0.0, 0.0});
-				
-			// その他設定項目
-			case "AutoGetPositionFlg":
-				return (T)(Boolean.FALSE);
-			case "BlindNameTextFlg":
-				return (T)(Boolean.FALSE);
-			case "SpecialGetPosFlg":
-				return (T)(Boolean.FALSE);
-			case "SaveWindowPositionFlg":
-				return (T)(Boolean.FALSE);
-			default:
-				throw new IllegalArgumentException();
-			}
+		// その他設定項目
+		case "AutoGetPositionFlg":
+			return (T)(Boolean.FALSE);
+		case "BlindNameTextFlg":
+			return (T)(Boolean.FALSE);
+		case "SpecialGetPosFlg":
+			return (T)(Boolean.FALSE);
+		case "SaveWindowPositionFlg":
+			return (T)(Boolean.FALSE);
+		default:
+			throw new IllegalArgumentException();
 		}
 	}
 	

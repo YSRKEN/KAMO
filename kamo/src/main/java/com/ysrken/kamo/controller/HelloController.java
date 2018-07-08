@@ -67,8 +67,6 @@ public class HelloController
     	if(slaveStage.get() == null) {
     		slaveStage.set(factory.create("/fxml/hello.fxml", "SlaveWindow"));
     		slaveStage.get().setTitle("Slave Window");
-    		slaveStage.get().setWidth(400);
-    		slaveStage.get().setHeight(300);
     		addWindowButton.disableProperty().set(true);
     		slaveStage.get().setOnCloseRequest(() -> {
     			slaveStage.set(null);

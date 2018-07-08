@@ -1,6 +1,8 @@
 package com.ysrken.kamo.stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -60,6 +62,18 @@ public class ExtraStageImpl implements ExtraStage {
         // その他の情報を登録する
         this.stage.setAlwaysOnTop(true);
         
+        // ウィンドウの座標を指定する
+        if(setting == null) {
+        	setting = new SettingService();
+        }
+        ArrayList<Double> rect = setting.<Boolean>getSetting("SaveWindowPositionFlg")
+        		? setting.<ArrayList<Double>>getSetting(keyWord)
+        		: setting.<ArrayList<Double>>getDefaultSetting(keyWord);
+        stage.setX(rect.get(0));
+        stage.setY(rect.get(1));
+        stage.setWidth(rect.get(2));
+        stage.setHeight(rect.get(3));
+        
         // ウィンドウが移動・リサイズした際のイベントを登録する
         stage.xProperty().addListener((ob, o, n) -> showWindowRect());
         stage.yProperty().addListener((ob, o, n) -> showWindowRect());
@@ -71,12 +85,12 @@ public class ExtraStageImpl implements ExtraStage {
 	 * ウィンドウのRectをロギング
 	 */
 	private void showWindowRect() {
-		setting.setSetting(keyWord, new double[] {
+		setting.setSetting(keyWord, new ArrayList<Double>(Arrays.asList(
 				stage.getX(),
 				stage.getY(),
 				stage.getWidth(),
 				stage.getHeight()
-		});
+		)));
 	}
 	
 	/* (非 Javadoc)
@@ -94,25 +108,7 @@ public class ExtraStageImpl implements ExtraStage {
 	public void setTitle(String title) {
 		stage.setTitle(title);
 	}
-	
-	/* (非 Javadoc)
-	 * @see com.ysrken.kamo.service.ExtraStage#setWidth(double)
-	 */
-	@Override
-	public void setWidth(double width) {
-		this.stage.setWidth(width);
-		this.stage.setMinWidth(width);
-	}
-	
-	/* (非 Javadoc)
-	 * @see com.ysrken.kamo.service.ExtraStage#setHeight(double)
-	 */
-	@Override
-	public void setHeight(double height) {
-		this.stage.setHeight(height);
-		this.stage.setMinHeight(height);
-	}
-	
+		
 	/* (非 Javadoc)
 	 * @see com.ysrken.kamo.service.ExtraStage#setOnCloseRequest(Runnable)
 	 */

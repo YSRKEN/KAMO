@@ -41,8 +41,6 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
 		ExtraStage mainStage = eFactory.create(stage, "/fxml/main.fxml", "MainWindow");
         mainStage.setTitle(SOFTWARE_NAME);
-        mainStage.setWidth(400);
-        mainStage.setHeight(250);
         mainStage.setOnCloseRequest(() -> {
         	Platform.exit();
             System.exit(0);
