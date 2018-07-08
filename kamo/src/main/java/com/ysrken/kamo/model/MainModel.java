@@ -1,6 +1,11 @@
 package com.ysrken.kamo.model;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -154,6 +159,28 @@ public class MainModel {
             addLogText("座標取得：NG");
             // スクリーンショットを使用不可にする
             disableSaveScreenshotFlg.set(true);
+        }
+	}
+	
+	/**
+	 * スクショコマンド
+	 */
+	public void saveScreenshotCommand() {
+		addLogText("【スクリーンショット】");
+        if(screenshot.canGetScreenshot()){
+            final BufferedImage screenShot = screenshot.getScreenshot();
+            //final var processedImage = pictureProcessing.getProcessedImage(screenShot);
+            final BufferedImage processedImage = screenShot;
+            final String fileName = String.format("%s.png", utility.getDateStringLong());
+            try {
+                ImageIO.write(processedImage, "png", new File(String.format("pic\\%s", fileName)));
+                addLogText(String.format("ファイル名：%s", fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+                addLogText("エラー：スクリーンショットの保存に失敗しました。");
+            }
+        }else{
+            addLogText("エラー：スクリーンショットを取得できません。");
         }
 	}
 	

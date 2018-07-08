@@ -65,6 +65,8 @@ public class MainController {
 		ExitMenu.setOnAction(e -> model.exitCommand());
 		GetPositionMenu.setOnAction(e -> model.getPositionCommand());
 		GetPositionButton.setOnAction(e -> model.getPositionCommand());
+		SaveScreenshotMenu.setOnAction(e -> model.saveScreenshotCommand());
+		SaveScreenshotButton.setOnAction(e -> model.saveScreenshotCommand());
 		OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
 		OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
 		OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());

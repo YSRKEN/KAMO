@@ -7,6 +7,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,6 +41,10 @@ public class ScreenshotService {
      */
     private int frameColor = 0;
 
+    /**
+     * 画素情報を保持するための構造体
+     * @author ysrken
+     */
     private class ColorPoint{
         public int X;
         public int Y;
@@ -55,6 +61,20 @@ public class ScreenshotService {
     @Autowired
     private SettingService setting;
 	
+    /**
+     * コンストラクタ
+     * @throws IOException 
+     */
+    public ScreenshotService() throws IOException {
+    	// picフォルダを作成する
+        final File folder = new File("pic");
+        if(!folder.exists()){
+            if(!folder.mkdir()){
+                throw new IOException();
+            }
+        }
+    }
+    
     /**
      * 自動座標取得を試みる(成功したらtrue)
      */
@@ -282,5 +302,24 @@ public class ScreenshotService {
      */
     public Rectangle getPosition(){
         return rect;
+    }
+    
+    /**
+     * スクリーンショットを取得できる状態ならtrue
+     */
+    public boolean canGetScreenshot(){
+        return (rect != null);
+    }
+    
+    /**
+     * スクリーンショットを取得する
+     */
+    public BufferedImage getScreenshot(){
+        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()){
+            //return SpecialScreenShotService.getScreenshot();
+        	return robot.createScreenCapture(rect);
+        }else {
+            return robot.createScreenCapture(rect);
+        }
     }
 }
