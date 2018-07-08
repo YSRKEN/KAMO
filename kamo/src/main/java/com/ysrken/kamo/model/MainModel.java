@@ -1,8 +1,11 @@
 package com.ysrken.kamo.model;
 
+import java.awt.Rectangle;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.SettingService;
 import com.ysrken.kamo.service.UtilityService;
 import com.ysrken.kamo.stage.ExtraStage;
@@ -78,6 +81,8 @@ public class MainModel {
     private SettingService setting;
     @Autowired
     private UtilityService utility;
+    @Autowired
+    private ScreenshotService screenshot;
 	
     /**
      * ログにテキストを追加
@@ -129,8 +134,27 @@ public class MainModel {
 	 */
 	public void getPositionCommand() {
 		addLogText("【座標取得】");
-		// スタブ
-		disableSaveScreenshotFlg.set(false);
+		
+		// 取得操作を行う
+        final boolean getPositionFlg = screenshot.trySearchGamePosition();
+
+        // 取得に成功したか否かで処理を分ける
+        if(getPositionFlg){
+            // ゲーム座標を取得する
+            final Rectangle rect = screenshot.getPosition();
+
+            // 取得したゲーム座標を記録する
+            addLogText("座標取得：OK");
+            addLogText(String.format("取得位置：(%d,%d)-%dx%d",
+                    rect.x, rect.y, rect.width, rect.height));
+            
+            // スクリーンショットを使用可能にする
+            disableSaveScreenshotFlg.set(false);
+        }else{
+            addLogText("座標取得：NG");
+            // スクリーンショットを使用不可にする
+            disableSaveScreenshotFlg.set(true);
+        }
 	}
 	
 	/**
