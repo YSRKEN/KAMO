@@ -14,6 +14,8 @@ public class PictureProcessingService {
 	 */
 	@Autowired
     private SettingService setting;
+	@Autowired
+    private SceneRecognitionService sceneRecognition;
 	
     /**
      * 画像データの一部分を、一部分を選択した部分を拡大することによって覆い隠す
@@ -45,7 +47,7 @@ public class PictureProcessingService {
      * @param image 画像データ
      * @return 名前部分が隠れた画像データ
      */
-    /*private BufferedImage blindUserName(BufferedImage image){
+    private BufferedImage blindUserName(BufferedImage image){
         // シーン判定を行う
         final String scene = sceneRecognition.judgeScene(image);
         final boolean isNearlyHomeFlg = sceneRecognition.isNearlyHomeScene(image);
@@ -75,7 +77,7 @@ public class PictureProcessingService {
             default:
                 return image;
         }
-    }*/
+    }
 
     /**
      * 画像処理後のイメージを取得する
@@ -83,9 +85,9 @@ public class PictureProcessingService {
      * @return 処理後
      */
     public BufferedImage getProcessedImage(BufferedImage image){
-        /*if(setting.<Boolean>getSetting("BlindNameTextFlg")){
+        if(setting.<Boolean>getSetting("BlindNameTextFlg")){
             return blindUserName(image);
-        }*/
+        }
         return image;
     }
 }

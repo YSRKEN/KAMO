@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.SettingService;
 import com.ysrken.kamo.service.UtilityService;
@@ -88,6 +89,8 @@ public class MainModel {
     private UtilityService utility;
     @Autowired
     private ScreenshotService screenshot;
+    @Autowired
+    private PictureProcessingService pictureProcessing;
 	
     /**
      * ログにテキストを追加
@@ -169,8 +172,7 @@ public class MainModel {
 		addLogText("【スクリーンショット】");
         if(screenshot.canGetScreenshot()){
             final BufferedImage screenShot = screenshot.getScreenshot();
-            //final var processedImage = pictureProcessing.getProcessedImage(screenShot);
-            final BufferedImage processedImage = screenShot;
+            final BufferedImage processedImage = pictureProcessing.getProcessedImage(screenShot);
             final String fileName = String.format("%s.png", utility.getDateStringLong());
             try {
                 ImageIO.write(processedImage, "png", new File(String.format("pic\\%s", fileName)));

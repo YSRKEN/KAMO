@@ -3,7 +3,19 @@ package com.ysrken.kamo.service;
 import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
+
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 @Component
 public class UtilityService {
@@ -19,8 +31,8 @@ public class UtilityService {
      * 現在の日時を「2006-01-02 03-04-05-890」形式で取得
      * @return 現在の日時文字列
      */
-    private static DateTimeFormatter dtfLong = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss-SSS");
-    public static String getDateStringLong(){
+    private final DateTimeFormatter dtfLong = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss-SSS");
+    public String getDateStringLong(){
         return LocalDateTime.now().format(dtfLong);
     }
     
@@ -70,5 +82,118 @@ public class UtilityService {
      */
     public long calcHummingDistance(long a, long b) {
         return popcnt(a ^ b);
+    }
+    
+    /**
+     * 「A/B」といった簡単な数式をパースして結果を返す
+     * @param str 数式
+     * @return 結果
+     */
+    public double parseFormula(String str) {
+    	if(str.contains("/")) {
+    		int pos = str.indexOf("/");
+    		double x = Double.parseDouble(str.substring(0, pos));
+    		double y = Double.parseDouble(str.substring(pos + 1, str.length()));
+    		return x / y;
+    	}else {
+    		return Double.parseDouble(str);
+    	}
+    }
+    
+    /**
+     * 常に最前面表示になるAlertダイアログ
+     * 参考→http://totomo.net/11317-javafxalert.htm
+     */
+    private class AlwaysOnTopAlert extends Stage{
+        /**
+         * AlertをStage上に載せる
+         * @param alert Alert
+         */
+        private void setAlertOnStage(Alert alert){
+            final DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getScene().setRoot(new Group());
+            dialogPane.setPadding(new Insets(0,0,1,0)); //黒魔術こわい
+            for (ButtonType buttonType : dialogPane.getButtonTypes()) {
+                final ButtonBase button = (ButtonBase) dialogPane.lookupButton(buttonType);
+                button.setOnAction(e -> {
+                    dialogPane.setUserData(buttonType);
+                    this.close();
+                });
+            }
+            this.setScene(new Scene(dialogPane));
+            this.setTitle(com.ysrken.kamo.Constant.SOFTWARE_NAME);
+            this.initModality(Modality.APPLICATION_MODAL);
+            this.setAlwaysOnTop(true);
+            this.setResizable(false);
+        }
+
+        /**
+         * 通常のダイアログを表示する
+         * @param contentText 内容
+         * @param headerText タイトル
+         * @param type 種類
+         */
+        public void showDialog(String contentText, String headerText, Alert.AlertType type){
+            // ダイアログの設定を行う
+            final Alert alert = new Alert(type);
+            alert.setHeaderText(headerText);
+            alert.setContentText(contentText);
+            // Stageにダイアログを「載せる」
+            setAlertOnStage(alert);
+            // Stageを「表示」
+            this.show();
+        }
+        
+        /**
+         * 選択ダイアログを表示する
+         * @param contentText 内容
+         * @param headerText タイトル
+         * @return 選択結果が「OK」の時のみtrue
+         */
+        public boolean showChoiceDialog(String contentText, String headerText){
+            // ダイアログの設定を行う
+            final Alert alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.CANCEL, ButtonType.APPLY);
+            alert.setHeaderText(headerText);
+            alert.setContentText(contentText);
+            
+            // Stageにダイアログを「載せる」
+            setAlertOnStage(alert);
+            
+            // Stageを「表示」
+            this.showAndWait();
+            final Optional<ButtonType> buttonType = Optional.ofNullable((ButtonType) alert.getDialogPane().getUserData());
+            return (buttonType.isPresent() && buttonType.get() == ButtonType.APPLY);
+        }
+    }
+
+    /**
+     * ダイアログを表示
+     * @param contentText 本文
+     * @param headerText タイトル文
+     */
+    public void showDialog(String contentText, String headerText){
+        showDialog(contentText, headerText, Alert.AlertType.INFORMATION);
+    }
+    
+    /**
+     * ダイアログを表示
+     * @param contentText 本文
+     * @param headerText タイトル文
+     * @param type ダイアログの種類
+     */
+    public void showDialog(String contentText, String headerText, Alert.AlertType type){
+        final AlwaysOnTopAlert alert = new AlwaysOnTopAlert();
+        alert.showDialog(contentText, headerText, type);
+    }
+    
+    /**
+     * YES/NOで選ぶ選択ダイアログを表示
+     * @param contentText 本文
+     * @param headerText タイトル文
+     * @return 選択結果。YESならtrue、それ以外はfalse
+     */
+    public boolean showChoiceDialog(String contentText, String headerText){
+        final AlwaysOnTopAlert alert = new AlwaysOnTopAlert();
+        return alert.showChoiceDialog(contentText, headerText);
     }
 }
