@@ -64,6 +64,7 @@ public class ExtraStageImpl implements ExtraStage {
         
         // ウィンドウの座標を指定する
         if(setting == null) {
+        	System.out.println("※new SettingService() in ExtraStageImpl");
         	setting = new SettingService();
         }
         ArrayList<Double> rect = setting.<Boolean>getSetting("SaveWindowPositionFlg")

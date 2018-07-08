@@ -14,6 +14,10 @@ import com.ysrken.kamo.MainApp;
 public class LoggerService {
 	private final Logger log = LoggerFactory.getLogger(MainApp.class);
 	
+	public LoggerService() {
+		System.out.println("DEBUG MainApp - LoggerService#LoggerService");
+	}
+	
 	/**
 	 * デバッグメッセージを残す
 	 * @param message

@@ -112,6 +112,7 @@ public class MainModel {
      * コンストラクタ
      */
     public MainModel() {
+    	System.out.println("DEBUG MainApp - MainModel#MainModel");
     	// 設定変更時に情報を記録する
     	autoGetPositionFlg.addListener((ob, o, n) -> setting.setSetting("AutoGetPositionFlg", n));
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
@@ -125,6 +126,7 @@ public class MainModel {
      * @throws JsonProcessingException 
      */
     public void initialize() throws JsonProcessingException, IOException{
+    	System.out.println("DEBUG MainApp - MainModel#initialize");
     	// 設定を読み込んだ上で画面に反映する
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));

@@ -66,6 +66,7 @@ public class ScreenshotService {
      * @throws IOException 
      */
     public ScreenshotService() throws IOException {
+    	System.out.println("DEBUG MainApp - ScreenshotService#ScreenshotService");
     	// picフォルダを作成する
         final File folder = new File("pic");
         if(!folder.exists()){

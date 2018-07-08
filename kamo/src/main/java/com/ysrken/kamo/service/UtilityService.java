@@ -19,6 +19,10 @@ import javafx.stage.Stage;
 
 @Component
 public class UtilityService {
+	public UtilityService() {
+		System.out.println("DEBUG MainApp - UtilityService#UtilityService");
+	}
+	
 	/**
 	 * Windows OS上で動作しているかを判定
 	 */

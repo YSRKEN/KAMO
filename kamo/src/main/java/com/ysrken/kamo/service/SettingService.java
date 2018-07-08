@@ -44,6 +44,7 @@ public class SettingService {
      * コンストラクタ
      */
 	public SettingService() {
+		System.out.println("DEBUG MainApp - SettingService#SettingService");
 		// 設定を読み込み
 		loadSetting();
 		
@@ -112,6 +113,7 @@ public class SettingService {
 	 * 設定を読み込む
 	 */
 	public void loadSetting() {
+		System.out.println("DEBUG MainApp - SettingService#loadSetting");
 		try {
 			// ファイルを読み込む
 			ObjectMapper mapper = new ObjectMapper();

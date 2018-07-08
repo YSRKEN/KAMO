@@ -81,12 +81,17 @@ public class PictureProcessingService {
         }
     }
 
+    public PictureProcessingService() {
+		System.out.println("DEBUG MainApp - PictureProcessingService#PictureProcessingService");
+	}
+    
     /**
      * 初期化
      * @throws IOException 
      * @throws JsonProcessingException 
      */
     public void initialize() throws JsonProcessingException, IOException {
+    	System.out.println("DEBUG MainApp - PictureProcessingService#initialize");
     	sceneRecognition.initialize();
     }
     
