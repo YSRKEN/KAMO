@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ysrken.kamo.service.SettingService;
+import com.ysrken.kamo.service.UtilityService;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
 
@@ -55,6 +56,13 @@ public class MainModel {
 	private StringProperty nowSceneText = new SimpleStringProperty("シーン判定：[不明]");
 	
 	/**
+	 * 動作ログ情報
+	 */
+	@Getter
+	private StringProperty messageLogText = new SimpleStringProperty("");
+	
+	
+	/**
 	 * 各種画面
 	 */
 	private ExtraStage battleSceneReflectionStage = null;
@@ -68,7 +76,24 @@ public class MainModel {
     private ExtraStageFactory factory;
     @Autowired
     private SettingService setting;
+    @Autowired
+    private UtilityService utility;
 	
+    /**
+     * ログにテキストを追加
+     * @param text
+     */
+    private void addLogText(String text){
+        Platform.runLater(() -> {
+        	messageLogText.set(String.format(
+                    "%s%s %s%n",
+                    messageLogText.get(),
+                    utility.getDateStringShort(),
+                    text
+            ));
+        });
+    }
+    
     /**
      * コンストラクタ
      */
@@ -103,6 +128,7 @@ public class MainModel {
 	 * 座標取得コマンド
 	 */
 	public void getPositionCommand() {
+		addLogText("【座標取得】");
 		// スタブ
 		disableSaveScreenshotFlg.set(false);
 	}
@@ -115,6 +141,10 @@ public class MainModel {
 		if(battleSceneReflectionStage != null) {
 			return;
 		}
+		
+		// 動作ログに残す
+		addLogText("【ウィンドウ】");
+		addLogText("名称：戦闘振り返り画面");
 		
 		// ウィンドウのStageを作成する
 		battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
@@ -145,6 +175,10 @@ public class MainModel {
 			return;
 		}
 		
+		// 動作ログに残す
+		addLogText("【ウィンドウ】");
+		addLogText("名称：各種タイマー画面");
+		
 		// ウィンドウのStageを作成する
 		timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
 		
@@ -174,6 +208,10 @@ public class MainModel {
 			return;
 		}
 
+		// 動作ログに残す
+		addLogText("【ウィンドウ】");
+		addLogText("名称：画像認識支援画面");
+		
 		// ウィンドウのStageを作成する
 		sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
 		
