@@ -78,6 +78,7 @@ public class MainController {
 		OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
 		OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());
 		OpenWikiMenu.setOnAction(e -> model.openWikiCommand());
+		CheckVersionMenu.setOnAction(e -> model.checkVersionCommand());
 		AboutMenu.setOnAction(e -> model.aboutCommand());
 		
 		// プロパティをData Bindingさせる
@@ -105,5 +106,8 @@ public class MainController {
         
 		// Modelの初期化
 		model.initialize();
+		
+		// ソフトウェアの更新を確認する
+		model.checkVersionCommand();
 	}
 }

@@ -313,6 +313,50 @@ public class MainModel {
 	}
 	
     /**
+     * ソフトウェアの更新が来ているかをチェックする
+     */
+    public void checkVersionCommand(){
+        try {
+            addLogText("【更新チェック】");
+            // 更新情報を表すテキストファイルをダウンロードする
+            final String checkText = utility.downloadTextData("https://raw.githubusercontent.com/YSRKEN/KAMO/master/version.txt");
+            if(checkText.isEmpty())
+                throw new IOException();
+            // 更新文字列は「1,1.0.0」のような書式になっているはずなので確認する
+            final String[] temp = checkText.split(",");
+            if(temp.length < 2){
+                throw new NumberFormatException();
+            }
+            // 情報を読み取っていく
+            final int revision = Integer.parseInt(temp[0]);
+            addLogText(String.format("現在のバージョン：%s, リビジョン：%d",
+                    Constant.SOFTWARE_VER, Constant.SOFTWARE_REVISION));
+            addLogText(String.format("最新のバージョン：%s, リビジョン：%d",
+                    temp[1], revision));
+            if(Constant.SOFTWARE_REVISION < revision){
+                String message = String.format(
+                        "より新しいバージョンが見つかりました。%n現在のバージョン：%s%n最新のバージョン：%s%nダウンロードサイトを開きますか？",
+                        Constant.SOFTWARE_VER, temp[1]
+                );
+                final boolean openUrlFlg = utility.showChoiceDialog(message, "更新チェック");
+                if(openUrlFlg){
+                    final Desktop desktop = Desktop.getDesktop();
+                    try{
+                        desktop.browse(new URI(Constant.SOFTWARE_URL));
+                    }catch( Exception e ){
+                        e.printStackTrace();
+                    }
+                }
+            }else{
+                addLogText("このソフトウェアは最新です。");
+            }
+        }catch(NumberFormatException | IOException e){
+            e.printStackTrace();
+            addLogText("エラー：更新データを確認できませんでした。");
+        }
+    }
+	
+    /**
      * オンラインヘルプ(Wiki)を開く
      */
     public void openWikiCommand(){
