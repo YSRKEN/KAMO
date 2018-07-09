@@ -1,9 +1,16 @@
 package com.ysrken.kamo.service;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -199,5 +206,22 @@ public class UtilityService {
     public boolean showChoiceDialog(String contentText, String headerText){
         final AlwaysOnTopAlert alert = new AlwaysOnTopAlert();
         return alert.showChoiceDialog(contentText, headerText);
+    }
+    
+    /**
+     * 指定したURL上のファイルをUTF-8形式の文字列としてダウンロードする。
+     * ダウンロードできなかった際は空文字列を返す
+     * @param url URL
+     * @return UTF-8形式のテキストデータ
+     */
+    public String downloadTextData(String url){
+        try(final InputStream is = new URL(url).openStream();
+            final InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+            final BufferedReader br = new BufferedReader(isr)){
+            return br.lines().collect(Collectors.joining(String.format("%n")));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

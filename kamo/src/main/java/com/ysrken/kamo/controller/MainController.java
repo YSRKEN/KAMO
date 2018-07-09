@@ -77,6 +77,8 @@ public class MainController {
 		OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
 		OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
 		OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());
+		OpenWikiMenu.setOnAction(e -> model.openWikiCommand());
+		AboutMenu.setOnAction(e -> model.aboutCommand());
 		
 		// プロパティをData Bindingさせる
 		SaveScreenshotMenu.disableProperty().bind(model.getDisableSaveScreenshotFlg());

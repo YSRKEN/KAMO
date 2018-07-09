@@ -1,9 +1,11 @@
 package com.ysrken.kamo.model;
 
+import java.awt.Desktop;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import javax.imageio.ImageIO;
 
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ysrken.kamo.Constant;
 import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.SettingService;
@@ -308,4 +311,28 @@ public class MainModel {
 		// ウィンドウを表示する
 		sceneHelperStage.show();
 	}
+	
+    /**
+     * オンラインヘルプ(Wiki)を開く
+     */
+    public void openWikiCommand(){
+        final Desktop desktop = Desktop.getDesktop();
+        try{
+            desktop.browse(new URI(Constant.HELP_URL));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * バージョン情報を表示する
+     */
+    public void aboutCommand(){
+        final String contentText = String.format("ソフト名：%s%nバージョン：%s%n作者：%s",
+        		Constant.SOFTWARE_NAME,
+        		Constant.SOFTWARE_VER,
+        		Constant.SOFTWARE_AUTHOR
+        );
+        utility.showDialog(contentText, "バージョン情報");
+    }
 }
