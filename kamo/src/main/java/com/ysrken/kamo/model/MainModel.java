@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 
@@ -26,6 +28,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Alert.AlertType;
 import lombok.Getter;
 
 /**
@@ -112,6 +115,27 @@ public class MainModel {
     }
     
     /**
+     * 長い周期で行われるタスクを設定
+     */
+    private class LongIntervalTask extends TimerTask{
+        public void run(){
+            // スクリーンショットが撮影可能な場合の処理
+            if(screenshot != null && screenshot.canGetScreenshot()){
+                // ゲーム画面の位置が移動した際の処理
+                if(screenshot.isMovedPosition()){
+                    addLogText("【位置ズレ検知】");
+                    addLogText("自動で再取得を試みます...");
+                    getPositionCommand();
+                }
+            }else if(setting != null && setting.<Boolean>getSetting("AutoGetPositionFlg")){
+                addLogText("【自動座標認識】");
+                addLogText("自動で再取得を試みます...");
+                getPositionCommand();
+            }
+        }
+    }
+    
+    /**
      * コンストラクタ
      */
     public MainModel() {
@@ -121,6 +145,10 @@ public class MainModel {
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
+    	
+        // 長周期で実行されるタイマー
+        final Timer longIntervalTimer = new Timer();
+        longIntervalTimer.schedule(new LongIntervalTask(), 0, 1000);
     }
     
     /**
@@ -196,6 +224,20 @@ public class MainModel {
             addLogText("エラー：スクリーンショットを取得できません。");
         }
 	}
+	
+    /**
+     * スクショの保存先であるpicフォルダを開く
+     * パス指定の時点で明らかなように、Windowsにしか対応していない
+     */
+    public void openPicFolderCommand(){
+        try {
+            final Runtime rt = Runtime.getRuntime();
+            String cmd = String.format("explorer %s\\pic", System.getProperty("user.dir"));
+            rt.exec(cmd);
+        } catch (IOException e) {
+            utility.showDialog("picフォルダを開けませんでした。", "IOエラー", AlertType.ERROR);
+        }
+    }
 	
 	/**
 	 * 戦闘振り返り画面を開くコマンド

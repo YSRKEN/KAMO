@@ -113,7 +113,9 @@ public class ScreenshotService {
                         
                         // 特殊なスクリーンショットルーチンが使えるかを判定しておく
                         if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()){
+                        	//if(SpecialScreenShotService.initialize(rect, rectForCheck, frameColor)){
                         	logger.debug("※特殊な座標取得手法が有効になっています");
+                        	//}
                         }
                         return true;
                     }
@@ -316,11 +318,33 @@ public class ScreenshotService {
      * スクリーンショットを取得する
      */
     public BufferedImage getScreenshot(){
-        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()){
+        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()/* && SpecialScreenShotService.canSpecialScreenShot()*/){
             //return SpecialScreenShotService.getScreenshot();
         	return robot.createScreenCapture(rect);
         }else {
             return robot.createScreenCapture(rect);
         }
+    }
+    
+    /**
+     * ゲーム画面の位置が動いたならtrue
+     * @return
+     */
+    public boolean isMovedPosition(){
+        // スクショを取得し、枠線の色が正しいかを確認する
+        BufferedImage sampleImage = null;
+        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()/* && SpecialScreenShotService.canSpecialScreenShot()*/){
+            //sampleImage = SpecialScreenShotService.getScreenshotForCheck();
+        	sampleImage = robot.createScreenCapture(rectForCheck);
+        }else{
+            sampleImage = robot.createScreenCapture(rectForCheck);
+        }
+        final int x2 = sampleImage.getWidth() - 1;
+        final int y2 = sampleImage.getHeight() - 1;
+        final BufferedImage sampleImage_ = sampleImage;
+        return (IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage_.getRGB(x, 0) != frameColor)
+        || IntStream.range(0, sampleImage.getWidth()).anyMatch(x -> sampleImage_.getRGB(x, y2) != frameColor)
+        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage_.getRGB(0, y) != frameColor)
+        || IntStream.range(0, sampleImage.getHeight()).anyMatch(y -> sampleImage_.getRGB(x2, y) != frameColor));
     }
 }
