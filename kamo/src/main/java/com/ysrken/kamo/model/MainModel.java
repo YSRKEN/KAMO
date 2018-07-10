@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ysrken.kamo.Constant;
 import com.ysrken.kamo.service.PictureProcessingService;
+import com.ysrken.kamo.service.SceneRecognitionService;
 import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.SettingService;
 import com.ysrken.kamo.service.UtilityService;
@@ -98,6 +99,8 @@ public class MainModel {
     private ScreenshotService screenshot;
     @Autowired
     private PictureProcessingService pictureProcessing;
+    @Autowired
+    private SceneRecognitionService sceneRecognition;
 	
     /**
      * ログにテキストを追加
@@ -120,18 +123,66 @@ public class MainModel {
     private class LongIntervalTask extends TimerTask{
         public void run(){
             // スクリーンショットが撮影可能な場合の処理
-            if(screenshot != null && screenshot.canGetScreenshot()){
+            if(screenshot.canGetScreenshot()){
                 // ゲーム画面の位置が移動した際の処理
                 if(screenshot.isMovedPosition()){
                     addLogText("【位置ズレ検知】");
                     addLogText("自動で再取得を試みます...");
                     getPositionCommand();
                 }
-            }else if(setting != null && setting.<Boolean>getSetting("AutoGetPositionFlg")){
+            }else if(setting.<Boolean>getSetting("AutoGetPositionFlg")){
                 addLogText("【自動座標認識】");
                 addLogText("自動で再取得を試みます...");
                 getPositionCommand();
             }
+        }
+    }
+    
+    /**
+     * 短い周期で行われるタスクを設定
+     */
+    private class ShortIntervalTask extends TimerTask{
+        public void run(){
+            // スクリーンショットが撮影可能な場合の処理
+            if(screenshot.canGetScreenshot()){
+                // 画像を取得
+                final BufferedImage frame = screenshot.getScreenshot();
+                // シーンを読み取り、結果をメイン画面に表示する
+                final String scene = sceneRecognition.judgeScene(frame);
+                final boolean isNearlyHomeFlg = sceneRecognition.isNearlyHomeScene(frame);
+                Platform.runLater(() -> {
+                	nowSceneText.set(String.format("シーン判定：%s%s",
+                            scene.isEmpty() ? "[不明]" : scene,
+                                    isNearlyHomeFlg ? "*" : ""));
+                });
+                /*// 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
+                if(OpenBattleSceneReflectionFlg.get()){
+                    if(battleSceneSet.contains(scene)){
+                        setImage.accept(scene, frame);
+                        setText.accept(scene, Utility.getDateStringLong());
+                    }
+                }
+                // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
+                if(OpenTimerFlg.get()){
+                    if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
+                        final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
+                        if(setExpTimer != null && setExpInfo != null && duration >= 0){
+                            final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(frame);
+                            final var fieetIds = CharacterRecognitionService.getExpeditionFleetId(frame);
+                            for(var pair : fieetIds.entrySet()){
+                                if(pair.getValue().equals(expeditionId)){
+                                    setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), pair.getKey() - 2);
+                                    setExpInfo.accept(CharacterRecognitionService.getExpeditionNameById(pair.getValue()), pair.getKey() - 2);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }*/
+            }
+            /*if(refreshExpTimerString != null){
+                refreshExpTimerString.run();
+            }*/
         }
     }
     
@@ -145,10 +196,6 @@ public class MainModel {
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
-    	
-        // 長周期で実行されるタイマー
-        final Timer longIntervalTimer = new Timer();
-        longIntervalTimer.schedule(new LongIntervalTask(), 0, 1000);
     }
     
     /**
@@ -166,6 +213,14 @@ public class MainModel {
     	
     	// Beanの初期化
     	pictureProcessing.initialize();
+    	
+        // 長周期で実行されるタイマー
+        final Timer longIntervalTimer = new Timer();
+        longIntervalTimer.schedule(new LongIntervalTask(), 0, 1000);
+        
+        // 短周期で実行されるタイマー
+        final Timer shortIntervalTimer = new Timer();
+        shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 200);
     }
     
 	/**

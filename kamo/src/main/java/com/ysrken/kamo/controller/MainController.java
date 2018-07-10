@@ -94,14 +94,14 @@ public class MainController {
 		SaveWindowPositionMenu.selectedProperty().bindBidirectional(model.getSaveWindowPositionFlg());
 		
 		NowSceneTextLabel.textProperty().bind(model.getNowSceneText());
-		MessageLogTextArea.textProperty().bind(model.getMessageLogText());
 		
 		// 使えない設定をdisableする
         OpenPicFolderMenu.setDisable(!utility.isWindows());
         SpecialGetPosMenu.setDisable(!utility.isWindows());
         
         // 内容が変更された際の動作を記述する
-        MessageLogTextArea.textProperty().addListener((ob, o, n) -> {
+        model.getMessageLogText().addListener((ob, o, n) -> {
+        	MessageLogTextArea.setText(n);
         	MessageLogTextArea.setScrollTop(Double.POSITIVE_INFINITY);
         });
         
