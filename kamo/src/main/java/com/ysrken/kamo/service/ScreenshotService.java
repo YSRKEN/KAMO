@@ -136,18 +136,18 @@ public class ScreenshotService {
      * ・長方形の領域である
      * ・領域の1ピクセル外側は、全て同じ色(A)である
      * ・↑の1ピクセル内側に、色Aと異なる色が1ピクセル以上存在する
-     * ・領域のピクセル比率は、800:480＝5:3である
+     * ・領域のピクセル比率は、1200:720＝5:3である
      * ただし、真面目にやると計算コストが重いので、ステップサーチによって計算量を削減している
      * @param image 画像データ
      * @return ゲーム画面の候補の一覧
      */
     public List<Rectangle> searchGamePosition(BufferedImage image){
-        final int minGameWidth = 800;
+        final int minGameWidth = 600;
         final int stepCount = 4;
         final int stepWidth = minGameWidth / (stepCount + 1);
-        final int minGameHeight = 480;
+        final int minGameHeight = 360;
         final int stepHeight = minGameHeight / (stepCount + 1);
-        final int maxGameWidth = 1800;
+        final int maxGameWidth = 2400;
         
         /**
          * 第一段階：上辺の候補を検索する
