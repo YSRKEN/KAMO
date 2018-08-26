@@ -60,6 +60,8 @@ public class ScreenshotService {
 	UtilityService utility;
     @Autowired
     private SettingService setting;
+    @Autowired
+    private  SprcialScreenShotService sprcialScreenShot;
 	
     /**
      * コンストラクタ
@@ -110,12 +112,12 @@ public class ScreenshotService {
 
                         // 枠線の色も記憶しておく
                         this.frameColor = imageData.getRGB((int)selectRect.getX() - 1, (int)selectRect.getY() - 1);
-                        
+
                         // 特殊なスクリーンショットルーチンが使えるかを判定しておく
                         if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()){
-                        	//if(SpecialScreenShotService.initialize(rect, rectForCheck, frameColor)){
-                        	logger.debug("※特殊な座標取得手法が有効になっています");
-                        	//}
+                            if(sprcialScreenShot.trySearchGamePosition(rect, rectForCheck, frameColor)){
+                                logger.debug("※特殊な座標取得手法が有効になっています");
+                            }
                         }
                         return true;
                     }
@@ -318,9 +320,8 @@ public class ScreenshotService {
      * スクリーンショットを取得する
      */
     public BufferedImage getScreenshot(){
-        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()/* && SpecialScreenShotService.canSpecialScreenShot()*/){
-            //return SpecialScreenShotService.getScreenshot();
-        	return robot.createScreenCapture(rect);
+        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows() && sprcialScreenShot.canGetScreenshot()){
+            return sprcialScreenShot.getScreenshot();
         }else {
             return robot.createScreenCapture(rect);
         }
@@ -333,9 +334,8 @@ public class ScreenshotService {
     public boolean isMovedPosition(){
         // スクショを取得し、枠線の色が正しいかを確認する
         BufferedImage sampleImage = null;
-        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows()/* && SpecialScreenShotService.canSpecialScreenShot()*/){
-            //sampleImage = SpecialScreenShotService.getScreenshotForCheck();
-        	sampleImage = robot.createScreenCapture(rectForCheck);
+        if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows() && sprcialScreenShot.canGetScreenshot()){
+            sampleImage = sprcialScreenShot.getScreenshotForCheck();
         }else{
             sampleImage = robot.createScreenCapture(rectForCheck);
         }
