@@ -40,7 +40,7 @@ public class MainApp extends Application {
      */
     public void start(Stage stage) throws Exception {
     	System.out.println("DEBUG MainApp - MainApp#start");
-		ExtraStage mainStage = eFactory.create(stage, "/fxml/main.fxml", "MainWindow");
+		ExtraStage mainStage = eFactory.create(stage, "/fxml/MainView.fxml", "MainWindow");
         mainStage.setTitle(SOFTWARE_NAME);
         mainStage.setOnCloseRequest(() -> {
         	Platform.exit();
