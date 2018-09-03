@@ -309,7 +309,7 @@ public class MainModel {
 		
 		// ウィンドウのStageを作成する
 		try {
-			battleSceneReflectionStage = factory.create("/fxml/hello.fxml", "BattleSceneReflectionWindow");
+			battleSceneReflectionStage = factory.create("/fxml/BattleSceneReflectionView.fxml", "BattleSceneReflectionWindow");
 		} catch (IOException e) {
 			addLogText("エラー：IOエラーが発生しました。");
 			e.printStackTrace();
@@ -348,7 +348,7 @@ public class MainModel {
 		
 		// ウィンドウのStageを作成する
 		try {
-			timerStage = factory.create("/fxml/hello.fxml", "TimerWindow");
+			timerStage = factory.create("/fxml/TimerView.fxml", "TimerWindow");
 		} catch (IOException e) {
 			addLogText("エラー：IOエラーが発生しました。");
 			e.printStackTrace();
@@ -386,7 +386,7 @@ public class MainModel {
 		
 		// ウィンドウのStageを作成する
 		try {
-			sceneHelperStage = factory.create("/fxml/hello.fxml", "SceneHelperWindow");
+			sceneHelperStage = factory.create("/fxml/SceneHelperView.fxml", "SceneHelperWindow");
 		} catch (IOException e) {
 			addLogText("エラー：IOエラーが発生しました。");
 			e.printStackTrace();
