@@ -150,10 +150,11 @@ public class MainModel {
                 // シーンを読み取り、結果をメイン画面に表示する
                 final String scene = sceneRecognition.judgeScene(frame);
                 final boolean isNearlyHomeFlg = sceneRecognition.isNearlyHomeScene(frame);
+                final String sceneMessage = String.format("シーン判定：%s%s",
+						scene.isEmpty() ? "[不明]" : scene,
+						isNearlyHomeFlg ? "*" : "");
                 Platform.runLater(() -> {
-                	nowSceneText.set(String.format("シーン判定：%s%s",
-                            scene.isEmpty() ? "[不明]" : scene,
-                                    isNearlyHomeFlg ? "*" : ""));
+                	nowSceneText.set(sceneMessage);
                 });
                 /*// 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(OpenBattleSceneReflectionFlg.get()){
