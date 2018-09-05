@@ -1,6 +1,6 @@
 [
   {
-    "name": "昼戦後",
+    "name": "昼戦後_",
     "differenceHash": [
       {
         "xPer": "18.0/8",
@@ -29,7 +29,7 @@
     ]
   },
   {
-    "name": "夜戦後",
+    "name": "夜戦後_",
     "differenceHash": [
       {
         "xPer": "367.0/8",
@@ -58,7 +58,7 @@
     ]
   },
   {
-    "name": "戦闘結果",
+    "name": "戦闘結果_",
     "differenceHash": [
       {
         "xPer":  "4.0/8",
@@ -108,7 +108,7 @@
     ]
   },
   {
-    "name": "MVP",
+    "name": "MVP_",
     "differenceHash": [],
     "averageColor": [
       {
@@ -150,7 +150,7 @@
     ]
   },
   {
-    "name": "戦闘判定",
+    "name": "戦闘判定_",
     "differenceHash": [],
     "averageColor": [
       {
@@ -192,7 +192,7 @@
     ]
   },
   {
-    "name": "マップ",
+    "name": "マップ_",
     "differenceHash": [
       {
         "xPer": "312.0/8",
@@ -275,7 +275,7 @@
     ]
   },
   {
-    "name": "艦隊司令部情報",
+    "name": "艦隊司令部情報_",
     "differenceHash": [
       {
         "xPer": "428.0/8",
@@ -323,7 +323,7 @@
     ]
   },
   {
-    "name": "ランキング",
+    "name": "ランキング_",
     "differenceHash": [
       {
         "xPer": "428.0/8",
@@ -373,7 +373,7 @@
     ]
   },
   {
-    "name": "演習一覧",
+    "name": "演習一覧_",
     "differenceHash": [
       {
         "xPer": "428.0/8",
@@ -423,7 +423,7 @@
     ]
   },
   {
-    "name": "演習個別",
+    "name": "演習個別_",
     "differenceHash": [],
     "averageColor": [
       {
@@ -456,7 +456,7 @@
     ]
   },
   {
-    "name": "遠征結果",
+    "name": "遠征結果_",
     "differenceHash": [],
     "averageColor": [
       {
@@ -489,7 +489,7 @@
     ]
   },
   {
-    "name": "遠征一覧",
+    "name": "遠征一覧_",
     "differenceHash": [
       {
         "xPer": "428.0/8",
@@ -539,7 +539,7 @@
     ]
   },
   {
-    "name": "遠征中止",
+    "name": "遠征中止_",
     "differenceHash": [
       {
         "xPer": "428.0/8",
