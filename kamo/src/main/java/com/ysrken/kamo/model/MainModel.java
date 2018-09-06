@@ -149,10 +149,7 @@ public class MainModel {
                 final BufferedImage frame = screenshot.getScreenshot();
                 // シーンを読み取り、結果をメイン画面に表示する
                 final String scene = sceneRecognition.judgeScene(frame);
-                final boolean isNearlyHomeFlg = sceneRecognition.isNearlyHomeScene(frame);
-                final String sceneMessage = String.format("シーン判定：%s%s",
-						scene.isEmpty() ? "[不明]" : scene,
-						isNearlyHomeFlg ? "*" : "");
+                final String sceneMessage = String.format("シーン判定：%s", scene.isEmpty() ? "[不明]" : scene);
                 Platform.runLater(() -> {
                 	nowSceneText.set(sceneMessage);
                 });

@@ -116,11 +116,6 @@ public class SceneRecognitionService {
      * シーン一覧
      */
     private Map<String, SceneEvidence[]> sceneList = new HashMap<String, SceneEvidence[]>();
-    
-    /**
-     * 母港にいるととみなせるシーン一覧
-     */
-    private SceneEvidence[] nearlyHomeScene = new SceneEvidence[]{};
 
     public SceneRecognitionService() {
     	System.out.println("DEBUG MainApp - SceneRecognitionService#SceneRecognitionService");
@@ -167,13 +162,8 @@ public class SceneRecognitionService {
                 final SceneEvidenceAC data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
                 evidenceList.add(data);
 			}
-			
-            // 特殊処理
-            if(sceneName.equals("ほぼ母港")){
-                nearlyHomeScene = evidenceList.toArray(new SceneEvidence[0]);
-            }else {
-                sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
-            }
+
+            sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
 		}
     }
 
@@ -192,10 +182,10 @@ public class SceneRecognitionService {
      * 「ほぼ母港画面」であるかを判定する。ここで「ほぼ母港画面」とは、
      * 母港画面などにある画面上の構造物(名前・資源表示・各種メニュー)が
      * 見えている全ての状況を指す
-     * @param frame 画像
+     * @param scene シーン名
      */
-    public boolean isNearlyHomeScene(BufferedImage frame){
-        return Arrays.stream(nearlyHomeScene).allMatch(se -> se.isMatchImage(frame));
+    public boolean isNearlyHomeScene(String scene){
+        return scene.matches("ほぼ母港.*");
     }
     
     /**
@@ -203,7 +193,7 @@ public class SceneRecognitionService {
      */
     public void testSceneRecognition(BufferedImage image){
         final String scene = judgeScene(image);
-        final boolean isNearlyHomeFlg = isNearlyHomeScene(image);
+        final boolean isNearlyHomeFlg = isNearlyHomeScene(scene);
         String contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
         if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
             /*final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);

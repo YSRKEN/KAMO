@@ -52,7 +52,7 @@ public class PictureProcessingService {
     private BufferedImage blindUserName(BufferedImage image){
         // シーン判定を行う
         final String scene = sceneRecognition.judgeScene(image);
-        final boolean isNearlyHomeFlg = sceneRecognition.isNearlyHomeScene(image);
+        final boolean isNearlyHomeFlg = sceneRecognition.isNearlyHomeScene(scene);
         // シーン認識結果から、画像のどの部分を覆うべきかを判定し、隠蔽操作を行う
         if(isNearlyHomeFlg){
             image = blindImageByAreaStretch(image, 277.0 / 8, 4.0 / 4.8, -165.0 / 8, 20.0 / 4.8);
