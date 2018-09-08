@@ -1,6 +1,9 @@
 package com.ysrken.kamo.stage;
 
 import java.io.IOException;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import javafx.stage.Stage;
 
@@ -31,4 +34,14 @@ public interface ExtraStage {
 	 * @param func
 	 */
 	void setOnCloseRequest(Runnable func);
+
+	/**
+	 * ファイルがドラッグされてきた際に転送モードを変更する
+	 */
+	void setOnDragOver();
+
+	/**
+	 * ファイルがドラッグされてきた際の処理を設定する
+	 */
+	<File> void setOnDragDropped(Consumer<File> func);
 }

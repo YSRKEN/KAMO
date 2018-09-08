@@ -1,5 +1,8 @@
 package com.ysrken.kamo;
 
+import com.ysrken.kamo.service.SceneRecognitionService;
+import com.ysrken.kamo.service.SettingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -13,6 +16,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 /**
  * 起動用クラス
  * @author ysrken
@@ -22,7 +30,7 @@ public class MainApp extends Application {
     private static ConfigurableApplicationContext context;
     
     private ExtraStageFactory eFactory = new ExtraStageFactory();
-    
+
     /**
      * main関数
      * @param args コマンドライン引数
@@ -45,6 +53,16 @@ public class MainApp extends Application {
         mainStage.setOnCloseRequest(() -> {
         	Platform.exit();
             System.exit(0);
+        });
+        mainStage.setOnDragOver();
+        mainStage.setOnDragDropped((File file) -> {
+            try {
+                BufferedImage image = ImageIO.read(file);
+                SceneRecognitionService sceneRecognition = context.getBean(SceneRecognitionService.class);
+                sceneRecognition.testSceneRecognition(image);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
         });
         mainStage.show();
     }

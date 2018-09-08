@@ -1,9 +1,14 @@
 package com.ysrken.kamo.stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -118,5 +123,36 @@ public class ExtraStageImpl implements ExtraStage {
 	@Override
 	public void setOnCloseRequest(Runnable func) {
 		this.stage.setOnCloseRequest(req -> func.run());
+	}
+
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#setOnDragOver()
+	 */
+	@Override
+	public void setOnDragOver() {
+		this.stage.getScene().getRoot().setOnDragOver(event -> {
+			final Dragboard board = event.getDragboard();
+			if (board.hasFiles()) {
+				event.acceptTransferModes(TransferMode.MOVE);
+			}
+		});
+	}
+
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#setOnDragDropped(Consumer)
+	 */
+	@Override
+	public <File> void setOnDragDropped(Consumer<File> func) {
+		this.stage.getScene().getRoot().setOnDragDropped(event -> {
+			final Dragboard board = event.getDragboard();
+			if (board.hasFiles()) {
+				board.getFiles().forEach(file -> {
+					func.accept((File) file);
+				});
+				event.setDropCompleted(true);
+			} else {
+				event.setDropCompleted(false);
+			}
+		});
 	}
 }
