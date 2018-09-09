@@ -44,4 +44,9 @@ public interface ExtraStage {
 	 * ファイルがドラッグされてきた際の処理を設定する
 	 */
 	<File> void setOnDragDropped(Consumer<File> func);
+
+	/*
+	 * コントローラーを取得する
+	 */
+	public <T> T getController();
 }

@@ -11,6 +11,7 @@ import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 
+import com.ysrken.kamo.controller.SceneHelperController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -404,7 +405,18 @@ public class MainModel {
 			sceneHelperStage = null;
 			openSceneHelperFlg.set(false);
 		});
-		
+
+		// ファイルドロップ時の処理を設定する
+		sceneHelperStage.setOnDragOver();
+		sceneHelperStage.setOnDragDropped((File file) -> {
+			try {
+				BufferedImage image = ImageIO.read(file);
+				sceneHelperStage.<SceneHelperController>getController().setImage(image);
+			}catch (IOException e){
+				e.printStackTrace();
+			}
+		});
+
 		// ウィンドウを表示する
 		sceneHelperStage.show();
 	}

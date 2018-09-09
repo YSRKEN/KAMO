@@ -35,7 +35,12 @@ public class ExtraStageImpl implements ExtraStage {
 	 * Stage情報
 	 */
 	private Stage stage;
-	
+
+	/**
+	 * FXMLLoader情報
+	 */
+	private FXMLLoader loader;
+
 	/**
 	 * ウィンドウを一意に特定するためのキー
 	 */
@@ -63,7 +68,7 @@ public class ExtraStageImpl implements ExtraStage {
 		this.keyWord = keyWord;
 		
 		// FXMLを読み込み、Stageに設定する
-		FXMLLoader loader = new FXMLLoader();
+		loader = new FXMLLoader();
         loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlPath));
         Scene scene = new Scene(rootNode);
@@ -154,5 +159,13 @@ public class ExtraStageImpl implements ExtraStage {
 				event.setDropCompleted(false);
 			}
 		});
+	}
+
+	/* (非 Javadoc)
+	 * @see com.ysrken.kamo.service.ExtraStage#<T>getController()
+	 */
+	@Override
+	public <T> T getController(){
+		return loader.getController();
 	}
 }
