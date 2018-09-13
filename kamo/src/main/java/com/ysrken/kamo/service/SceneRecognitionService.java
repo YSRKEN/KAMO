@@ -115,7 +115,8 @@ public class SceneRecognitionService {
     /**
      * シーン一覧
      */
-    private Map<String, SceneEvidence[]> sceneList = new HashMap<String, SceneEvidence[]>();
+    private Map<String, SceneEvidence[]> homeSceneList = new HashMap<String, SceneEvidence[]>();
+    private Map<String, SceneEvidence[]> otherSceneList = new HashMap<String, SceneEvidence[]>();
 
     public SceneRecognitionService() {
     	System.out.println("DEBUG MainApp - SceneRecognitionService#SceneRecognitionService");
@@ -163,7 +164,11 @@ public class SceneRecognitionService {
                 evidenceList.add(data);
 			}
 
-            sceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+			if (sceneName.matches("ほぼ母港.*")){
+                homeSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+            }else{
+                otherSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+            }
 		}
     }
 
@@ -173,19 +178,39 @@ public class SceneRecognitionService {
      * @return シーンを表す文字列
      */
     public String judgeScene(BufferedImage frame){
-        return sceneList.entrySet().stream().filter(e ->
-                Arrays.stream(e.getValue()).allMatch(se -> se.isMatchImage(frame))
-        ).map(e -> e.getKey()).findFirst().orElse("");
+        for(Map.Entry<String, SceneEvidence[]> e : otherSceneList.entrySet()){
+            SceneEvidence[] seList = e.getValue();
+            boolean flg = true;
+            for(SceneEvidence se : seList){
+                if (!se.isMatchImage(frame)){
+                    flg = false;
+                    break;
+                }
+            }
+            if (flg){
+                return e.getKey();
+            }
+        }
+        return "";
     }
     
     /**
      * 「ほぼ母港画面」であるかを判定する。ここで「ほぼ母港画面」とは、
      * 母港画面などにある画面上の構造物(名前・資源表示・各種メニュー)が
      * 見えている全ての状況を指す
-     * @param scene シーン名
+     * @param frame スクショ
+     * @return 母港の書類を表す文字列
      */
-    public boolean isNearlyHomeScene(String scene){
-        return scene.matches("ほぼ母港.*");
+    public String judgeHomeType(BufferedImage frame){
+        for(Map.Entry<String, SceneEvidence[]> e : homeSceneList.entrySet()){
+            SceneEvidence[] seList = e.getValue();
+            for(SceneEvidence se : seList){
+                if (se.isMatchImage(frame)){
+                    return e.getKey();
+                }
+            }
+        }
+        return "";
     }
     
     /**
@@ -193,8 +218,9 @@ public class SceneRecognitionService {
      */
     public void testSceneRecognition(BufferedImage image){
         final String scene = judgeScene(image);
-        final boolean isNearlyHomeFlg = isNearlyHomeScene(scene);
-        String contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "不明" : scene, isNearlyHomeFlg ? "Yes" : "No");
+        final String homeType = judgeHomeType(image);
+
+        String contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "[不明]": scene, homeType.isEmpty() ? "No" : "Yes(" + homeType + ")");
         if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
             /*final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
             if(duration >= 0) {

@@ -149,8 +149,9 @@ public class MainModel {
                 // 画像を取得
                 final BufferedImage frame = screenshot.getScreenshot();
                 // シーンを読み取り、結果をメイン画面に表示する
-                final String scene = sceneRecognition.judgeScene(frame);
-                final String sceneMessage = String.format("シーン判定：%s", scene.isEmpty() ? "[不明]" : scene);
+				final String scene = sceneRecognition.judgeScene(frame);
+				final String homeType = sceneRecognition.judgeHomeType(frame);
+				final String sceneMessage = String.format("シーン判定：%s　%s", scene.isEmpty() ? "[不明]": scene, homeType.isEmpty() ? "―" : homeType);
                 Platform.runLater(() -> {
                 	nowSceneText.set(sceneMessage);
                 });
