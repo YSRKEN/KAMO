@@ -233,6 +233,29 @@
     ]
   },
   {
+    "name": "母港",
+    "differenceHash": [
+      {
+        "xPer": "1145.0/12",
+        "yPer": "656.0/7.2",
+        "wPer": "29.0/12",
+        "hPer": "29.0/7.2",
+        "hash":  "aa2b495555692f8e"
+      }
+    ],
+    "averageColor": [
+      {
+        "xPer": "568.0/12",
+        "yPer": "696.0/7.2",
+        "wPer": "4.0/12",
+        "hPer": "4.0/7.2",
+        "r":  74,
+        "g":  202,
+        "b":  205
+      }
+    ]
+  },
+  {
     "name": "ほぼ母港(一式UI)",
     "differenceHash": [],
     "averageColor": [
