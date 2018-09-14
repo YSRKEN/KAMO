@@ -55,29 +55,45 @@ public class PictureProcessingService {
         final String homeType = sceneRecognition.judgeHomeType(image);
         // シーン認識結果から、画像のどの部分を覆うべきかを判定し、隠蔽操作を行う
         if(!homeType.isEmpty()){
-            image = blindImageByAreaStretch(image, 277.0 / 8, 4.0 / 4.8, -165.0 / 8, 20.0 / 4.8);
+            switch(homeType){
+                case "ほぼ母港(一式UI)":
+                    image = blindImageByAreaStretch(image, 277.0 / 8, 4.0 / 4.8, -165.0 / 8, 20.0 / 4.8);
+                    break;
+                case "ほぼ母港(一式改UI)":
+                    image = blindImageByAreaStretch(image, 404.0 / 12, 5.0 / 7.2, -233.0 / 12, 31.0 / 7.2);
+                    break;
+                case "ほぼ母港(二式UI)":
+                    image = blindImageByAreaStretch(image, 385.0 / 12, 5.0 / 7.2, -212.0 / 12, 31.0 / 7.2);
+                    break;
+                case "ほぼ母港(三式UI)":
+                    image = blindImageByAreaStretch(image, 404.0 / 12, 5.0 / 7.2, -233.0 / 12, 31.0 / 7.2);
+                    break;
+                case "ほぼ母港(三式改UI)":
+                    image = blindImageByAreaStretch(image, 404.0 / 12, 5.0 / 7.2, -233.0 / 12, 31.0 / 7.2);
+                    break;
+            }
         }
         switch(scene){
-            case "戦闘結果":
-                return blindImageByAreaStretch(image, 93.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
-            case "MVP":
-                return blindImageByAreaStretch(image, 58.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
-            case "艦隊司令部情報":
-                return blindImageByAreaStretch(image, 201.0 / 8, 123.0 / 4.8, 295.0 / 8, 26.0 / 4.8);
-            case "ランキング":
-                return blindImageByAreaStretch(image, 228.0 / 8, 157.0 / 4.8, 146.0 / 8, 290.0 / 4.8);
-            case "演習一覧":
-                image = blindImageByAreaStretch(image, 336.0 / 8, 178.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
-                image = blindImageByAreaStretch(image, 336.0 / 8, 233.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
-                image = blindImageByAreaStretch(image, 336.0 / 8, 288.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
-                image = blindImageByAreaStretch(image, 336.0 / 8, 343.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
-                return  blindImageByAreaStretch(image, 336.0 / 8, 398.0 / 4.8, 165.0 / 8, 15.0 / 4.8);
-            case "演習個別":
-                return  blindImageByAreaStretch(image, 129.0 / 8, 85.0 / 4.8, 285.0 / 8, 27.0 / 4.8);
-            case "遠征結果":
-                return  blindImageByAreaStretch(image, 62.0 / 8, 79.0 / 4.8, 172.0 / 8, 19.0 / 4.8);
-            default:
-                return image;
+        case "戦闘結果_":
+            return blindImageByAreaStretch(image, 93.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
+        case "MVP_":
+            return blindImageByAreaStretch(image, 58.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
+        case "艦隊司令部情報":
+            return blindImageByAreaStretch(image, 201.0 / 8, 123.0 / 4.8, 295.0 / 8, 26.0 / 4.8);
+        case "ランキング":
+            return blindImageByAreaStretch(image, 561.0 / 12, 229.0 / 7.2, -217.0 / 12, 443.0 / 7.2);
+        case "演習一覧":
+            image = blindImageByAreaStretch(image, 748.0 / 12, 263.0 / 7.2, -246.0 / 12, 26.0 / 7.2);
+            image = blindImageByAreaStretch(image, 748.0 / 12, 345.0 / 7.2, -246.0 / 12, 26.0 / 7.2);
+            image = blindImageByAreaStretch(image, 748.0 / 12, 427.0 / 7.2, -246.0 / 12, 26.0 / 7.2);
+            image = blindImageByAreaStretch(image, 748.0 / 12, 509.0 / 7.2, -246.0 / 12, 26.0 / 7.2);
+            return blindImageByAreaStretch(image, 748.0 / 12, 591.0 / 7.2, -246.0 / 12, 26.0 / 7.2);
+        case "演習個別":
+            return  blindImageByAreaStretch(image, 190.0 / 12, 129.0 / 7.2, 458.0 / 12, 37.0 / 7.2);
+        case "遠征結果_":
+            return  blindImageByAreaStretch(image, 62.0 / 8, 79.0 / 4.8, 172.0 / 8, 19.0 / 4.8);
+        default:
+            return image;
         }
     }
 

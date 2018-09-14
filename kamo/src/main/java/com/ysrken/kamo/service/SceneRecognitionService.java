@@ -204,10 +204,15 @@ public class SceneRecognitionService {
     public String judgeHomeType(BufferedImage frame){
         for(Map.Entry<String, SceneEvidence[]> e : homeSceneList.entrySet()){
             SceneEvidence[] seList = e.getValue();
+            boolean flg = true;
             for(SceneEvidence se : seList){
-                if (se.isMatchImage(frame)){
-                    return e.getKey();
+                if (!se.isMatchImage(frame)){
+                    flg = false;
+                    break;
                 }
+            }
+            if (flg){
+                return e.getKey();
             }
         }
         return "";
