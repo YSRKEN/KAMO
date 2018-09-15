@@ -18,8 +18,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -232,6 +235,22 @@ public class UtilityService {
         } catch (IOException e) {
             e.printStackTrace();
             return "";
+        }
+    }
+
+    /**
+     * ISO-8601形式で時刻をパース・変換するための準備
+     */
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    public String DateToISO8601(Date date){
+        return df.format(date);
+    }
+    public Date ISO8601ToDate(String str){
+        try {
+            return df.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

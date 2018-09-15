@@ -17,6 +17,8 @@ public class SettingService {
 
 	@Autowired
 	private LoggerService logger;
+	@Autowired
+	private UtilityService utility;
 	
 	/**
 	 * 最終保存日時
@@ -82,7 +84,15 @@ public class SettingService {
 			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
 		case "SceneHelperWindow":
 			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
-			
+		// 遠征
+		case "ExpTimer0":
+			return (T)(new ArrayList<String>(Arrays.asList(utility.DateToISO8601(new Date()), "？")));
+		case "ExpTimer1":
+			return (T)(new ArrayList<String>(Arrays.asList(utility.DateToISO8601(new Date()), "？")));
+		case "ExpTimer2":
+			return (T)(new ArrayList<String>(Arrays.asList(utility.DateToISO8601(new Date()), "？")));
+		case "ExpTimer3":
+			return (T)(new ArrayList<String>(Arrays.asList(utility.DateToISO8601(new Date()), "？")));
 		// その他設定項目
 		case "AutoGetPositionFlg":
 			return (T)(Boolean.FALSE);

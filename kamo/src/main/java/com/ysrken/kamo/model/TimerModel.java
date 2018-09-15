@@ -23,7 +23,7 @@ public class TimerModel {
     /**
      * 最大の遠征数
      */
-    private static int EXPEDITION_COUNT = 3;
+    public static int EXPEDITION_COUNT = 3;
 
     /**
      * 遠征の残時間表示

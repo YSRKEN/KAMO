@@ -24,7 +24,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
@@ -190,8 +194,16 @@ public class MainModel {
                             final Map<Integer, String> fieetIds = characterRecognition.getExpeditionFleetId(frame);
                             for(Map.Entry<Integer, String> pair : fieetIds.entrySet()){
                                 if(pair.getValue().equals(expeditionId)){
-                                    setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), pair.getKey() - 2);
-                                    setExpInfo.accept(characterRecognition.getExpeditionNameById(pair.getValue()), pair.getKey() - 2);
+                                	Date date = new Date(new Date().getTime() + duration * 1000);
+                                	String name = characterRecognition.getExpeditionNameById(pair.getValue());
+                                    setExpTimer.accept(date, pair.getKey() - 2);
+                                    setExpInfo.accept(name, pair.getKey() - 2);
+									setting.setSetting(String.format("ExpTimer%d", pair.getKey() - 2),
+											new ArrayList<String>(Arrays.asList(
+												utility.DateToISO8601(date),
+												name
+											))
+									);
                                     break;
                                 }
                             }
@@ -398,6 +410,13 @@ public class MainModel {
 		setExpTimer = (date, index) -> controller.setExpTimer(date, index);
 		setExpInfo = (info, index) -> controller.setExpInfo(info, index);
 		refreshExpTimerString = (() -> controller.refreshExpTimerString());
+
+		// 事前に値をセットする
+		for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+			List<String> timer = setting.getSetting(String.format("ExpTimer%d",i));
+			setExpInfo.accept(timer.get(1), i);
+			setExpTimer.accept(utility.ISO8601ToDate(timer.get(0)), i);
+		}
 
 		// ウィンドウを表示する
 		timerStage.show();
