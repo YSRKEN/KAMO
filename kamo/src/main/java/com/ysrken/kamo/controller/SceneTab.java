@@ -1,11 +1,13 @@
 package com.ysrken.kamo.controller;
 
+import com.ysrken.kamo.MainApp;
 import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.UtilityService;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -94,23 +96,27 @@ public class SceneTab extends Tab {
     /**
      * コンストラクタ
      */
-    public SceneTab(String scene){
+    public SceneTab() {
         super();
-        this.setText(scene);
-        final FXMLLoader fxmlLoader  = new FXMLLoader(
-                ClassLoader.getSystemResource("/fxml/SceneTab.fxml"));
 
-        // FXMLのルートタグとして、自らを登録
-        fxmlLoader.setRoot( this );
-        fxmlLoader.setController( this );
-
-        // FXMLの読込
+        // FXMLを読み込む
+        final FXMLLoader loader = new FXMLLoader();
+        loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
+        loader.setRoot(this);
+        loader.setController(this);
         try{
-            fxmlLoader.load();
+            loader.load(getClass().getResourceAsStream("/fxml/SceneTab.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    /**
+     * 初期化
+     */
+    public void initialize(String scene){
+        this.setText(scene);
 
         // ImageViewのサイズを自動調整する
         // 参考→https://qiita.com/opengl-8080/items/29c3ef163f41ee172173
@@ -125,9 +131,13 @@ public class SceneTab extends Tab {
      * @param image 画像
      */
     public void setImage(BufferedImage image){
+        /*if (utility == null){
+            return;
+        }*/
+        //String text = utility.getDateStringLong();
         Platform.runLater(() -> {
             SceneImageView.setImage(SwingFXUtils.toFXImage(image, null));
-            SceneLabel.setText(utility.getDateStringLong());
+            //SceneLabel.setText(text);
         });
     }
 }

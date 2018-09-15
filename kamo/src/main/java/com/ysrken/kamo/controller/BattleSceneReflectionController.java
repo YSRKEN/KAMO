@@ -39,7 +39,8 @@ public class BattleSceneReflectionController {
         // SceneTabを自動生成する
         final ObservableList<Tab> tabList = SceneTabs.getTabs();
         for(String scene : sceneList) {
-            final SceneTab sceneTab = new SceneTab(scene);
+            final SceneTab sceneTab = new SceneTab();
+            sceneTab.initialize(scene);
             tabList.add(sceneTab);
             tabMap.put(scene, sceneTab);
         }
