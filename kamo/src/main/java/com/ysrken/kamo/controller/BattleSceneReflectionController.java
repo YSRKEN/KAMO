@@ -1,11 +1,14 @@
 package com.ysrken.kamo.controller;
 
 import com.ysrken.kamo.MainApp;
+import com.ysrken.kamo.model.BattleSceneReflectionModel;
+import com.ysrken.kamo.model.SceneHelperModel;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
@@ -23,16 +26,12 @@ public class BattleSceneReflectionController {
      */
     @FXML
     private TabPane SceneTabs;
+
     /**
-     * 表示するシーン一覧
+     * Model
      */
-    final private Set<String> sceneList = new LinkedHashSet<>(
-            Arrays.asList("昼戦後", "夜戦後", "戦闘結果", "MVP", "マップ")
-    );
-    /**
-     * タブ一覧(ハッシュアクセス用)
-     */
-    private Map<String, SceneTab> tabMap = new HashMap<>();
+    @Autowired
+    BattleSceneReflectionModel model;
 
     /**
      * 初期化
@@ -42,22 +41,7 @@ public class BattleSceneReflectionController {
 
         // SceneTabを自動生成する
         final ObservableList<Tab> tabList = SceneTabs.getTabs();
-        for(String scene : sceneList) {
-            try{
-                final FXMLLoader loader = new FXMLLoader();
-                loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
-                SceneTab sceneTab = MainApp.getApplicationContext().getBean(SceneTab.class);
-                loader.setRoot(sceneTab);
-                loader.setController(sceneTab);
-                loader.load(getClass().getResourceAsStream("/fxml/SceneTab.fxml"));
-                sceneTab.initialize(scene);
-                tabList.add(sceneTab);
-                tabMap.put(scene, sceneTab);
-            }catch(IOException e){
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage());
-            }
-        }
+        tabList.addAll(model.getSceneTabList());
     }
 
     /**
@@ -66,14 +50,6 @@ public class BattleSceneReflectionController {
      * @param image 画像
      */
     public void setImage(String key, BufferedImage image){
-        final SceneTab targetTab = tabMap.get(key);
-        targetTab.setImage(image);
-    }
-    /**
-     * 表示するシーン一覧
-     * @return 表示するシーン一覧
-     */
-    public Set<String> getBattleSceneSet(){
-        return sceneList;
+        model.setImage(key, image);
     }
 }

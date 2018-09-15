@@ -1,20 +1,16 @@
 package com.ysrken.kamo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.GDI32Util;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.W32APIOptions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 /** WinAPIを叩くための準備*/
 interface User32Ex extends W32APIOptions {

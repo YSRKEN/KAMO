@@ -1,26 +1,22 @@
 package com.ysrken.kamo.stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-
+import com.ysrken.kamo.MainApp;
+import com.ysrken.kamo.service.SettingService;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.ysrken.kamo.MainApp;
-import com.ysrken.kamo.service.SettingService;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 /**
  * ExtraStageImplの実装クラス

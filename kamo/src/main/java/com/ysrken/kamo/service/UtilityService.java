@@ -1,6 +1,17 @@
 package com.ysrken.kamo.service;
 
-import java.awt.Color;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.springframework.stereotype.Component;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,18 +22,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
-import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBase;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 @Component
 public class UtilityService {

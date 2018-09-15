@@ -1,25 +1,22 @@
 package com.ysrken.kamo;
 
 import com.ysrken.kamo.service.SceneRecognitionService;
-import com.ysrken.kamo.service.SettingService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ysrken.kamo.stage.ExtraStage;
+import com.ysrken.kamo.stage.ExtraStageFactory;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.ysrken.kamo.stage.ExtraStage;
-import com.ysrken.kamo.stage.ExtraStageFactory;
-import static com.ysrken.kamo.Constant.*;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
+import static com.ysrken.kamo.Constant.SOFTWARE_NAME;
 
 /**
  * 起動用クラス

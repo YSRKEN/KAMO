@@ -1,12 +1,10 @@
 package com.ysrken.kamo.stage;
 
-import java.io.IOException;
-
+import com.ysrken.kamo.MainApp;
+import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
-import com.ysrken.kamo.MainApp;
-
-import javafx.stage.Stage;
+import java.io.IOException;
 
 /**
  * ExtraStageクラスのファクトリクラス

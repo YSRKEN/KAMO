@@ -1,7 +1,24 @@
 package com.ysrken.kamo.model;
 
-import java.awt.Desktop;
-import java.awt.Rectangle;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ysrken.kamo.Constant;
+import com.ysrken.kamo.controller.BattleSceneReflectionController;
+import com.ysrken.kamo.controller.SceneHelperController;
+import com.ysrken.kamo.service.*;
+import com.ysrken.kamo.stage.ExtraStage;
+import com.ysrken.kamo.stage.ExtraStageFactory;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.scene.control.Alert.AlertType;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,31 +27,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.BiConsumer;
-
-import javax.imageio.ImageIO;
-
-import com.ysrken.kamo.controller.BattleSceneReflectionController;
-import com.ysrken.kamo.controller.SceneHelperController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ysrken.kamo.Constant;
-import com.ysrken.kamo.service.PictureProcessingService;
-import com.ysrken.kamo.service.SceneRecognitionService;
-import com.ysrken.kamo.service.ScreenshotService;
-import com.ysrken.kamo.service.SettingService;
-import com.ysrken.kamo.service.UtilityService;
-import com.ysrken.kamo.stage.ExtraStage;
-import com.ysrken.kamo.stage.ExtraStageFactory;
-
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.scene.control.Alert.AlertType;
-import lombok.Getter;
 
 /**
  * メイン画面のModel
@@ -343,7 +335,7 @@ public class MainModel {
 		});
 
 		// Controllerから値・メソッドを受け取る
-		battleSceneSet = battleSceneReflectionStage.<BattleSceneReflectionController>getController().getBattleSceneSet();
+		battleSceneSet = BattleSceneReflectionModel.SceneList;
 		setImage = (key, image) -> battleSceneReflectionStage.<BattleSceneReflectionController>getController().setImage(key, image);
 
 		// ウィンドウを表示する

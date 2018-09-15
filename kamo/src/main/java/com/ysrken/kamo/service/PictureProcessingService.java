@@ -1,13 +1,12 @@
 package com.ysrken.kamo.service;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ysrken.kamo.BitmapImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ysrken.kamo.BitmapImage;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 @Component
 public class PictureProcessingService {

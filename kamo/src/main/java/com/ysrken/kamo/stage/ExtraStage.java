@@ -1,11 +1,9 @@
 package com.ysrken.kamo.stage;
 
-import java.io.IOException;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Stageを拡張したクラス用のインターフェース

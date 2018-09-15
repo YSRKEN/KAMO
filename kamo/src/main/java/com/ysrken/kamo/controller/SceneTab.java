@@ -1,13 +1,10 @@
 package com.ysrken.kamo.controller;
 
-import com.ysrken.kamo.MainApp;
 import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.UtilityService;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

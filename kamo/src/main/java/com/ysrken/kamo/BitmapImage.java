@@ -1,11 +1,9 @@
 package com.ysrken.kamo;
 
-import javax.imageio.ImageIO;
-
+import com.ysrken.kamo.service.UtilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ysrken.kamo.service.UtilityService;
-
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
