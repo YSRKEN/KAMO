@@ -115,7 +115,7 @@ public class SettingService {
 		try {
 			// ファイルを読み込む
 			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(new File("sample_setting.json"));
+			JsonNode root = mapper.readTree(new File("setting.json"));
 			
 			// 各項目を読み込み、Mapに登録する
 			Iterator<String> keys = root.fieldNames();
@@ -133,7 +133,7 @@ public class SettingService {
 	 * 設定を保存する
 	 */
 	public void saveSetting() {
-		try (FileOutputStream fos = new FileOutputStream("sample_setting.json");
+		try (FileOutputStream fos = new FileOutputStream("setting.json");
 				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 				BufferedWriter writer = new BufferedWriter(osw)) {
 

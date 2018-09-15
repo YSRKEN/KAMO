@@ -1,0 +1,13 @@
+{
+  "BattleSceneReflectionWindow" : [ 2932.0, 150.0, 773.0, 579.0 ],
+  "ExpTimer2" : [ "2018-09-16T02:04:56+09", "長距離練習航海" ],
+  "ExpTimer0" : [ "2018-09-16T02:34:49+09", "観艦式予行" ],
+  "BlindNameTextFlg" : true,
+  "ExpTimer1" : [ "2018-09-16T01:56:00+09", "対潜警戒任務" ],
+  "AutoGetPositionFlg" : false,
+  "SpecialGetPosFlg" : false,
+  "MainWindow" : [ 2688.0, 165.0, 862.0, 401.0 ],
+  "SceneHelperWindow" : [ 1253.0, 552.0, 572.0, 402.0 ],
+  "TimerWindow" : [ 2810.0, 570.0, 400.0, 302.0 ],
+  "SaveWindowPositionFlg" : true
+}
