@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,8 @@ public class SceneRecognitionService {
 	 */
 	@Autowired
     private UtilityService utility;
+	@Autowired
+    private CharacterRecognitionService characterRecognition;
 	
 	/**
 	 * 画像がそのシーンたりうる証拠
@@ -130,44 +132,48 @@ public class SceneRecognitionService {
     	
     	// JSONを読み込む
 		ObjectMapper mapper = new ObjectMapper();
-		JsonNode root = mapper.readTree(new File("D:\\自作ソフトウェア\\艦これモニタリングツール「KAMO」\\repository\\kamo\\src\\main\\resources\\scene_parameter.json"));
-		for(JsonNode evidenceJsonData: root) {
-			// 保存用の配列を用意する
-			final ArrayList<SceneEvidence> evidenceList = new ArrayList<>();
-			
-			// シーンの名称を読み込む
-			final String sceneName = evidenceJsonData.get("name").textValue();
-			
-			// DifferenceHashについての処理
-			for(JsonNode differenceHash: evidenceJsonData.get("differenceHash")) {
-                final double xPer = utility.parseFormula(differenceHash.get("xPer").textValue());
-                final double yPer = utility.parseFormula(differenceHash.get("yPer").textValue());
-                final double wPer = utility.parseFormula(differenceHash.get("wPer").textValue());
-                final double hPer = utility.parseFormula(differenceHash.get("hPer").textValue());
-                final long hash = Long.parseUnsignedLong(differenceHash.get("hash").textValue(), 16);
-                final SceneEvidenceDH data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
-                evidenceList.add(data);
-			}
-			
-			// AverageColorについての処理
-			for(JsonNode averageColor: evidenceJsonData.get("averageColor")) {
-                final double xPer = utility.parseFormula(averageColor.get("xPer").textValue());
-                final double yPer = utility.parseFormula(averageColor.get("yPer").textValue());
-                final double wPer = utility.parseFormula(averageColor.get("wPer").textValue());
-                final double hPer = utility.parseFormula(averageColor.get("hPer").textValue());
-                final int r = averageColor.get("r").intValue();
-                final int g = averageColor.get("g").intValue();
-                final int b = averageColor.get("b").intValue();
-                final SceneEvidenceAC data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
-                evidenceList.add(data);
-			}
+        try(final InputStream is = ClassLoader.getSystemResourceAsStream("scene_parameter.json")) {
+            JsonNode root = mapper.readTree(is);
+            for(JsonNode evidenceJsonData: root) {
+                // 保存用の配列を用意する
+                final ArrayList<SceneEvidence> evidenceList = new ArrayList<>();
 
-			if (sceneName.matches("ほぼ母港.*")){
-                homeSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
-            }else{
-                otherSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                // シーンの名称を読み込む
+                final String sceneName = evidenceJsonData.get("name").textValue();
+
+                // DifferenceHashについての処理
+                for(JsonNode differenceHash: evidenceJsonData.get("differenceHash")) {
+                    final double xPer = utility.parseFormula(differenceHash.get("xPer").textValue());
+                    final double yPer = utility.parseFormula(differenceHash.get("yPer").textValue());
+                    final double wPer = utility.parseFormula(differenceHash.get("wPer").textValue());
+                    final double hPer = utility.parseFormula(differenceHash.get("hPer").textValue());
+                    final long hash = Long.parseUnsignedLong(differenceHash.get("hash").textValue(), 16);
+                    final SceneEvidenceDH data = new SceneEvidenceDH(xPer, yPer, wPer, hPer, hash);
+                    evidenceList.add(data);
+                }
+
+                // AverageColorについての処理
+                for(JsonNode averageColor: evidenceJsonData.get("averageColor")) {
+                    final double xPer = utility.parseFormula(averageColor.get("xPer").textValue());
+                    final double yPer = utility.parseFormula(averageColor.get("yPer").textValue());
+                    final double wPer = utility.parseFormula(averageColor.get("wPer").textValue());
+                    final double hPer = utility.parseFormula(averageColor.get("hPer").textValue());
+                    final int r = averageColor.get("r").intValue();
+                    final int g = averageColor.get("g").intValue();
+                    final int b = averageColor.get("b").intValue();
+                    final SceneEvidenceAC data = new SceneEvidenceAC(xPer, yPer, wPer, hPer, r, g, b);
+                    evidenceList.add(data);
+                }
+
+                if (sceneName.matches("ほぼ母港.*")){
+                    homeSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                }else{
+                    otherSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                }
             }
-		}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -224,22 +230,22 @@ public class SceneRecognitionService {
         final String homeType = judgeHomeType(image);
 
         String contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "[不明]": scene, homeType.isEmpty() ? "No" : "Yes(" + homeType + ")");
-        if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
-            /*final var duration = CharacterRecognitionService.getExpeditionRemainingTime(image);
+        if(scene.equals("遠征個別") || scene.equals("遠征中止")){
+            final long duration = characterRecognition.getExpeditionRemainingTime(image);
             if(duration >= 0) {
-                contentText += String.format("%n残り時間：%s", Utility.LongToDateStringShort(duration));
+                contentText += String.format("%n残り時間：%s", utility.getDateStringShortFromLong(duration));
             }else{
-                contentText += "%n残り時間：不明";
+                contentText += String.format("%n残り時間：不明");
             }
-            final var result = CharacterRecognitionService.getExpeditionFleetId(image);
+            final Map<Integer, String> result = characterRecognition.getExpeditionFleetId(image);
             if(result.size() > 0){
                 contentText += String.format("%n遠征艦隊番号：");
-                for(var pair : result.entrySet()){
+                for(Map.Entry<Integer, String> pair : result.entrySet()){
                     contentText += String.format("%n　第%d艦隊→%s", pair.getKey(), pair.getValue());
                 }
             }
-            final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(image);
-            contentText += String.format("%n遠征ID：%s", expeditionId);*/
+            final String expeditionId = characterRecognition.getSelectedExpeditionId(image);
+            contentText += String.format("%n遠征ID：%s", expeditionId);
         }
         utility.showDialog(contentText, "画像認識結果");
     }

@@ -113,7 +113,9 @@ public class CharacterRecognitionService {
     /**
      * 初期化
      */
-    public void initialize(){
+    public CharacterRecognitionService(){
+        System.out.println("DEBUG MainApp - CharacterRecognitionService#CharacterRecognitionService");
+
         final boolean debugFlg = false;
 
         // テンプレート情報を用意する
@@ -173,7 +175,7 @@ public class CharacterRecognitionService {
         });
 
         // 遠征情報を用意する
-        try(final InputStream is = ClassLoader.getSystemResourceAsStream("/resources/expedition_list.csv");
+        try(final InputStream is = ClassLoader.getSystemResourceAsStream("expedition_list.csv");
             final InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
             final BufferedReader br = new BufferedReader(isr)) {
             // テキストデータを用意し、1行ごとに処理を行う
@@ -277,7 +279,7 @@ public class CharacterRecognitionService {
 
     /** 選択されている遠征の遠征IDを取り出す */
     public String getSelectedExpeditionId(BufferedImage image){
-        final long hash = BitmapImage.of(image).calcDifferenceHash(577.0 / 8, 104.0 / 4.8, 103.0 / 8, 19.0 / 4.8);
+        final long hash = BitmapImage.of(image).calcDifferenceHash(860.0 / 12, 158.0 / 7.2, 153.0 / 12, 27.0 / 7.2);
         String fleetId = "";
         long minDiff = Long.MAX_VALUE;
         for(Map.Entry<String, Pair<String, Long>> pair : expeditionDataMap.entrySet()){

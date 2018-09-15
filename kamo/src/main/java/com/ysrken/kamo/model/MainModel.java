@@ -183,7 +183,7 @@ public class MainModel {
                 }
                 // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
                 if(openTimerFlg.get()){
-                    if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
+                    if(scene.equals("遠征個別") || scene.equals("遠征中止")){
                         final long duration = characterRecognition.getExpeditionRemainingTime(frame);
                         if(setExpTimer != null && setExpInfo != null && duration >= 0){
                             final String expeditionId = characterRecognition.getSelectedExpeditionId(frame);

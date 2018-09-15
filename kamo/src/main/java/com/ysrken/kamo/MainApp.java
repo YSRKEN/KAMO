@@ -34,6 +34,7 @@ public class MainApp extends Application {
      * @throws Exception 実行時例外
      */
     public static void main(String[] args) throws Exception {
+        System.out.println("DEBUG MainApp - MainApp#main");
     	context = new AnnotationConfigApplicationContext(MainApp.class);
         launch(args);
     }

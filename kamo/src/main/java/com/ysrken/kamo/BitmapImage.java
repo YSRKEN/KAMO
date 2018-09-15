@@ -1,7 +1,12 @@
 package com.ysrken.kamo;
 
 import com.ysrken.kamo.service.UtilityService;
+import com.ysrken.kamo.stage.ExtraStageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,6 +21,8 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 /** 自作の画像クラス */
+@Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class BitmapImage {
     /** 画像データを格納するフィールド */
     private BufferedImage image;
@@ -28,9 +35,15 @@ public class BitmapImage {
     
     /** BufferedImageから変換 */
     public static BitmapImage of(BufferedImage image){
-        final BitmapImage bitmap = new BitmapImage();
-        bitmap.image = image;
-        return bitmap;
+        if (MainApp.getApplicationContext() != null) {
+            final BitmapImage bitmap = MainApp.getApplicationContext().getBean(BitmapImage.class);
+            bitmap.image = image;
+            return bitmap;
+        }else{
+            final BitmapImage bitmap = new BitmapImage();
+            bitmap.image = image;
+            return bitmap;
+        }
     }
 
     /** 画像の横幅 */
