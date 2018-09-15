@@ -9,3 +9,21 @@
 
 　GitHubにWikiを立てたからそちらを参照するといいかも！  
 　　[https://github.com/YSRKEN/KAMO/wiki](https://github.com/YSRKEN/KAMO/wiki)
+
+## ライセンス
+
+- MIT License
+  - 当ツール自体
+  - Lombok：MIT
+  - slf4j
+
+- Apache License 2.0
+  - Java Native Access
+  - Jackson
+  - log4j
+  - StreamEx
+  - Spring Framework
+  - Apache Commons Lang
+
+- BSD License
+  - MigLayout
