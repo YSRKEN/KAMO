@@ -74,9 +74,9 @@ public class PictureProcessingService {
             }
         }
         switch(scene){
-        case "戦闘結果_":
+        case "戦闘結果":
             return blindImageByAreaStretch(image, 93.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
-        case "MVP_":
+        case "MVP":
             return blindImageByAreaStretch(image, 58.0 / 8, 81.0 / 4.8, 170.0 / 8, 24.0 / 4.8);
         case "艦隊司令部情報":
             return blindImageByAreaStretch(image, 201.0 / 8, 123.0 / 4.8, 295.0 / 8, 26.0 / 4.8);
