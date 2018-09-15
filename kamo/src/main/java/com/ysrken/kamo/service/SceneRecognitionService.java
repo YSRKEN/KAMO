@@ -212,7 +212,7 @@ public class SceneRecognitionService {
                 }
             }
             if (flg){
-                return e.getKey().replaceAll("ほぼ母港(.+)", "$1").replace("(", "").replace(")", "");
+                return e.getKey().replaceAll("ほぼ母港\\((.+)\\)", "$1");
             }
         }
         return "";
