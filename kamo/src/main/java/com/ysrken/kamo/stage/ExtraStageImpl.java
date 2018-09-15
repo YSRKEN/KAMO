@@ -68,7 +68,6 @@ public class ExtraStageImpl implements ExtraStage {
         loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlPath));
         Scene scene = new Scene(rootNode);
-        scene.getStylesheets().add("/styles/styles.css");
         this.stage.setScene(scene);
         
         // その他の情報を登録する
