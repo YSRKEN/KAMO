@@ -54,7 +54,18 @@ public class UtilityService {
     public String getDateStringShort(){
         return LocalDateTime.now().format(dtfShort);
     }
-    
+
+    /** 秒数を時間の文字列に変換する */
+    public static String getDateStringShortFromLong(long x) {
+        if(x <= 0){
+            return "00:00:00";
+        }
+        long second = x % 60; x -= second; x /= 60;
+        long minute = x % 60; x -= minute; x /= 60;
+        long hour = x;
+        return String.format("%02d:%02d:%02d", hour, minute, second);
+    }
+
     /**
      * 色間のRGB色空間における距離を計算する
      * @param a 色1

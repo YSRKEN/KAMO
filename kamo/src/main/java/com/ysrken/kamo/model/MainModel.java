@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ysrken.kamo.Constant;
 import com.ysrken.kamo.controller.BattleSceneReflectionController;
 import com.ysrken.kamo.controller.SceneHelperController;
+import com.ysrken.kamo.controller.TimerController;
 import com.ysrken.kamo.service.*;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
@@ -23,9 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -92,6 +91,21 @@ public class MainModel {
 	private BiConsumer<String, BufferedImage> setImage = null;
 
 	/**
+	 * 遠征のタイマー情報を更新するルーチン
+	 */
+	private BiConsumer<Date, Integer> setExpTimer = null;
+
+	/**
+	 * 遠征の遠征名を更新するルーチン
+	 */
+	private BiConsumer<String, Integer> setExpInfo = null;
+
+	/**
+	 * 遠征タイマーの表示を更新する絵ルーチン
+	 */
+	private Runnable refreshExpTimerString = null;
+
+	/**
 	 * 各種サービス
 	 */
     @Autowired
@@ -106,6 +120,8 @@ public class MainModel {
     private PictureProcessingService pictureProcessing;
     @Autowired
     private SceneRecognitionService sceneRecognition;
+    @Autowired
+	private CharacterRecognitionService characterRecognition;
 	
     /**
      * ログにテキストを追加
@@ -165,27 +181,27 @@ public class MainModel {
                         setImage.accept(scene, frame);
                     }
                 }
-                /*// 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
-                if(OpenTimerFlg.get()){
+                // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
+                if(openTimerFlg.get()){
                     if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
-                        final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
+                        final long duration = characterRecognition.getExpeditionRemainingTime(frame);
                         if(setExpTimer != null && setExpInfo != null && duration >= 0){
-                            final var expeditionId = CharacterRecognitionService.getSelectedExpeditionId(frame);
-                            final var fieetIds = CharacterRecognitionService.getExpeditionFleetId(frame);
-                            for(var pair : fieetIds.entrySet()){
+                            final String expeditionId = characterRecognition.getSelectedExpeditionId(frame);
+                            final Map<Integer, String> fieetIds = characterRecognition.getExpeditionFleetId(frame);
+                            for(Map.Entry<Integer, String> pair : fieetIds.entrySet()){
                                 if(pair.getValue().equals(expeditionId)){
                                     setExpTimer.accept(new Date(new Date().getTime() + duration * 1000), pair.getKey() - 2);
-                                    setExpInfo.accept(CharacterRecognitionService.getExpeditionNameById(pair.getValue()), pair.getKey() - 2);
+                                    setExpInfo.accept(characterRecognition.getExpeditionNameById(pair.getValue()), pair.getKey() - 2);
                                     break;
                                 }
                             }
                         }
                     }
-                }*/
+                }
             }
-            /*if(refreshExpTimerString != null){
+            if(refreshExpTimerString != null){
                 refreshExpTimerString.run();
-            }*/
+            }
         }
     }
     
@@ -335,8 +351,9 @@ public class MainModel {
 		});
 
 		// Controllerから値・メソッドを受け取る
+		BattleSceneReflectionController controller = battleSceneReflectionStage.getController();
 		battleSceneSet = BattleSceneReflectionModel.SceneList;
-		setImage = (key, image) -> battleSceneReflectionStage.<BattleSceneReflectionController>getController().setImage(key, image);
+		setImage = (key, image) -> controller.setImage(key, image);
 
 		// ウィンドウを表示する
 		battleSceneReflectionStage.show();
@@ -375,7 +392,13 @@ public class MainModel {
 			timerStage = null;
 			openTimerFlg.set(false);
 		});
-		
+
+		// Controllerから値・メソッドを受け取る
+		TimerController controller = timerStage.getController();
+		setExpTimer = (date, index) -> controller.setExpTimer(date, index);
+		setExpInfo = (info, index) -> controller.setExpInfo(info, index);
+		refreshExpTimerString = (() -> controller.refreshExpTimerString());
+
 		// ウィンドウを表示する
 		timerStage.show();
 	}

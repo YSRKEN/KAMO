@@ -146,7 +146,7 @@ public class SettingService {
     	
     	/**
     	 * コンストラクタ
-    	 * @param saveTask 保存コマンド
+    	 * @param saveSettings 保存コマンド
     	 */
     	public SaveTask(Runnable saveSettings) {
     		this.saveSettings = saveSettings;
