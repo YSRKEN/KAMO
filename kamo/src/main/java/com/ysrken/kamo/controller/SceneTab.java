@@ -1,5 +1,7 @@
 package com.ysrken.kamo.controller;
 
+import com.ysrken.kamo.model.BattleSceneReflectionModel;
+import com.ysrken.kamo.model.SceneTabModel;
 import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.UtilityService;
 import javafx.application.Platform;
@@ -43,52 +45,10 @@ public class SceneTab extends Tab {
     @FXML private Button SaveSceneButton;
 
     /**
-     * 最後に選択したフォルダパスを保持
-     */
-    private File lastSelectFolder = null;
-
-    /**
-     * 各種サービス
+     * Model
      */
     @Autowired
-    private UtilityService utility;
-    @Autowired
-    private PictureProcessingService pictureProcessing;
-
-    /**
-     * 画像を保存するコマンド
-     */
-    private void saveScene(){
-        // 画像がそもそも存在しているか？
-        final Image image = SceneImageView.getImage();
-        if(image == null){
-            return;
-        }
-        // ファイルを選択
-        final FileChooser fc = new FileChooser();
-        fc.setTitle("ファイルを保存");
-        fc.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PNG", "*.png"),
-                new FileChooser.ExtensionFilter("ALL", "*.*")
-        );
-        fc.setInitialFileName(SceneLabel.getText() + ".png");
-        if(lastSelectFolder != null) {
-            fc.setInitialDirectory(lastSelectFolder);
-        }
-        final File file = fc.showSaveDialog(null);
-        if(file == null) {
-            return;
-        }
-        lastSelectFolder = file.getParentFile();
-        // 保存用のデータを保存
-        try{
-            final BufferedImage processedImage = pictureProcessing.getProcessedImage(SwingFXUtils.fromFXImage(image, null));
-            ImageIO.write(processedImage, "png", file);
-        } catch (IOException e) {
-            utility.showDialog("画像を保存できませんでした。", "IOエラー", Alert.AlertType.ERROR);
-            e.printStackTrace();
-        }
-    }
+    SceneTabModel model;
 
     /**
      * 初期化
@@ -96,26 +56,24 @@ public class SceneTab extends Tab {
     public void initialize(String scene) throws IOException {
         this.setText(scene);
 
+        // メソッドをコントロールに割り当てる
+        SaveSceneButton.setOnAction(e -> model.saveScene());
+
+        // プロパティをData Bindingさせる
+        SceneImageView.imageProperty().bindBidirectional(model.Image);
+        SceneLabel.textProperty().bindBidirectional(model.LabelText);
+
         // ImageViewのサイズを自動調整する
         // 参考→https://qiita.com/opengl-8080/items/29c3ef163f41ee172173
         SceneImageView.fitWidthProperty().bind(SceneBP.widthProperty());
         SceneImageView.fitHeightProperty().bind(SceneBP.heightProperty());
-
-        // Data Binding
-        SaveSceneButton.setOnAction(e -> saveScene());
     }
+
     /**
      * 画像をタブにセットする
      * @param image 画像
      */
     public void setImage(BufferedImage image){
-        if (utility == null){
-            return;
-        }
-        String text = utility.getDateStringLong();
-        Platform.runLater(() -> {
-            SceneImageView.setImage(SwingFXUtils.toFXImage(image, null));
-            SceneLabel.setText(text);
-        });
+        model.setImage(image);
     }
 }
