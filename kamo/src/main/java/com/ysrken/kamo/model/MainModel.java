@@ -6,11 +6,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.BiConsumer;
 
 import javax.imageio.ImageIO;
 
+import com.ysrken.kamo.controller.BattleSceneReflectionController;
 import com.ysrken.kamo.controller.SceneHelperController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -78,15 +81,24 @@ public class MainModel {
 	 */
 	@Getter
 	private StringProperty messageLogText = new SimpleStringProperty("");
-	
-	
+
 	/**
 	 * 各種画面
 	 */
 	private ExtraStage battleSceneReflectionStage = null;
 	private ExtraStage timerStage = null;
 	private ExtraStage sceneHelperStage = null;
-	
+
+	/**
+	 * 戦闘に関わるシーン一覧
+	 */
+	private Set<String> battleSceneSet = null;
+
+	/**
+	 * 各種戦闘画面の画像を更新するルーチン
+	 */
+	private BiConsumer<String, BufferedImage> setImage = null;
+
 	/**
 	 * 各種サービス
 	 */
@@ -155,14 +167,13 @@ public class MainModel {
                 Platform.runLater(() -> {
                 	nowSceneText.set(sceneMessage);
                 });
-                /*// 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
-                if(OpenBattleSceneReflectionFlg.get()){
+                // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
+                if(openBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
                         setImage.accept(scene, frame);
-                        setText.accept(scene, Utility.getDateStringLong());
                     }
                 }
-                // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
+                /*// 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
                 if(OpenTimerFlg.get()){
                     if(scene.equals("遠征一覧") || scene.equals("遠征中止")){
                         final var duration = CharacterRecognitionService.getExpeditionRemainingTime(frame);
@@ -330,7 +341,11 @@ public class MainModel {
 			battleSceneReflectionStage = null;
 			openBattleSceneReflectionFlg.set(false);
 		});
-		
+
+		// Controllerから値・メソッドを受け取る
+		battleSceneSet = battleSceneReflectionStage.<BattleSceneReflectionController>getController().getBattleSceneSet();
+		setImage = (key, image) -> battleSceneReflectionStage.<BattleSceneReflectionController>getController().setImage(key, image);
+
 		// ウィンドウを表示する
 		battleSceneReflectionStage.show();
 	}
