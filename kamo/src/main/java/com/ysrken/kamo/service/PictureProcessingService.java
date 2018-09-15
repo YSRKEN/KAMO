@@ -89,8 +89,8 @@ public class PictureProcessingService {
             return blindImageByAreaStretch(image, 748.0 / 12, 591.0 / 7.2, -246.0 / 12, 26.0 / 7.2);
         case "演習個別":
             return  blindImageByAreaStretch(image, 190.0 / 12, 129.0 / 7.2, 458.0 / 12, 37.0 / 7.2);
-        case "遠征結果_":
-            return  blindImageByAreaStretch(image, 62.0 / 8, 79.0 / 4.8, 172.0 / 8, 19.0 / 4.8);
+        case "遠征結果":
+            return  blindImageByAreaStretch(image, 95.0 / 12, 116.0 / 7.2, 245.0 / 12, 35.0 / 7.2);
         default:
             return image;
         }
