@@ -1,12 +1,15 @@
 package com.ysrken.kamo.controller;
 
+import com.ysrken.kamo.MainApp;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -36,13 +39,24 @@ public class BattleSceneReflectionController {
      */
     public void initialize() {
         System.out.println("DEBUG MainApp - BattleSceneReflectionController#initialize");
+
         // SceneTabを自動生成する
         final ObservableList<Tab> tabList = SceneTabs.getTabs();
         for(String scene : sceneList) {
-            final SceneTab sceneTab = new SceneTab();
-            sceneTab.initialize(scene);
-            tabList.add(sceneTab);
-            tabMap.put(scene, sceneTab);
+            try{
+                final FXMLLoader loader = new FXMLLoader();
+                loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
+                SceneTab sceneTab = MainApp.getApplicationContext().getBean(SceneTab.class);
+                loader.setRoot(sceneTab);
+                loader.setController(sceneTab);
+                loader.load(getClass().getResourceAsStream("/fxml/SceneTab.fxml"));
+                sceneTab.initialize(scene);
+                tabList.add(sceneTab);
+                tabMap.put(scene, sceneTab);
+            }catch(IOException e){
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            }
         }
     }
 

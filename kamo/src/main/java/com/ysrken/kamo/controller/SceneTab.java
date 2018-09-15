@@ -94,28 +94,9 @@ public class SceneTab extends Tab {
     }
 
     /**
-     * コンストラクタ
-     */
-    public SceneTab() {
-        super();
-
-        // FXMLを読み込む
-        final FXMLLoader loader = new FXMLLoader();
-        loader.setControllerFactory(MainApp.getApplicationContext()::getBean);
-        loader.setRoot(this);
-        loader.setController(this);
-        try{
-            loader.load(getClass().getResourceAsStream("/fxml/SceneTab.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    /**
      * 初期化
      */
-    public void initialize(String scene){
+    public void initialize(String scene) throws IOException {
         this.setText(scene);
 
         // ImageViewのサイズを自動調整する
@@ -131,13 +112,13 @@ public class SceneTab extends Tab {
      * @param image 画像
      */
     public void setImage(BufferedImage image){
-        /*if (utility == null){
+        if (utility == null){
             return;
-        }*/
-        //String text = utility.getDateStringLong();
+        }
+        String text = utility.getDateStringLong();
         Platform.runLater(() -> {
             SceneImageView.setImage(SwingFXUtils.toFXImage(image, null));
-            //SceneLabel.setText(text);
+            SceneLabel.setText(text);
         });
     }
 }
