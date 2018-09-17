@@ -31,7 +31,7 @@ public class SceneTabModel {
     /**
      * 最後に選択したフォルダパスを保持
      */
-    private File lastSelectFolder = null;
+    private File lastSelectFolder = new File(String.format("%s\\pic", System.getProperty("user.dir")));
 
     /**
      * 各種サービス
