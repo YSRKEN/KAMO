@@ -55,19 +55,19 @@ public class PictureProcessingService {
         // シーン認識結果から、画像のどの部分を覆うべきかを判定し、隠蔽操作を行う
         if(!homeType.isEmpty()){
             switch(homeType){
-                case "ほぼ母港(一式UI)":
+                case "一式UI":
                     image = blindImageByAreaStretch(image, 277.0 / 8, 4.0 / 4.8, -165.0 / 8, 20.0 / 4.8);
                     break;
-                case "ほぼ母港(一式改UI)":
+                case "一式改UI":
                     image = blindImageByAreaStretch(image, 404.0 / 12, 5.0 / 7.2, -233.0 / 12, 31.0 / 7.2);
                     break;
-                case "ほぼ母港(二式UI)":
+                case "二式UI":
                     image = blindImageByAreaStretch(image, 385.0 / 12, 5.0 / 7.2, -212.0 / 12, 31.0 / 7.2);
                     break;
-                case "ほぼ母港(三式UI)":
+                case "三式UI":
                     image = blindImageByAreaStretch(image, 404.0 / 12, 5.0 / 7.2, -233.0 / 12, 31.0 / 7.2);
                     break;
-                case "ほぼ母港(三式改UI)":
+                case "三式改UI":
                     image = blindImageByAreaStretch(image, 404.0 / 12, 5.0 / 7.2, -233.0 / 12, 31.0 / 7.2);
                     break;
             }
