@@ -108,7 +108,7 @@ public class SceneRecognitionService {
          */
         public boolean isMatchImage(BufferedImage image){
             final Color color = BitmapImage.of(image).calcAverageColor(xPer, yPer, wPer, hPer);
-            return utility.calcColorDistance(this.color, color) < 50;
+            return utility.calcColorDistance(this.color, color) < 150;
         }
     }
 
