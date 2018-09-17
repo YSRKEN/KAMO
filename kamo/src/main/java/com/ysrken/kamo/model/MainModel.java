@@ -9,10 +9,7 @@ import com.ysrken.kamo.service.*;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.Alert.AlertType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +63,22 @@ public class MainModel {
 	private BooleanProperty specialGetPosFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty saveWindowPositionFlg = new SimpleBooleanProperty(false);
-	
+
+	@Getter
+	private BooleanProperty updateFps01Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps03Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps05Flg = new SimpleBooleanProperty(true);
+	@Getter
+	private BooleanProperty updateFps10Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps15Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps30Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps60Flg = new SimpleBooleanProperty(false);
+
 	/**
 	 * シーン情報
 	 */
@@ -90,6 +102,20 @@ public class MainModel {
 	 * 戦闘に関わるシーン一覧
 	 */
 	private Set<String> battleSceneSet = null;
+
+	/**
+	 * 動作fps
+	 */
+	private IntegerProperty updateFps = new SimpleIntegerProperty(5);
+	private Map<Integer, BooleanProperty> fpsMenuMap = new HashMap<Integer, BooleanProperty>(){{
+		put(1, updateFps01Flg);
+		put(3, updateFps03Flg);
+		put(5, updateFps05Flg);
+		put(10, updateFps10Flg);
+		put(15, updateFps15Flg);
+		put(30, updateFps30Flg);
+		put(60, updateFps60Flg);
+	}};
 
 	/**
 	 * 各種戦闘画面の画像を更新するルーチン
@@ -231,6 +257,7 @@ public class MainModel {
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
+		updateFps.addListener((ob, o, n) -> setting.setSetting("UpdateFps", n));
     }
     
     /**
@@ -247,7 +274,33 @@ public class MainModel {
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
     	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));
-    	
+		updateFps.set(setting.getSetting("UpdateFps"));
+
+		// FPS設定によって、メニューのチェック状態を変更
+		boolean flg = false;
+		for(Map.Entry<Integer, BooleanProperty> pair : fpsMenuMap.entrySet()){
+			if (updateFps.get() == pair.getKey()){
+				flg = true;
+				pair.getValue().set(true);
+			}else{
+				pair.getValue().set(false);
+			}
+		}
+		if(!flg){
+			final int defaultFps = setting.getDefaultSetting("UpdateFps");
+			fpsMenuMap.get(defaultFps).set(true);
+			updateFps.set(defaultFps);
+		}
+
+		// 選択系メニューにおける処理
+		updateFps01Flg.addListener((n) -> updateFps.set(1));
+		updateFps03Flg.addListener((n) -> updateFps.set(3));
+		updateFps05Flg.addListener((n) -> updateFps.set(5));
+		updateFps10Flg.addListener((n) -> updateFps.set(10));
+		updateFps15Flg.addListener((n) -> updateFps.set(15));
+		updateFps30Flg.addListener((n) -> updateFps.set(30));
+		updateFps60Flg.addListener((n) -> updateFps.set(60));
+
     	// Beanの初期化
     	pictureProcessing.initialize();
     	

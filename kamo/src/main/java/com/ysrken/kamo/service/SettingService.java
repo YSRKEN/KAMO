@@ -104,6 +104,8 @@ public class SettingService {
 			return (T)(Boolean.FALSE);
 		case "SaveWindowPositionFlg":
 			return (T)(Boolean.FALSE);
+		case "UpdateFps":
+			return (T)(Integer.valueOf(5));
 		default:
 			throw new IllegalArgumentException();
 		}
