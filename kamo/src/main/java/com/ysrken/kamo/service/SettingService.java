@@ -96,6 +96,8 @@ public class SettingService {
 		// その他設定項目
 		case "AutoGetPositionFlg":
 			return (T)(Boolean.FALSE);
+		case "DisableCheckMovedPositionFlg":
+			return (T)(Boolean.FALSE);
 		case "BlindNameTextFlg":
 			return (T)(Boolean.FALSE);
 		case "SpecialGetPosFlg":

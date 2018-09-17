@@ -59,6 +59,8 @@ public class MainModel {
 	@Getter
 	private BooleanProperty autoGetPositionFlg = new SimpleBooleanProperty(false);
 	@Getter
+	private BooleanProperty disableCheckMovedPositionFlg = new SimpleBooleanProperty(false);
+	@Getter
 	private BooleanProperty blindNameTextFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty specialGetPosFlg = new SimpleBooleanProperty(false);
@@ -150,7 +152,7 @@ public class MainModel {
             // スクリーンショットが撮影可能な場合の処理
             if(screenshot.canGetScreenshot()){
                 // ゲーム画面の位置が移動した際の処理
-                if(screenshot.isMovedPosition()){
+                if(!disableCheckMovedPositionFlg.get() && screenshot.isMovedPosition()){
                     addLogText("【位置ズレ検知】");
                     addLogText("自動で再取得を試みます...");
                     getPositionCommand();
@@ -225,6 +227,7 @@ public class MainModel {
 
     	// 設定変更時に情報を記録する
     	autoGetPositionFlg.addListener((ob, o, n) -> setting.setSetting("AutoGetPositionFlg", n));
+		disableCheckMovedPositionFlg.addListener((ob, o, n) -> setting.setSetting("DisableCheckMovedPositionFlg", n));
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
@@ -240,6 +243,7 @@ public class MainModel {
 
     	// 設定を読み込んだ上で画面に反映する
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
+		disableCheckMovedPositionFlg.set(setting.getSetting("DisableCheckMovedPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
     	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));

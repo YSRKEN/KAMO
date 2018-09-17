@@ -27,6 +27,7 @@ public class MainController {
 	@FXML private MenuItem OpenTimerMenu;
 	@FXML private MenuItem OpenSceneHelperMenu;
 	@FXML private CheckMenuItem AutoGetPositionMenu;
+	@FXML private CheckMenuItem DisableCheckMovedPositionMenu;
 	@FXML private CheckMenuItem BlindNameTextMenu;
 	@FXML private CheckMenuItem SpecialGetPosMenu;
 	@FXML private CheckMenuItem SaveWindowPositionMenu;
@@ -83,6 +84,7 @@ public class MainController {
 		OpenTimerMenu.disableProperty().bind(model.getOpenTimerFlg());
 		OpenSceneHelperMenu.disableProperty().bind(model.getOpenSceneHelperFlg());
 		AutoGetPositionMenu.selectedProperty().bindBidirectional(model.getAutoGetPositionFlg());
+		DisableCheckMovedPositionMenu.selectedProperty().bindBidirectional(model.getDisableCheckMovedPositionFlg());
 		BlindNameTextMenu.selectedProperty().bindBidirectional(model.getBlindNameTextFlg());
 		SpecialGetPosMenu.selectedProperty().bindBidirectional(model.getSpecialGetPosFlg());
 		SaveWindowPositionMenu.selectedProperty().bindBidirectional(model.getSaveWindowPositionFlg());
