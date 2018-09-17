@@ -13,12 +13,12 @@ public class Constant {
     /**
      * ソフトウェアのバージョン番号
      */
-    public static final String SOFTWARE_VER = "2.0.1";
+    public static final String SOFTWARE_VER = "2.0.2";
     
     /**
      * ソフトウェアのリビジョン番号
      */
-    public static final int SOFTWARE_REVISION = 6;
+    public static final int SOFTWARE_REVISION = 7;
 
     /**
      * ソフトウェアの作者名
