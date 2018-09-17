@@ -118,6 +118,11 @@ public class MainModel {
 	}};
 
 	/**
+	 * 短時間タイマー
+	 */
+	Timer shortIntervalTimer = null;
+
+	/**
 	 * 各種戦闘画面の画像を更新するルーチン
 	 */
 	private BiConsumer<String, BufferedImage> setImage = null;
@@ -309,12 +314,12 @@ public class MainModel {
         longIntervalTimer.schedule(new LongIntervalTask(), 0, 1000);
         
         // 短周期で実行されるタイマー
-        final Timer shortIntervalTimer = new Timer();
+        shortIntervalTimer = new Timer();
         shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 1000 / updateFps.get());
 		updateFps.addListener((ob, o, n) -> {
 			shortIntervalTimer.cancel();
-			final Timer shortIntervalTimer2 = new Timer();
-			Platform.runLater(() -> shortIntervalTimer2.schedule(new ShortIntervalTask(), 0, 1000 / n.intValue()));
+			shortIntervalTimer = new Timer();
+			Platform.runLater(() -> shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 1000 / n.intValue()));
 			addLogText(String.format("動作fps：%d",n.intValue()));
 		});
     }
