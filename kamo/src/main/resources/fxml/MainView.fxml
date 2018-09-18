@@ -29,9 +29,24 @@
                 <Menu text="オプション(_O)">
                     <items>
                         <CheckMenuItem fx:id="AutoGetPositionMenu" text="自動で座標を取得し直す(_A)" />
+                        <CheckMenuItem fx:id="DisableCheckMovedPositionMenu" text="位置ズレ検知を行わない(_D)" />
                         <CheckMenuItem fx:id="BlindNameTextMenu" text="スクショで名前を隠す(_B)" />
                         <CheckMenuItem fx:id="SpecialGetPosMenu" text="特殊な座標取得手法を使用する(_S)" />
                         <CheckMenuItem fx:id="SaveWindowPositionMenu" text="ウィンドウの位置を記憶する(_P)" />
+                        <Menu text="画面更新速度(_U)">
+                            <fx:define>
+                                <ToggleGroup fx:id="fpsToggleGroup"/>
+                            </fx:define>
+                            <items>
+                                <RadioMenuItem fx:id="UpdateFps01Menu" text="1fps"  toggleGroup="$fpsToggleGroup" />
+                                <RadioMenuItem fx:id="UpdateFps03Menu" text="3fps"  toggleGroup="$fpsToggleGroup" />
+                                <RadioMenuItem fx:id="UpdateFps05Menu" text="5fps"  toggleGroup="$fpsToggleGroup" />
+                                <RadioMenuItem fx:id="UpdateFps10Menu" text="10fps" toggleGroup="$fpsToggleGroup" />
+                                <RadioMenuItem fx:id="UpdateFps15Menu" text="15fps" toggleGroup="$fpsToggleGroup" />
+                                <RadioMenuItem fx:id="UpdateFps30Menu" text="30fps" toggleGroup="$fpsToggleGroup" />
+                                <RadioMenuItem fx:id="UpdateFps60Menu" text="60fps" toggleGroup="$fpsToggleGroup" />
+                            </items>
+                        </Menu>
                     </items>
                 </Menu>
                 <Menu text="ヘルプ(_H)">

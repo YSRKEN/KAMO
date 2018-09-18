@@ -9,10 +9,7 @@ import com.ysrken.kamo.service.*;
 import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.Alert.AlertType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,12 +56,29 @@ public class MainModel {
 	@Getter
 	private BooleanProperty autoGetPositionFlg = new SimpleBooleanProperty(false);
 	@Getter
+	private BooleanProperty disableCheckMovedPositionFlg = new SimpleBooleanProperty(false);
+	@Getter
 	private BooleanProperty blindNameTextFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty specialGetPosFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty saveWindowPositionFlg = new SimpleBooleanProperty(false);
-	
+
+	@Getter
+	private BooleanProperty updateFps01Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps03Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps05Flg = new SimpleBooleanProperty(true);
+	@Getter
+	private BooleanProperty updateFps10Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps15Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps30Flg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty updateFps60Flg = new SimpleBooleanProperty(false);
+
 	/**
 	 * シーン情報
 	 */
@@ -88,6 +102,25 @@ public class MainModel {
 	 * 戦闘に関わるシーン一覧
 	 */
 	private Set<String> battleSceneSet = null;
+
+	/**
+	 * 動作fps
+	 */
+	private IntegerProperty updateFps = new SimpleIntegerProperty(5);
+	private Map<Integer, BooleanProperty> fpsMenuMap = new HashMap<Integer, BooleanProperty>(){{
+		put(1, updateFps01Flg);
+		put(3, updateFps03Flg);
+		put(5, updateFps05Flg);
+		put(10, updateFps10Flg);
+		put(15, updateFps15Flg);
+		put(30, updateFps30Flg);
+		put(60, updateFps60Flg);
+	}};
+
+	/**
+	 * 短時間タイマー
+	 */
+	Timer shortIntervalTimer = null;
 
 	/**
 	 * 各種戦闘画面の画像を更新するルーチン
@@ -150,7 +183,7 @@ public class MainModel {
             // スクリーンショットが撮影可能な場合の処理
             if(screenshot.canGetScreenshot()){
                 // ゲーム画面の位置が移動した際の処理
-                if(screenshot.isMovedPosition()){
+                if(!disableCheckMovedPositionFlg.get() && screenshot.isMovedPosition()){
                     addLogText("【位置ズレ検知】");
                     addLogText("自動で再取得を試みます...");
                     getPositionCommand();
@@ -193,7 +226,10 @@ public class MainModel {
                             final String expeditionId = characterRecognition.getSelectedExpeditionId(frame);
                             final Map<Integer, String> fieetIds = characterRecognition.getExpeditionFleetId(frame);
                             for(Map.Entry<Integer, String> pair : fieetIds.entrySet()){
-                                if(pair.getValue().equals(expeditionId)){
+                                if(pair.getValue().equals(expeditionId)
+										//イベント用の支援遠征は、通常海域用の支援遠征と区別できないため
+										|| pair.getValue().equals("S1") && expeditionId.equals("33")
+										|| pair.getValue().equals("S2") && expeditionId.equals("34")){
                                 	Date date = new Date(new Date().getTime() + duration * 1000);
                                 	String name = characterRecognition.getExpeditionNameById(pair.getValue());
                                     setExpTimer.accept(date, pair.getKey() - 2);
@@ -225,9 +261,11 @@ public class MainModel {
 
     	// 設定変更時に情報を記録する
     	autoGetPositionFlg.addListener((ob, o, n) -> setting.setSetting("AutoGetPositionFlg", n));
+		disableCheckMovedPositionFlg.addListener((ob, o, n) -> setting.setSetting("DisableCheckMovedPositionFlg", n));
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
+		updateFps.addListener((ob, o, n) -> setting.setSetting("UpdateFps", n));
     }
     
     /**
@@ -240,10 +278,37 @@ public class MainModel {
 
     	// 設定を読み込んだ上で画面に反映する
     	autoGetPositionFlg.set(setting.getSetting("AutoGetPositionFlg"));
+		disableCheckMovedPositionFlg.set(setting.getSetting("DisableCheckMovedPositionFlg"));
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
     	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));
-    	
+		updateFps.set(setting.getSetting("UpdateFps"));
+
+		// FPS設定によって、メニューのチェック状態を変更
+		boolean flg = false;
+		for(Map.Entry<Integer, BooleanProperty> pair : fpsMenuMap.entrySet()){
+			if (updateFps.get() == pair.getKey()){
+				flg = true;
+				pair.getValue().set(true);
+			}else{
+				pair.getValue().set(false);
+			}
+		}
+		if(!flg){
+			final int defaultFps = setting.getDefaultSetting("UpdateFps");
+			fpsMenuMap.get(defaultFps).set(true);
+			updateFps.set(defaultFps);
+		}
+
+		// 選択系メニューにおける処理
+		updateFps01Flg.addListener((n) -> updateFps.set(1));
+		updateFps03Flg.addListener((n) -> updateFps.set(3));
+		updateFps05Flg.addListener((n) -> updateFps.set(5));
+		updateFps10Flg.addListener((n) -> updateFps.set(10));
+		updateFps15Flg.addListener((n) -> updateFps.set(15));
+		updateFps30Flg.addListener((n) -> updateFps.set(30));
+		updateFps60Flg.addListener((n) -> updateFps.set(60));
+
     	// Beanの初期化
     	pictureProcessing.initialize();
     	
@@ -252,8 +317,14 @@ public class MainModel {
         longIntervalTimer.schedule(new LongIntervalTask(), 0, 1000);
         
         // 短周期で実行されるタイマー
-        final Timer shortIntervalTimer = new Timer();
-        shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 200);
+        shortIntervalTimer = new Timer();
+        shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 1000 / updateFps.get());
+		updateFps.addListener((ob, o, n) -> {
+			shortIntervalTimer.cancel();
+			shortIntervalTimer = new Timer();
+			Platform.runLater(() -> shortIntervalTimer.schedule(new ShortIntervalTask(), 0, 1000 / n.intValue()));
+			addLogText(String.format("動作fps：%d",n.intValue()));
+		});
     }
     
 	/**

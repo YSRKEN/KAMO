@@ -96,12 +96,16 @@ public class SettingService {
 		// その他設定項目
 		case "AutoGetPositionFlg":
 			return (T)(Boolean.FALSE);
+		case "DisableCheckMovedPositionFlg":
+			return (T)(Boolean.FALSE);
 		case "BlindNameTextFlg":
 			return (T)(Boolean.FALSE);
 		case "SpecialGetPosFlg":
 			return (T)(Boolean.FALSE);
 		case "SaveWindowPositionFlg":
 			return (T)(Boolean.FALSE);
+		case "UpdateFps":
+			return (T)(Integer.valueOf(5));
 		default:
 			throw new IllegalArgumentException();
 		}
