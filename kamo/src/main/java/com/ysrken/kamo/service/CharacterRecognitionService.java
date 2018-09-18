@@ -238,12 +238,19 @@ public class CharacterRecognitionService {
             final int dist2 = utility.calcColorDistance(pos1, temp2);   //緑からの距離
             if(dist1 <= dist2)
                 continue;
+
+            // フラッグの位置と左上艦隊番号から、当該遠征の番号を算出する
             final int num = offset + i;
             String numStr = (num < 10 ? "0" : "") + num;
+            //A1～A3
             if(offset <= 4 && num > 8){
                 numStr = "A" + (num - 8);
+            //B1～B2
             }else if(offset <= 11 && num > 16){
                 numStr = "B" + (num - 16);
+            //S1・S2
+            }else if(offset == 31){
+                numStr  ="S" + (i + 1);
             }
 
             // 艦隊番号を判断する

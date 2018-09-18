@@ -226,7 +226,10 @@ public class MainModel {
                             final String expeditionId = characterRecognition.getSelectedExpeditionId(frame);
                             final Map<Integer, String> fieetIds = characterRecognition.getExpeditionFleetId(frame);
                             for(Map.Entry<Integer, String> pair : fieetIds.entrySet()){
-                                if(pair.getValue().equals(expeditionId)){
+                                if(pair.getValue().equals(expeditionId)
+										//イベント用の支援遠征は、通常海域用の支援遠征と区別できないため
+										|| pair.getValue().equals("S1") && expeditionId.equals("33")
+										|| pair.getValue().equals("S2") && expeditionId.equals("34")){
                                 	Date date = new Date(new Date().getTime() + duration * 1000);
                                 	String name = characterRecognition.getExpeditionNameById(pair.getValue());
                                     setExpTimer.accept(date, pair.getKey() - 2);
