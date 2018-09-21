@@ -121,14 +121,25 @@ public class TimerModel {
     }
 
     /**
-     * 表示時間を更新する
+     * 表示時間を更新する。表示時間≦0秒ならば、遠征情報もリセットする
      */
     public void refreshExpTimerString(){
         for(int i = 0; i < EXPEDITION_COUNT; ++i){
             final long period = expTimer.get(i).get().getTime() - new Date().getTime();
-            final int ii = i;
-            Platform.runLater(() ->
-                    expTimerString.get(ii).set(utility.getDateStringShortFromLong(period / 1000)));
+            if (period <= 0) {
+                if (!expTimerString.get(i).get().equals("00:00:00")){
+                    final int ii = i;
+                    Platform.runLater(() ->
+                            expTimerString.get(ii).set("00:00:00"));
+                }
+                if (!expInfoString.get(i).get().equals("？")) {
+                    setExpInfo("？", i);
+                }
+            }else{
+                final int ii = i;
+                Platform.runLater(() ->
+                        expTimerString.get(ii).set(utility.getDateStringShortFromLong(period / 1000)));
+            }
         }
     }
 }
