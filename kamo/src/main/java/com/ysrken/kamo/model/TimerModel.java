@@ -121,6 +121,14 @@ public class TimerModel {
     }
 
     /**
+     * 遠征情報を取得する
+     */
+    public String getExpInfo(int index){
+        return expInfoString.get(index).get();
+    }
+
+
+    /**
      * 表示時間を更新する。表示時間≦0秒ならば、遠征情報もリセットする
      */
     public void refreshExpTimerString(){

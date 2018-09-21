@@ -27,6 +27,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * メイン画面のModel
@@ -138,7 +139,12 @@ public class MainModel {
 	private BiConsumer<String, Integer> setExpInfo = null;
 
 	/**
-	 * 遠征タイマーの表示を更新する絵ルーチン
+	 * 遠征の遠征名を取得するルーチン
+	 */
+	private Function<Integer, String> getExpInfo = null;
+
+	/**
+	 * 遠征タイマーの表示を更新するルーチン
 	 */
 	private Runnable refreshExpTimerString = null;
 
@@ -212,6 +218,15 @@ public class MainModel {
                 Platform.runLater(() -> {
                 	nowSceneText.set(sceneMessage);
                 });
+                // 母港に帰投した際、支援系の遠征は即座にリセットする
+				if(scene.equals("母港")){
+					for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+						if(getExpInfo.apply(i).contains("支援任務")){
+							setExpInfo.accept("？", i);
+							setExpTimer.accept(new Date(), i);
+						}
+					}
+				}
                 // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(openBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
@@ -480,6 +495,7 @@ public class MainModel {
 		TimerController controller = timerStage.getController();
 		setExpTimer = (date, index) -> controller.setExpTimer(date, index);
 		setExpInfo = (info, index) -> controller.setExpInfo(info, index);
+		getExpInfo = (index) -> controller.getExpInfo(index);
 		refreshExpTimerString = (() -> controller.refreshExpTimerString());
 
 		// 事前に値をセットする

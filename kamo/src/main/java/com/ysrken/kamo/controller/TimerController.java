@@ -53,6 +53,13 @@ public class TimerController {
     }
 
     /**
+     * 遠征情報を取得する
+     */
+    public String getExpInfo(int index){
+        return model.getExpInfo(index);
+    }
+
+    /**
      * 表示時間を更新する
      */
     public void refreshExpTimerString(){
