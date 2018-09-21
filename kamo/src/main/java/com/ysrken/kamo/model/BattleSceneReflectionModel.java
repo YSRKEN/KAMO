@@ -23,7 +23,7 @@ public class BattleSceneReflectionModel {
      * 表示するシーン一覧
      */
     final static public Set<String> SceneList = new LinkedHashSet<>(
-            Arrays.asList("昼戦後", "夜戦後", "戦闘結果", "MVP", "マップ")
+            Arrays.asList("昼戦後", "夜戦後", "戦闘結果", "MVP", "マップ", "中破", "大破")
     );
 
     /**
