@@ -219,8 +219,9 @@ public class MainModel {
                 	nowSceneText.set(sceneMessage);
                 });
                 // 母港に帰投した際、支援系の遠征は即座にリセットする
-				if(scene.equals("母港")){
+				if(getExpInfo != null && setExpTimer != null && setExpInfo != null && scene.equals("母港")){
 					for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+						String temp_string = getExpInfo.apply(i);
 						if(getExpInfo.apply(i).contains("支援任務")){
 							setExpInfo.accept("？", i);
 							setExpTimer.accept(new Date(), i);
