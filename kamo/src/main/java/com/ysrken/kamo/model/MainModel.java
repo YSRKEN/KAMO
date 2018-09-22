@@ -27,6 +27,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * メイン画面のModel
@@ -47,6 +48,8 @@ public class MainModel {
 	private BooleanProperty openBattleSceneReflectionFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty openTimerFlg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty openFleetCombineFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty openSceneHelperFlg = new SimpleBooleanProperty(false);
 	
@@ -96,6 +99,7 @@ public class MainModel {
 	 */
 	private ExtraStage battleSceneReflectionStage = null;
 	private ExtraStage timerStage = null;
+	private ExtraStage fleetCombineStage = null;
 	private ExtraStage sceneHelperStage = null;
 
 	/**
@@ -138,7 +142,12 @@ public class MainModel {
 	private BiConsumer<String, Integer> setExpInfo = null;
 
 	/**
-	 * 遠征タイマーの表示を更新する絵ルーチン
+	 * 遠征の遠征名を取得するルーチン
+	 */
+	private Function<Integer, String> getExpInfo = null;
+
+	/**
+	 * 遠征タイマーの表示を更新するルーチン
 	 */
 	private Runnable refreshExpTimerString = null;
 
@@ -212,6 +221,16 @@ public class MainModel {
                 Platform.runLater(() -> {
                 	nowSceneText.set(sceneMessage);
                 });
+                // 母港に帰投した際、支援系の遠征は即座にリセットする
+				if(getExpInfo != null && setExpTimer != null && setExpInfo != null && scene.equals("母港")){
+					for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
+						String temp_string = getExpInfo.apply(i);
+						if(getExpInfo.apply(i).contains("支援任務")){
+							setExpInfo.accept("？", i);
+							setExpTimer.accept(new Date(), i);
+						}
+					}
+				}
                 // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(openBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
@@ -480,6 +499,7 @@ public class MainModel {
 		TimerController controller = timerStage.getController();
 		setExpTimer = (date, index) -> controller.setExpTimer(date, index);
 		setExpInfo = (info, index) -> controller.setExpInfo(info, index);
+		getExpInfo = (index) -> controller.getExpInfo(index);
 		refreshExpTimerString = (() -> controller.refreshExpTimerString());
 
 		// 事前に値をセットする
@@ -492,7 +512,45 @@ public class MainModel {
 		// ウィンドウを表示する
 		timerStage.show();
 	}
-	
+
+	/**
+	 * 編成まとめ画面を開くコマンド
+	 */
+	public void openFleetCombineCommand(){
+		// nullでない＝既にそのウィンドウが開いている＝これ以上開く必要はない
+		if(fleetCombineStage != null) {
+			return;
+		}
+
+		// 動作ログに残す
+		addLogText("【ウィンドウ】");
+		addLogText("名称：編成まとめ画面");
+
+		// ウィンドウのStageを作成する
+		try {
+			fleetCombineStage = factory.create("/fxml/FleetCombineView.fxml", "FleetCombineWindow");
+		} catch (IOException e) {
+			addLogText("エラー：IOエラーが発生しました。");
+			e.printStackTrace();
+		}
+
+		// タイトルを設定する
+		fleetCombineStage.setTitle("編成まとめ画面");
+
+		// 既にウィンドウを表示した、というフラグを立てる
+		openFleetCombineFlg.set(true);
+
+		// ウィンドウが閉じられた際の処理を記述する
+		// (再度ウィンドウを開けるようにリセット)
+		fleetCombineStage.setOnCloseRequest(() -> {
+			fleetCombineStage = null;
+			openFleetCombineFlg.set(false);
+		});
+
+		// ウィンドウを表示する
+		fleetCombineStage.show();
+	}
+
 	/**
 	 * 画像認識支援画面を開くコマンド
 	 */
