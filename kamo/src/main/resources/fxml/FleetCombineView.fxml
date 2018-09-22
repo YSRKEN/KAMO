@@ -30,6 +30,22 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
                 </ComboBox>
+                <ComboBox fx:id="CombineTypeComboBox">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="フリー" />
+                            <String fx:value="通常艦隊" />
+                            <String fx:value="連合艦隊" />
+                            <String fx:value="遊撃艦隊" />
+                        </FXCollections>
+                    </items>
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </HBox.margin>
+                </ComboBox>
                 <Button fx:id="ClearButton" text="クリア">
                 <HBox.margin>
                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

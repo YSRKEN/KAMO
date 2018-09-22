@@ -1,6 +1,7 @@
 package com.ysrken.kamo.model;
 
 import com.ysrken.kamo.BitmapImage;
+import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.UtilityService;
 import javafx.application.Platform;
@@ -82,6 +83,11 @@ public class FleetCombineModel {
     public final IntegerProperty ViewType = new SimpleIntegerProperty(0);
 
     /**
+     * まとめ形式
+     */
+    public final IntegerProperty CombineType = new SimpleIntegerProperty(0);
+
+    /**
      * セルの横個数
      */
     public static final int X_COUNT = 4;
@@ -100,6 +106,44 @@ public class FleetCombineModel {
     UtilityService utility;
 
     /**
+     * X列Y行目の画像に適切な艦番テキストを付与して返す
+     * @param image 画像
+     * @param x X-1
+     * @param y Y-1
+     * @return 追加後画像
+     */
+    private BufferedImage setTextByCombineType(BufferedImage image, int x, int y){
+        if (CombineType.get() != 0){
+            double zoomPer = 1.0 * image.getWidth() / DEFAULT_SIZE_X;
+            String text = "";
+            switch(CombineType.get()){
+                case 1:
+                    if (x < 2 && y < 3){
+                        text = String.format("%d番艦",y * 2 + x + 1);
+                    }
+                    break;
+                case 2:
+                    if(y < 3){
+                        if (x < 2){
+                            text = String.format("1-%d",y * 2 + x + 1);
+                        }else{
+                            text = String.format("2-%d",y * 2 + (x - 2) + 1);
+                        }
+                    }
+                    break;
+                case 3:
+                    if (x < 2){
+                        text = String.format("%d番艦",y * 2 + x + 1);
+                    }
+                    break;
+            }
+            return BitmapImage.of(image).addText(text, (int)(zoomPer * 40), (int)(zoomPer * 209), (int)(zoomPer * 68)).getImage();
+        }else{
+            return image;
+        }
+    }
+
+    /**
      * X列Y行目の画像要素を書き換える
      * @param x X-1
      * @param y Y-1
@@ -110,13 +154,15 @@ public class FleetCombineModel {
             double[] cropPer = VIEW_TYPE_RECT_PER.get(ViewType.get());
 
             // クロップする(ダミーデータは避ける)
-            BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
+            BufferedImage tempBi = baseImageList.get(y * X_COUNT + x), tempBi2;
             if (tempBi.getWidth() > DUMMY_SIZE) {
-                BufferedImage tempBi2 = BitmapImage.of(tempBi).crop(cropPer[0], cropPer[1], cropPer[2], cropPer[3]).getImage();
-                ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi2, null));
+                tempBi2 = BitmapImage.of(tempBi).crop(cropPer[0], cropPer[1], cropPer[2], cropPer[3]).getImage();
             }else{
-                ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi, null));
+                tempBi2 = tempBi;
             }
+
+            // CombineTypeを選択している場合、文字を付与する
+            ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(setTextByCombineType(tempBi2, x, y), null));
         });
     }
 
@@ -193,6 +239,7 @@ public class FleetCombineModel {
 
         // ViewTypeにイベント設定を行う
         ViewType.addListener((ob, o, n) -> updateImageViewAll());
+        CombineType.addListener((ob, o, n) -> updateImageViewAll());
     }
 
     /**
@@ -237,13 +284,13 @@ public class FleetCombineModel {
         for(int y = rect1[1]; y <= rect2[1]; ++y) {
             for (int x = rect1[0]; x <= rect2[0]; ++x) {
                 BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
+                BufferedImage tempBi2;
                 if (tempBi.getWidth() > DUMMY_SIZE) {
-                    BitmapImage tempImage = BitmapImage.of(tempBi).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect);
-                    resultImage = resultImage.paste(tempImage, (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
+                    tempBi2 = BitmapImage.of(tempBi).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect).getImage();
                 }else{
-                    BitmapImage tempImage = BitmapImage.of(getDummyImage()).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect);
-                    resultImage = resultImage.paste(tempImage, (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
+                    tempBi2 = BitmapImage.of(getDummyImage()).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect).getImage();
                 }
+                resultImage = resultImage.paste(BitmapImage.of(tempBi2), (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
             }
         }
 

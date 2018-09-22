@@ -296,4 +296,20 @@ public class BitmapImage {
         });
         return BitmapImage.of(tempImage);
     }
+
+    /**
+     * 文字を付与する
+     * @param text テキスト
+     * @param size フォントサイズ
+     * @param x 左上X座標
+     * @param y 左上Y座標
+     * @return 加工後の画像
+     */
+    public BitmapImage addText(String text, int size, int x, int y){
+        Graphics g = this.image.getGraphics();
+        g.setFont(new Font("", 0, size));
+        g.drawString(text, x, y);
+        g.dispose();
+        return this;
+    }
 }

@@ -38,6 +38,12 @@ public class FleetCombineController {
     private ComboBox FleetTypeComboBox;
 
     /**
+     * まとめタイプ設定(コントロール)
+     */
+    @FXML
+    private ComboBox CombineTypeComboBox;
+
+    /**
      * クリアボタン(コントロール)
      */
     @FXML
@@ -97,6 +103,7 @@ public class FleetCombineController {
 
         // その他の設定
         FleetTypeComboBox.getSelectionModel().select(model.ViewType.get());
+        CombineTypeComboBox.getSelectionModel().select(model.CombineType.get());
         model.ViewType.bind(FleetTypeComboBox.getSelectionModel().selectedIndexProperty());
         ClearButton.setOnAction((e) -> model.clearAll());
         SaveButton.setOnAction((e) -> model.saveCombinePicture());
