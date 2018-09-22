@@ -49,6 +49,8 @@ public class MainModel {
 	@Getter
 	private BooleanProperty openTimerFlg = new SimpleBooleanProperty(false);
 	@Getter
+	private BooleanProperty openFleetCombineFlg = new SimpleBooleanProperty(false);
+	@Getter
 	private BooleanProperty openSceneHelperFlg = new SimpleBooleanProperty(false);
 	
 	/**
@@ -97,6 +99,7 @@ public class MainModel {
 	 */
 	private ExtraStage battleSceneReflectionStage = null;
 	private ExtraStage timerStage = null;
+	private ExtraStage fleetCombineStage = null;
 	private ExtraStage sceneHelperStage = null;
 
 	/**
@@ -509,7 +512,45 @@ public class MainModel {
 		// ウィンドウを表示する
 		timerStage.show();
 	}
-	
+
+	/**
+	 * 編成まとめ画面を開くコマンド
+	 */
+	public void openFleetCombineCommand(){
+		// nullでない＝既にそのウィンドウが開いている＝これ以上開く必要はない
+		if(fleetCombineStage != null) {
+			return;
+		}
+
+		// 動作ログに残す
+		addLogText("【ウィンドウ】");
+		addLogText("名称：編成まとめ画面");
+
+		// ウィンドウのStageを作成する
+		try {
+			fleetCombineStage = factory.create("/fxml/FleetCombineView.fxml", "FleetCombineWindow");
+		} catch (IOException e) {
+			addLogText("エラー：IOエラーが発生しました。");
+			e.printStackTrace();
+		}
+
+		// タイトルを設定する
+		fleetCombineStage.setTitle("編成まとめ画面");
+
+		// 既にウィンドウを表示した、というフラグを立てる
+		openFleetCombineFlg.set(true);
+
+		// ウィンドウが閉じられた際の処理を記述する
+		// (再度ウィンドウを開けるようにリセット)
+		fleetCombineStage.setOnCloseRequest(() -> {
+			fleetCombineStage = null;
+			openFleetCombineFlg.set(false);
+		});
+
+		// ウィンドウを表示する
+		fleetCombineStage.show();
+	}
+
 	/**
 	 * 画像認識支援画面を開くコマンド
 	 */

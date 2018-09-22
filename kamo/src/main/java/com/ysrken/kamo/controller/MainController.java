@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 @Component
 public class MainController {
-	/**
+    /**
 	 * 各種メニュー
 	 */
 	@FXML private MenuItem ExitMenu;
@@ -27,6 +27,7 @@ public class MainController {
 
 	@FXML private MenuItem OpenBattleSceneReflectionMenu;
 	@FXML private MenuItem OpenTimerMenu;
+	@FXML private MenuItem OpenFleetCombineMenu;
 	@FXML private MenuItem OpenSceneHelperMenu;
 
 	@FXML private CheckMenuItem AutoGetPositionMenu;
@@ -87,6 +88,7 @@ public class MainController {
 
 		OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
 		OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
+		OpenFleetCombineMenu.setOnAction(e -> model.openFleetCombineCommand());
 		OpenSceneHelperMenu.setOnAction(e -> model.openSceneHelperCommand());
 
 		OpenWikiMenu.setOnAction(e -> model.openWikiCommand());

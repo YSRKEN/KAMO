@@ -23,6 +23,7 @@
                     <items>
                         <MenuItem fx:id="OpenBattleSceneReflectionMenu" text="戦闘振り返り(_B)" />
                         <MenuItem fx:id="OpenTimerMenu" text="各種タイマー(_T)" />
+                        <MenuItem fx:id="OpenFleetCombineMenu" text="編成まとめ機能(_R)"/>
                         <MenuItem fx:id="OpenSceneHelperMenu" text="画像認識支援(_R)"/>
                     </items>
                 </Menu>

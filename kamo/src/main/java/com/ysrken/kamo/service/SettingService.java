@@ -82,6 +82,8 @@ public class SettingService {
 			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
 		case "TimerWindow":
 			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
+		case "FleetCombineWindow":
+			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 600.0, 400.0)));
 		case "SceneHelperWindow":
 			return (T)(new ArrayList<Double>(Arrays.asList(Double.NaN, Double.NaN, 400.0, 300.0)));
 		// 遠征

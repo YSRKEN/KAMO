@@ -296,4 +296,25 @@ public class BitmapImage {
         });
         return BitmapImage.of(tempImage);
     }
+
+    /**
+     * 文字を付与する
+     * @param text テキスト
+     * @param size フォントサイズ
+     * @param x 左上X座標
+     * @param y 左上Y座標
+     * @return 加工後の画像
+     */
+    public BitmapImage addText(String text, int size, int x, int y){
+        BufferedImage tempImage = new BufferedImage(this.getWidth(), this.getHeight(), this.getType());
+        Graphics g = tempImage.getGraphics();
+        g.drawImage(this.image, 0, 0, null);
+        g.setFont(new Font("", Font.BOLD, size));
+        g.setColor(Color.white);
+        g.drawString(text, x + size / 20, y + size + size / 20);
+        g.setColor(Color.red);
+        g.drawString(text, x, y + size);
+        g.dispose();
+        return BitmapImage.of(tempImage);
+    }
 }
