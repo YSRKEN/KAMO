@@ -4,6 +4,7 @@ import com.ysrken.kamo.model.FleetCombineModel;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -28,6 +29,12 @@ public class FleetCombineController {
      */
     @FXML
     private GridPane FleetTabs;
+
+    /**
+     * 表示タイプ設定(コントロール)
+     */
+    @FXML
+    private ComboBox FleetTypeComboBox;
 
     /**
      * Model
@@ -74,5 +81,9 @@ public class FleetCombineController {
                 FleetTabs.add(imageView, x, y);
             }
         }
+
+        // その他の設定
+        FleetTypeComboBox.getSelectionModel().select(model.ViewType.get());
+        model.ViewType.bind(FleetTypeComboBox.getSelectionModel().selectedIndexProperty());
     }
 }

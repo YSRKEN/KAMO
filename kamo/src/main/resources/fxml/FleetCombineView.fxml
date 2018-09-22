@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.ysrken.kamo.controller.FleetCombineController"
             prefHeight="400.0" prefWidth="600.0">
     <children>
-        <GridPane fx:id="FleetTabs"
-                 AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+        <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+            <GridPane fx:id="FleetTabs" VBox.vgrow="ALWAYS"/>
+            <ComboBox fx:id="FleetTypeComboBox">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="大サイズ"/>
+                        <String fx:value="中サイズ"/>
+                        <String fx:value="小サイズ"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </VBox>
     </children>
 </AnchorPane>

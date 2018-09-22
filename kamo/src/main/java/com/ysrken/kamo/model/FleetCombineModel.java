@@ -2,6 +2,7 @@ package com.ysrken.kamo.model;
 
 import com.ysrken.kamo.BitmapImage;
 import com.ysrken.kamo.service.ScreenshotService;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -35,7 +36,7 @@ public class FleetCombineModel {
     /**
      * 表示形式
      */
-    public final IntegerProperty ViewType = new SimpleIntegerProperty(3);
+    public final IntegerProperty ViewType = new SimpleIntegerProperty(0);
 
     /**
      * セルの横個数
@@ -59,28 +60,32 @@ public class FleetCombineModel {
      * @param y Y-1
      */
     private void updateImageView(int x, int y){
-        // クロップする範囲を決定する
-        double[] cropPer = {0.0, 0.0, 100.0, 100.0};
+        Platform.runLater(() -> {
+            // クロップする範囲を決定する
+            double[] cropPer = {0.0, 0.0, 100.0, 100.0};
 
-        switch (ViewType.get()){
-        case 1:
-            // 編成画面(大)
-            cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 732.0 / 12, 565.0 / 7.2};
-            break;
-        case 2:
-            // 編成画面(中)
-            cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 359.0 / 12, 565.0 / 7.2};
-            break;
-        case 3:
-            // 編成画面(小)
-            cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 359.0 / 12, 348.0 / 7.2};
-            break;
-        }
+            switch (ViewType.get()){
+                case 0:
+                    // 編成画面(大)
+                    cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 732.0 / 12, 565.0 / 7.2};
+                    break;
+                case 1:
+                    // 編成画面(中)
+                    cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 359.0 / 12, 565.0 / 7.2};
+                    break;
+                case 2:
+                    // 編成画面(小)
+                    cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 359.0 / 12, 348.0 / 7.2};
+                    break;
+            }
 
-        // クロップする
-        BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
-        BufferedImage tempBi2 = BitmapImage.of(tempBi).crop(cropPer[0], cropPer[1], cropPer[2], cropPer[3]).getImage();
-        ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi2, null));
+            // クロップする(ダミーデータは避ける)
+            BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
+            if (tempBi.getWidth() > 1) {
+                BufferedImage tempBi2 = BitmapImage.of(tempBi).crop(cropPer[0], cropPer[1], cropPer[2], cropPer[3]).getImage();
+                ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi2, null));
+            }
+        });
     }
 
     /**
