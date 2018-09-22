@@ -112,9 +112,11 @@ public class FleetCombineModel {
      * @param y Y-1
      * @return 追加後画像
      */
-    private BufferedImage setTextByCombineType(BufferedImage image, int x, int y){
+    private BufferedImage setTextByCombineType(BufferedImage image, double zoomPer, int x, int y){
+        if (image.getWidth() <= DUMMY_SIZE) {
+            return image;
+        }
         if (CombineType.get() != 0){
-            double zoomPer = 1.0 * image.getWidth() / DEFAULT_SIZE_X;
             String text = "";
             switch(CombineType.get()){
                 case 1:
@@ -137,7 +139,11 @@ public class FleetCombineModel {
                     }
                     break;
             }
-            return BitmapImage.of(image).addText(text, (int)(zoomPer * 40), (int)(zoomPer * 209), (int)(zoomPer * 68)).getImage();
+            if(ViewType.get() == 0){
+                return BitmapImage.of(image).addText(text, (int)(zoomPer * 60), (int)(zoomPer * 550), (int)(zoomPer * 0)).getImage();
+            }else{
+                return BitmapImage.of(image).addText(text, (int)(zoomPer * 48), (int)(zoomPer * 209), (int)(zoomPer * 50)).getImage();
+            }
         }else{
             return image;
         }
@@ -162,7 +168,8 @@ public class FleetCombineModel {
             }
 
             // CombineTypeを選択している場合、文字を付与する
-            ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(setTextByCombineType(tempBi2, x, y), null));
+            double zoomPer = 1.0 * tempBi.getWidth() / DEFAULT_SIZE_X;
+            ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(setTextByCombineType(tempBi2, zoomPer, x, y), null));
         });
     }
 
@@ -290,7 +297,8 @@ public class FleetCombineModel {
                 }else{
                     tempBi2 = BitmapImage.of(getDummyImage()).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect).getImage();
                 }
-                resultImage = resultImage.paste(BitmapImage.of(tempBi2), (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
+                BufferedImage tempBi3 = setTextByCombineType(tempBi2, 1.0, x, y);
+                resultImage = resultImage.paste(BitmapImage.of(tempBi3), (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
             }
         }
 

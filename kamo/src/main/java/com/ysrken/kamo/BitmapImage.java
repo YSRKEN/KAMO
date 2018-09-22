@@ -306,10 +306,15 @@ public class BitmapImage {
      * @return 加工後の画像
      */
     public BitmapImage addText(String text, int size, int x, int y){
-        Graphics g = this.image.getGraphics();
-        g.setFont(new Font("", 0, size));
-        g.drawString(text, x, y);
+        BufferedImage tempImage = new BufferedImage(this.getWidth(), this.getHeight(), this.getType());
+        Graphics g = tempImage.getGraphics();
+        g.drawImage(this.image, 0, 0, null);
+        g.setFont(new Font("", Font.BOLD, size));
+        g.setColor(Color.white);
+        g.drawString(text, x + size / 20, y + size + size / 20);
+        g.setColor(Color.red);
+        g.drawString(text, x, y + size);
         g.dispose();
-        return this;
+        return BitmapImage.of(tempImage);
     }
 }

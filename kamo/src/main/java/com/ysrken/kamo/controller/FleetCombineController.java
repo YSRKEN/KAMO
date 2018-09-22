@@ -105,6 +105,7 @@ public class FleetCombineController {
         FleetTypeComboBox.getSelectionModel().select(model.ViewType.get());
         CombineTypeComboBox.getSelectionModel().select(model.CombineType.get());
         model.ViewType.bind(FleetTypeComboBox.getSelectionModel().selectedIndexProperty());
+        model.CombineType.bind(CombineTypeComboBox.getSelectionModel().selectedIndexProperty());
         ClearButton.setOnAction((e) -> model.clearAll());
         SaveButton.setOnAction((e) -> model.saveCombinePicture());
     }
