@@ -4,6 +4,7 @@ import com.ysrken.kamo.model.FleetCombineModel;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -35,6 +36,12 @@ public class FleetCombineController {
      */
     @FXML
     private ComboBox FleetTypeComboBox;
+
+    /**
+     * 画像保存ボタン(コントロール)
+     */
+    @FXML
+    private Button SaveButton;
 
     /**
      * Model
@@ -85,5 +92,6 @@ public class FleetCombineController {
         // その他の設定
         FleetTypeComboBox.getSelectionModel().select(model.ViewType.get());
         model.ViewType.bind(FleetTypeComboBox.getSelectionModel().selectedIndexProperty());
+        SaveButton.setOnAction((e) -> model.saveCombinePicture());
     }
 }

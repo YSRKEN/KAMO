@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.ysrken.kamo.controller.FleetCombineController"
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ysrken.kamo.controller.FleetCombineController">
     <children>
         <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-            <GridPane fx:id="FleetTabs" VBox.vgrow="ALWAYS"/>
-            <ComboBox fx:id="FleetTypeComboBox">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="大サイズ"/>
-                        <String fx:value="中サイズ"/>
-                        <String fx:value="小サイズ"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+            <GridPane fx:id="FleetTabs" VBox.vgrow="ALWAYS" />
+            <HBox>
+                <ComboBox fx:id="FleetTypeComboBox">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="大サイズ" />
+                            <String fx:value="中サイズ" />
+                            <String fx:value="小サイズ" />
+                        </FXCollections>
+                    </items>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+                </ComboBox>
+                <Button fx:id="SaveButton" text="保存">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin></Button>
+            <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            </HBox>
         </VBox>
     </children>
 </AnchorPane>

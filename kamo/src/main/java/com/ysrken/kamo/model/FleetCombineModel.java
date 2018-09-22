@@ -2,22 +2,26 @@ package com.ysrken.kamo.model;
 
 import com.ysrken.kamo.BitmapImage;
 import com.ysrken.kamo.service.ScreenshotService;
+import com.ysrken.kamo.service.UtilityService;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
-import javafx.scene.image.Image;
+import javafx.scene.control.Alert;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.input.MouseEvent;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -37,6 +41,35 @@ public class FleetCombineModel {
      * ダミー画像の色
      */
     private static final int DUMMY_COLOR = 0xFFFFFF;
+
+    /**
+     * 保存時に基準となる画面横サイズ
+     */
+    private static final int DEFAULT_SIZE_X = 1200;
+
+    /**
+     * 保存時に基準となる画面縦サイズ
+     */
+    private static final int DEFAULT_SIZE_Y = 720;
+
+    /**
+     * 編成画面(大～小)におけるRECT
+     */
+    private static final List<Rectangle> VIEW_TYPE_RECT = new ArrayList<Rectangle>(Arrays.asList(
+            new Rectangle(468, 141, 732, 565),
+            new Rectangle(468, 141, 359, 565),
+            new Rectangle(468, 141, 359, 348)
+    ));
+
+    /**
+     * 編成画面(大～小)におけるRECT(割合)
+     */
+    private static List<double[]> VIEW_TYPE_RECT_PER = new ArrayList<>();
+
+    /**
+     * 最後に選択したフォルダパスを保持
+     */
+    private File lastSelectFolder = new File(String.format("%s\\pic", System.getProperty("user.dir")));
 
     /**
      * 表示画像
@@ -63,6 +96,8 @@ public class FleetCombineModel {
      */
     @Autowired
     ScreenshotService screenshot;
+    @Autowired
+    UtilityService utility;
 
     /**
      * X列Y行目の画像要素を書き換える
@@ -72,28 +107,15 @@ public class FleetCombineModel {
     private void updateImageView(int x, int y){
         Platform.runLater(() -> {
             // クロップする範囲を決定する
-            double[] cropPer = {0.0, 0.0, 100.0, 100.0};
-
-            switch (ViewType.get()){
-                case 0:
-                    // 編成画面(大)
-                    cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 732.0 / 12, 565.0 / 7.2};
-                    break;
-                case 1:
-                    // 編成画面(中)
-                    cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 359.0 / 12, 565.0 / 7.2};
-                    break;
-                case 2:
-                    // 編成画面(小)
-                    cropPer = new double[]{468.0 / 12, 141.0 / 7.2, 359.0 / 12, 348.0 / 7.2};
-                    break;
-            }
+            double[] cropPer = VIEW_TYPE_RECT_PER.get(ViewType.get());
 
             // クロップする(ダミーデータは避ける)
             BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
             if (tempBi.getWidth() > DUMMY_SIZE) {
                 BufferedImage tempBi2 = BitmapImage.of(tempBi).crop(cropPer[0], cropPer[1], cropPer[2], cropPer[3]).getImage();
                 ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi2, null));
+            }else{
+                ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi, null));
             }
         });
     }
@@ -124,6 +146,11 @@ public class FleetCombineModel {
      * コンストラクタ
      */
     public FleetCombineModel(){
+        // VIEW_TYPE_RECT_PERを初期化
+        for(Rectangle rect : VIEW_TYPE_RECT){
+            VIEW_TYPE_RECT_PER.add(new double[]{1.0 * rect.x / 12, 1.0 * rect.y / 7.2, 1.0 * rect.width / 12, 1.0 * rect.height / 7.2});
+        }
+
         // baseImageListを初期化
         for(int y = 0; y < Y_COUNT; ++y) {
             for (int x = 0; x < X_COUNT; ++x) {
@@ -141,12 +168,21 @@ public class FleetCombineModel {
                 // 表示位置を指定
                 GridPane.setConstraints(imageView, x, y);
 
-                // クリックされた際、現在の画像を取り込むようにする
+                /**
+                 * クリックされた際、現在の画像を取り込むようにする
+                 * 右クリックされた際、対象の画像を消去する
+                 */
                 final int x_ = x, y_ = y;
                 imageView.setOnMouseClicked((e) -> {
-                    if(screenshot != null && screenshot.canGetScreenshot()){
-                        BufferedImage image = screenshot.getScreenshot();
-                        baseImageList.set(y_ * X_COUNT + x_, image);
+                    MouseButton temp = e.getButton();
+                    if (e.getButton() == MouseButton.PRIMARY) {
+                        if (screenshot != null && screenshot.canGetScreenshot()) {
+                            BufferedImage image = screenshot.getScreenshot();
+                            baseImageList.set(y_ * X_COUNT + x_, image);
+                            updateImageView(x_, y_);
+                        }
+                    }else if(e.getButton() == MouseButton.SECONDARY){
+                        baseImageList.set(y_ * X_COUNT + x_, getDummyImage());
                         updateImageView(x_, y_);
                     }
                 });
@@ -157,5 +193,84 @@ public class FleetCombineModel {
 
         // ViewTypeにイベント設定を行う
         ViewType.addListener((ob, o, n) -> updateImageViewAll());
+    }
+
+    /**
+     * 画像を全て消去する
+     */
+    public void clearAll(){
+        for(int y = 0; y < Y_COUNT; ++y) {
+            for (int x = 0; x < X_COUNT; ++x) {
+                baseImageList.set(y * X_COUNT + x, getDummyImage());
+                updateImageView(x, y);
+            }
+        }
+    }
+
+    /**
+     * 画像の保存処理
+     */
+    public void saveCombinePicture(){
+        // 左上座標と右下座標を取得
+        int[] rect1 = {X_COUNT, Y_COUNT}, rect2 = {-1, -1};
+        for(int y = 0; y < Y_COUNT; ++y) {
+            for (int x = 0; x < X_COUNT; ++x) {
+                BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
+                if (tempBi.getWidth() > DUMMY_SIZE) {
+                    rect1[0] = Math.min(rect1[0], x);
+                    rect1[1] = Math.min(rect1[1], y);
+                    rect2[0] = Math.max(rect2[0], x);
+                    rect2[1] = Math.max(rect2[1], y);
+                }
+            }
+        }
+        if (rect2[0] < 0){
+            return;
+        }
+
+        // 範囲を別のイメージに転記
+        int rectW = rect2[0] - rect1[0] + 1, rectH = rect2[1] - rect1[1] + 1;
+        Rectangle tempRect = VIEW_TYPE_RECT.get(ViewType.get());
+        BitmapImage resultImage = BitmapImage.of(new BufferedImage(
+                tempRect.width * rectW, tempRect.height * rectH, BufferedImage.TYPE_3BYTE_BGR
+        ));
+        for(int y = rect1[1]; y <= rect2[1]; ++y) {
+            for (int x = rect1[0]; x <= rect2[0]; ++x) {
+                BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
+                if (tempBi.getWidth() > DUMMY_SIZE) {
+                    BitmapImage tempImage = BitmapImage.of(tempBi).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect);
+                    resultImage = resultImage.paste(tempImage, (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
+                }else{
+                    BitmapImage tempImage = BitmapImage.of(getDummyImage()).resize(DEFAULT_SIZE_X, DEFAULT_SIZE_Y).crop(tempRect);
+                    resultImage = resultImage.paste(tempImage, (x - rect1[0]) * tempRect.width, (y - rect1[1]) * tempRect.height);
+                }
+            }
+        }
+
+        // 画像を保存
+        // ファイルを選択
+        final FileChooser fc = new FileChooser();
+        fc.setTitle("ファイルを保存");
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PNG", "*.png"),
+                new FileChooser.ExtensionFilter("ALL", "*.*")
+        );
+        fc.setInitialFileName("編成まとめ画像.png");
+        if(lastSelectFolder != null) {
+            fc.setInitialDirectory(lastSelectFolder);
+        }
+        final File file = fc.showSaveDialog(null);
+        if(file == null) {
+            return;
+        }
+        lastSelectFolder = file.getParentFile();
+        // 保存用のデータを保存
+        try{
+            ImageIO.write(resultImage.getImage(), "png", file);
+            clearAll();
+        } catch (IOException e) {
+            utility.showDialog("画像を保存できませんでした。", "IOエラー", Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
     }
 }
