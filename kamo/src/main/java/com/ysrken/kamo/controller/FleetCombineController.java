@@ -38,6 +38,12 @@ public class FleetCombineController {
     private ComboBox FleetTypeComboBox;
 
     /**
+     * クリアボタン(コントロール)
+     */
+    @FXML
+    private Button ClearButton;
+
+    /**
      * 画像保存ボタン(コントロール)
      */
     @FXML
@@ -92,6 +98,7 @@ public class FleetCombineController {
         // その他の設定
         FleetTypeComboBox.getSelectionModel().select(model.ViewType.get());
         model.ViewType.bind(FleetTypeComboBox.getSelectionModel().selectedIndexProperty());
+        ClearButton.setOnAction((e) -> model.clearAll());
         SaveButton.setOnAction((e) -> model.saveCombinePicture());
     }
 }
