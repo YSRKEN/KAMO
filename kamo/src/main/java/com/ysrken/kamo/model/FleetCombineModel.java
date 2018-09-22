@@ -144,9 +144,17 @@ public class FleetCombineModel {
                     break;
             }
             if(ViewType.get() == 0){
-                return BitmapImage.of(image).addText(text, (int)(zoomPer * 60), (int)(zoomPer * 550), (int)(zoomPer * 0)).getImage();
+                if(CombineType.get() == 2){
+                    return BitmapImage.of(image).addText(text, (int)(zoomPer * 60), (int)(zoomPer * 630), (int)(zoomPer * 0)).getImage();
+                }else{
+                    return BitmapImage.of(image).addText(text, (int)(zoomPer * 60), (int)(zoomPer * 550), (int)(zoomPer * 0)).getImage();
+                }
             }else{
-                return BitmapImage.of(image).addText(text, (int)(zoomPer * 48), (int)(zoomPer * 209), (int)(zoomPer * 50)).getImage();
+                if(CombineType.get() == 2) {
+                    return BitmapImage.of(image).addText(text, (int) (zoomPer * 48), (int) (zoomPer * 259), (int) (zoomPer * 50)).getImage();
+                }else{
+                    return BitmapImage.of(image).addText(text, (int) (zoomPer * 48), (int) (zoomPer * 209), (int) (zoomPer * 50)).getImage();
+                }
             }
         }else{
             return image;
