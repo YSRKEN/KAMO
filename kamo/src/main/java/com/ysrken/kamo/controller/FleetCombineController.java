@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -42,6 +43,11 @@ public class FleetCombineController {
      */
     @FXML
     private ComboBox CombineTypeComboBox;
+
+    /**
+     * 保存後にクリアするか？
+     */
+    @FXML private CheckBox ClearCheckBox;
 
     /**
      * クリアボタン(コントロール)
@@ -104,6 +110,7 @@ public class FleetCombineController {
         // その他の設定
         FleetTypeComboBox.getSelectionModel().select(model.ViewType.get());
         CombineTypeComboBox.getSelectionModel().select(model.CombineType.get());
+        ClearCheckBox.selectedProperty().bindBidirectional(model.ClearCheckFlg);
         model.ViewType.bind(FleetTypeComboBox.getSelectionModel().selectedIndexProperty());
         model.CombineType.bind(CombineTypeComboBox.getSelectionModel().selectedIndexProperty());
         ClearButton.setOnAction((e) -> model.clearAll());

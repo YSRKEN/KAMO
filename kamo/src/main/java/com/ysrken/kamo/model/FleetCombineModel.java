@@ -5,7 +5,9 @@ import com.ysrken.kamo.service.PictureProcessingService;
 import com.ysrken.kamo.service.ScreenshotService;
 import com.ysrken.kamo.service.UtilityService;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert;
@@ -86,6 +88,8 @@ public class FleetCombineModel {
      * まとめ形式
      */
     public final IntegerProperty CombineType = new SimpleIntegerProperty(0);
+
+    public final BooleanProperty ClearCheckFlg = new SimpleBooleanProperty(false);
 
     /**
      * セルの横個数
@@ -322,7 +326,9 @@ public class FleetCombineModel {
         // 保存用のデータを保存
         try{
             ImageIO.write(resultImage.getImage(), "png", file);
-            clearAll();
+            if(ClearCheckFlg.get()){
+                clearAll();
+            }
         } catch (IOException e) {
             utility.showDialog("画像を保存できませんでした。", "IOエラー", Alert.AlertType.ERROR);
             e.printStackTrace();
