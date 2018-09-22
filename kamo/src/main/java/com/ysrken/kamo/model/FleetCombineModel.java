@@ -29,6 +29,16 @@ public class FleetCombineModel {
     private final List<BufferedImage> baseImageList = new ArrayList<>();
 
     /**
+     * ダミー画像の大きさ
+     */
+    private static final int DUMMY_SIZE = 1;
+
+    /**
+     * ダミー画像の色
+     */
+    private static final int DUMMY_COLOR = 0xFFFFFF;
+
+    /**
      * 表示画像
      */
     public final List<ImageView> ImageViewList = new ArrayList<>();
@@ -81,7 +91,7 @@ public class FleetCombineModel {
 
             // クロップする(ダミーデータは避ける)
             BufferedImage tempBi = baseImageList.get(y * X_COUNT + x);
-            if (tempBi.getWidth() > 1) {
+            if (tempBi.getWidth() > DUMMY_SIZE) {
                 BufferedImage tempBi2 = BitmapImage.of(tempBi).crop(cropPer[0], cropPer[1], cropPer[2], cropPer[3]).getImage();
                 ImageViewList.get(y * X_COUNT + x).setImage(SwingFXUtils.toFXImage(tempBi2, null));
             }
@@ -101,15 +111,23 @@ public class FleetCombineModel {
     }
 
     /**
+     * ダミー画像を返す
+     * @return ダミー画像
+     */
+    private BufferedImage getDummyImage(){
+        BufferedImage image = new BufferedImage(DUMMY_SIZE, DUMMY_SIZE, BufferedImage.TYPE_3BYTE_BGR);
+        image.setRGB(0, 0, DUMMY_COLOR);
+        return image;
+    }
+
+    /**
      * コンストラクタ
      */
     public FleetCombineModel(){
         // baseImageListを初期化
         for(int y = 0; y < Y_COUNT; ++y) {
             for (int x = 0; x < X_COUNT; ++x) {
-                BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
-                image.setRGB(0, 0, 0xFFFFFF);
-                baseImageList.add(image);
+                baseImageList.add(getDummyImage());
             }
         }
 
