@@ -47,6 +47,7 @@ public class FleetCombineController {
             ColumnConstraints column = new ColumnConstraints();
             column.setPercentWidth(100.0 / X_COUNT);
             column.setHgrow(Priority.ALWAYS);
+            column.setHalignment(HPos.CENTER);
             column.setFillWidth(true);
             FleetTabs.getColumnConstraints().add(column);
         }
@@ -54,6 +55,7 @@ public class FleetCombineController {
             RowConstraints row = new RowConstraints();
             row.setPercentHeight(100.0 / Y_COUNT);
             row.setVgrow(Priority.ALWAYS);
+            row.setValignment(VPos.CENTER);
             row.setFillHeight(true);
             FleetTabs.getRowConstraints().add(row);
         }
@@ -64,10 +66,10 @@ public class FleetCombineController {
             for(int x = 0; x < X_COUNT; ++x){
                 ImageView imageView = imageViewLIst.get(y * X_COUNT + x);
                 FleetTabs.widthProperty().addListener((ob, o, n) ->{
-                    imageView.setFitWidth(n.doubleValue() / X_COUNT);
+                    imageView.setFitWidth(n.doubleValue() / X_COUNT - 2);
                 });
                 FleetTabs.heightProperty().addListener((ob, o, n) ->{
-                    imageView.setFitHeight(n.doubleValue() / Y_COUNT);
+                    imageView.setFitHeight(n.doubleValue() / Y_COUNT - 2);
                 });
                 FleetTabs.add(imageView, x, y);
             }
