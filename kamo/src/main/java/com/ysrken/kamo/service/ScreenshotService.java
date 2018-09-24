@@ -316,7 +316,9 @@ public class ScreenshotService {
     public BufferedImage getScreenshot(){
         if(setting.<Boolean>getSetting("SpecialGetPosFlg") && utility.isWindows() && sprcialScreenShot.canGetScreenshot()){
             return sprcialScreenShot.getScreenshot();
-        }else {
+        }else if(utility.isWindows()){
+            return sprcialScreenShot.getBasicScreenshot(rect);
+        } else {
             return robot.createScreenCapture(rect);
         }
     }

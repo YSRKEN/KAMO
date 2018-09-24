@@ -1,9 +1,8 @@
 package com.ysrken.kamo.service;
 
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
-import com.sun.jna.platform.win32.GDI32Util;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.*;
 import com.sun.jna.win32.W32APIOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,16 @@ import java.awt.image.DirectColorModel;
 interface User32Ex extends W32APIOptions {
     User32Ex instance = (User32Ex) Native.loadLibrary("user32", User32Ex.class, DEFAULT_OPTIONS);
     WinDef.HWND WindowFromPoint(long point);
-    WinDef.HDC GetWindowDC(WinDef.HWND hWnd);
     WinDef.HWND ChildWindowFromPoint(WinDef.HWND hWnd, long point);
+    WinDef.HWND GetDesktopWindow();
+    int GetSystemMetrics(int nIndex);
+}
+
+interface Gdi32Ex extends W32APIOptions {
+    Gdi32Ex instance = (Gdi32Ex) Native.loadLibrary("gdi32", Gdi32Ex.class, DEFAULT_OPTIONS);
+    WinDef.HDC CreateDCA(String lpszDriver, long lpszDevice, long lpszOutput, long lpInitData);
+    WinDef.BOOL DeleteDC(WinDef.HDC hdc);
+    WinDef.BOOL BitBlt(WinDef.HDC hdc, int nXDest, int nYDest, int nWidth, int nHeight, WinDef.HDC hdcSrc, int nXSrc, int nYSrc, int dwRop);
 }
 
 @Component
@@ -33,6 +40,11 @@ public class SprcialScreenShotService {
 
     /** 特殊な定数 */
     private final int CAPTUREBLT = 0x40000000;
+    private final int SM_XVIRTUALSCREEN = 76;
+    private final int SM_YVIRTUALSCREEN = 77;
+    private final int SM_CXVIRTUALSCREEN = 78;
+    private final int SM_CYVIRTUALSCREEN = 79;
+    private final int SRCCOPY = 0x00CC0020;
     private final DirectColorModel SCREENSHOT_COLOR_MODEL = new DirectColorModel(24, 0x00FF0000, 0xFF00, 0xFF);
     private final int[] SCREENSHOT_BAND_MASKS = {
             SCREENSHOT_COLOR_MODEL.getRedMask(),
@@ -117,6 +129,49 @@ public class SprcialScreenShotService {
      */
     public BufferedImage getScreenshot(){
         return GDI32Util.getScreenshot(windowHandle).getSubimage(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    /**
+     * スクリーンショットを取得する(デスクトップ全体のイメージからクロップするタイプ)
+     * 参考：https://stackoverflow.com/questions/4433994/java-window-image
+     * @param rect 取得範囲(スクリーン座標)
+     * @return 切り取ったイメージ
+     */
+    public BufferedImage getBasicScreenshot(Rectangle rect){
+        // 仮想スクリーンの左上座標を取得
+        int left = User32Ex.instance.GetSystemMetrics(SM_XVIRTUALSCREEN);
+        int top = User32Ex.instance.GetSystemMetrics(SM_YVIRTUALSCREEN);
+        int width = User32Ex.instance.GetSystemMetrics(SM_CXVIRTUALSCREEN);
+        int height = User32Ex.instance.GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+        WinDef.HDC hdcWindow = Gdi32Ex.instance.CreateDCA("DISPLAY", 0, 0, 0);
+        WinDef.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
+
+        WinDef.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, width, height);
+
+        WinNT.HANDLE hOld = GDI32.INSTANCE.SelectObject(hdcMemDC, hBitmap);
+        Gdi32Ex.instance.BitBlt(hdcMemDC, 0, 0, width, height, hdcWindow, 0, 0, SRCCOPY);
+
+        GDI32.INSTANCE.SelectObject(hdcMemDC, hOld);
+        GDI32.INSTANCE.DeleteDC(hdcMemDC);
+
+        WinGDI.BITMAPINFO bmi = new WinGDI.BITMAPINFO();
+        bmi.bmiHeader.biWidth = width;
+        bmi.bmiHeader.biHeight = -height;
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = WinGDI.BI_RGB;
+
+        Memory buffer = new Memory(width * height * 4);
+        GDI32.INSTANCE.GetDIBits(hdcWindow, hBitmap, 0, height, buffer, bmi, WinGDI.DIB_RGB_COLORS);
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        image.setRGB(0, 0, width, height, buffer.getIntArray(0, width * height), 0, width);
+
+        GDI32.INSTANCE.DeleteObject(hBitmap);
+        Gdi32Ex.instance.DeleteDC(hdcWindow);
+
+        return image.getSubimage(rect.x - left, rect.y - top, rect.width, rect.height);
     }
 
     /**
