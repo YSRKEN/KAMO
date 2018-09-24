@@ -139,40 +139,34 @@ public class SprcialScreenShotService {
      * @return 切り取ったイメージ
      */
     public BufferedImage getBasicScreenshot(Rectangle rect){
-        // 仮想スクリーンの左上座標を取得
-        int left = User32Ex.instance.GetSystemMetrics(SM_XVIRTUALSCREEN);
-        int top = User32Ex.instance.GetSystemMetrics(SM_YVIRTUALSCREEN);
-        int width = User32Ex.instance.GetSystemMetrics(SM_CXVIRTUALSCREEN);
-        int height = User32Ex.instance.GetSystemMetrics(SM_CYVIRTUALSCREEN);
-
         WinDef.HDC hdcWindow = Gdi32Ex.instance.CreateDCW("DISPLAY", 0, 0, 0);
         WinDef.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
 
-        WinDef.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, width, height);
+        WinDef.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, rect.width, rect.height);
 
         WinNT.HANDLE hOld = GDI32.INSTANCE.SelectObject(hdcMemDC, hBitmap);
-        Gdi32Ex.instance.BitBlt(hdcMemDC, 0, 0, width, height, hdcWindow, left, top, SRCCOPY);
+        Gdi32Ex.instance.BitBlt(hdcMemDC, 0, 0, rect.width, rect.height, hdcWindow, rect.x, rect.y, SRCCOPY);
 
         GDI32.INSTANCE.SelectObject(hdcMemDC, hOld);
         GDI32.INSTANCE.DeleteDC(hdcMemDC);
 
         WinGDI.BITMAPINFO bmi = new WinGDI.BITMAPINFO();
-        bmi.bmiHeader.biWidth = width;
-        bmi.bmiHeader.biHeight = -height;
+        bmi.bmiHeader.biWidth = rect.width;
+        bmi.bmiHeader.biHeight = -rect.height;
         bmi.bmiHeader.biPlanes = 1;
         bmi.bmiHeader.biBitCount = 32;
         bmi.bmiHeader.biCompression = WinGDI.BI_RGB;
 
-        Memory buffer = new Memory(width * height * 4);
-        GDI32.INSTANCE.GetDIBits(hdcWindow, hBitmap, 0, height, buffer, bmi, WinGDI.DIB_RGB_COLORS);
+        Memory buffer = new Memory(rect.width * rect.height * 4);
+        GDI32.INSTANCE.GetDIBits(hdcWindow, hBitmap, 0, rect.height, buffer, bmi, WinGDI.DIB_RGB_COLORS);
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        image.setRGB(0, 0, width, height, buffer.getIntArray(0, width * height), 0, width);
+        BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+        image.setRGB(0, 0, rect.width, rect.height, buffer.getIntArray(0, rect.width * rect.height), 0, rect.width);
 
         GDI32.INSTANCE.DeleteObject(hBitmap);
         Gdi32Ex.instance.DeleteDC(hdcWindow);
 
-        return image.getSubimage(rect.x - left, rect.y - top, rect.width, rect.height);
+        return image;
     }
 
     /**
