@@ -4,6 +4,7 @@ import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.win32.W32APIOptions;
+import com.ysrken.kamo.BitmapImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ interface User32Ex extends W32APIOptions {
 
 interface Gdi32Ex extends W32APIOptions {
     Gdi32Ex instance = (Gdi32Ex) Native.loadLibrary("gdi32", Gdi32Ex.class, DEFAULT_OPTIONS);
-    WinDef.HDC CreateDCA(String lpszDriver, long lpszDevice, long lpszOutput, long lpInitData);
+    WinDef.HDC CreateDCW(String lpszDriver, long lpszDevice, long lpszOutput, long lpInitData);
     WinDef.BOOL DeleteDC(WinDef.HDC hdc);
     WinDef.BOOL BitBlt(WinDef.HDC hdc, int nXDest, int nYDest, int nWidth, int nHeight, WinDef.HDC hdcSrc, int nXSrc, int nYSrc, int dwRop);
 }
@@ -144,13 +145,13 @@ public class SprcialScreenShotService {
         int width = User32Ex.instance.GetSystemMetrics(SM_CXVIRTUALSCREEN);
         int height = User32Ex.instance.GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-        WinDef.HDC hdcWindow = Gdi32Ex.instance.CreateDCA("DISPLAY", 0, 0, 0);
+        WinDef.HDC hdcWindow = Gdi32Ex.instance.CreateDCW("DISPLAY", 0, 0, 0);
         WinDef.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
 
         WinDef.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, width, height);
 
         WinNT.HANDLE hOld = GDI32.INSTANCE.SelectObject(hdcMemDC, hBitmap);
-        Gdi32Ex.instance.BitBlt(hdcMemDC, 0, 0, width, height, hdcWindow, 0, 0, SRCCOPY);
+        Gdi32Ex.instance.BitBlt(hdcMemDC, 0, 0, width, height, hdcWindow, left, top, SRCCOPY);
 
         GDI32.INSTANCE.SelectObject(hdcMemDC, hOld);
         GDI32.INSTANCE.DeleteDC(hdcMemDC);
