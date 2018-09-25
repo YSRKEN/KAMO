@@ -24,6 +24,7 @@ public class MainController {
 	@FXML private MenuItem GetPositionMenu;
 	@FXML private MenuItem SaveScreenshotMenu;
 	@FXML private MenuItem OpenPicFolderMenu;
+	@FXML private MenuItem FullGCMenu;
 
 	@FXML private MenuItem OpenBattleSceneReflectionMenu;
 	@FXML private MenuItem OpenTimerMenu;
@@ -85,6 +86,7 @@ public class MainController {
 		SaveScreenshotMenu.setOnAction(e -> model.saveScreenshotCommand());
 		SaveScreenshotButton.setOnAction(e -> model.saveScreenshotCommand());
 		OpenPicFolderMenu.setOnAction(e -> model.openPicFolderCommand());
+		FullGCMenu.setOnAction(e -> model.runFullGCCommand());
 
 		OpenBattleSceneReflectionMenu.setOnAction(e -> model.openBattleSceneReflectionCommand());
 		OpenTimerMenu.setOnAction(e -> model.openTimerCommand());
