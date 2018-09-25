@@ -326,4 +326,16 @@ public class BitmapImage {
         g.dispose();
         return BitmapImage.of(tempImage);
     }
+
+    /**
+     * 自身と同じ画像で別のインスタンスを作成する
+     * @return 自身と同じ画像で別のインスタンス
+     */
+    public BitmapImage clone(){
+        BufferedImage image2 = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        Graphics g = image2.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        return BitmapImage.of(image);
+    }
 }

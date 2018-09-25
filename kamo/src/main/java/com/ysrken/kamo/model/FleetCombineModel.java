@@ -243,7 +243,7 @@ public class FleetCombineModel {
                     if (e.getButton() == MouseButton.PRIMARY) {
                         if (screenshot != null && screenshot.canGetScreenshot()) {
                             BufferedImage image = screenshot.getScreenshot();
-                            baseImageList.set(y_ * X_COUNT + x_, image);
+                            baseImageList.set(y_ * X_COUNT + x_, BitmapImage.of(image).clone().getImage());
                             updateImageView(x_, y_);
                         }
                     }else if(e.getButton() == MouseButton.SECONDARY){

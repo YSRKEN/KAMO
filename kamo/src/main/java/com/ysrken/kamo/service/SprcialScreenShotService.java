@@ -54,6 +54,11 @@ public class SprcialScreenShotService {
     };
 
     /**
+     * 常に上書きされる画像イメージ
+     */
+    private BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+
+    /**
      * 各種サービス
      */
     @Autowired
@@ -160,7 +165,9 @@ public class SprcialScreenShotService {
         Memory buffer = new Memory(rect.width * rect.height * 4);
         GDI32.INSTANCE.GetDIBits(hdcWindow, hBitmap, 0, rect.height, buffer, bmi, WinGDI.DIB_RGB_COLORS);
 
-        BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+        if (image.getWidth() != rect.width || image.getHeight() != rect.height) {
+            image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+        }
         image.setRGB(0, 0, rect.width, rect.height, buffer.getIntArray(0, rect.width * rect.height), 0, rect.width);
 
         GDI32.INSTANCE.DeleteObject(hBitmap);
