@@ -103,6 +103,7 @@ public class MainController {
 
 		OpenBattleSceneReflectionMenu.disableProperty().bind(model.getOpenBattleSceneReflectionFlg());
 		OpenTimerMenu.disableProperty().bind(model.getOpenTimerFlg());
+		OpenFleetCombineMenu.disableProperty().bind(model.getOpenFleetCombineFlg());
 		OpenSceneHelperMenu.disableProperty().bind(model.getOpenSceneHelperFlg());
 
 		AutoGetPositionMenu.selectedProperty().bindBidirectional(model.getAutoGetPositionFlg());
