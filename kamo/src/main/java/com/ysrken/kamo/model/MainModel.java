@@ -416,7 +416,15 @@ public class MainModel {
             utility.showDialog("picフォルダを開けませんでした。", "IOエラー", AlertType.ERROR);
         }
     }
-	
+
+	/**
+	 * GCするようJVMに要請する(※気休め)
+	 */
+	public void runFullGCCommand(){
+		Runtime rt = Runtime.getRuntime();
+		rt.gc();
+	}
+
 	/**
 	 * 戦闘振り返り画面を開くコマンド
 	 */

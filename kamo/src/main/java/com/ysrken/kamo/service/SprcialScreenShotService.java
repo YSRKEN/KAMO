@@ -1,10 +1,10 @@
 package com.ysrken.kamo.service;
 
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
-import com.sun.jna.platform.win32.GDI32Util;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.*;
 import com.sun.jna.win32.W32APIOptions;
+import com.ysrken.kamo.BitmapImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +16,16 @@ import java.awt.image.DirectColorModel;
 interface User32Ex extends W32APIOptions {
     User32Ex instance = (User32Ex) Native.loadLibrary("user32", User32Ex.class, DEFAULT_OPTIONS);
     WinDef.HWND WindowFromPoint(long point);
-    WinDef.HDC GetWindowDC(WinDef.HWND hWnd);
     WinDef.HWND ChildWindowFromPoint(WinDef.HWND hWnd, long point);
+    WinDef.HWND GetDesktopWindow();
+    int GetSystemMetrics(int nIndex);
+}
+
+interface Gdi32Ex extends W32APIOptions {
+    Gdi32Ex instance = (Gdi32Ex) Native.loadLibrary("gdi32", Gdi32Ex.class, DEFAULT_OPTIONS);
+    WinDef.HDC CreateDCW(String lpszDriver, long lpszDevice, long lpszOutput, long lpInitData);
+    WinDef.BOOL DeleteDC(WinDef.HDC hdc);
+    WinDef.BOOL BitBlt(WinDef.HDC hdc, int nXDest, int nYDest, int nWidth, int nHeight, WinDef.HDC hdcSrc, int nXSrc, int nYSrc, int dwRop);
 }
 
 @Component
@@ -33,12 +41,22 @@ public class SprcialScreenShotService {
 
     /** 特殊な定数 */
     private final int CAPTUREBLT = 0x40000000;
+    private final int SM_XVIRTUALSCREEN = 76;
+    private final int SM_YVIRTUALSCREEN = 77;
+    private final int SM_CXVIRTUALSCREEN = 78;
+    private final int SM_CYVIRTUALSCREEN = 79;
+    private final int SRCCOPY = 0x00CC0020;
     private final DirectColorModel SCREENSHOT_COLOR_MODEL = new DirectColorModel(24, 0x00FF0000, 0xFF00, 0xFF);
     private final int[] SCREENSHOT_BAND_MASKS = {
             SCREENSHOT_COLOR_MODEL.getRedMask(),
             SCREENSHOT_COLOR_MODEL.getGreenMask(),
             SCREENSHOT_COLOR_MODEL.getBlueMask()
     };
+
+    /**
+     * 常に上書きされる画像イメージ
+     */
+    private BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
     /**
      * 各種サービス
@@ -117,6 +135,45 @@ public class SprcialScreenShotService {
      */
     public BufferedImage getScreenshot(){
         return GDI32Util.getScreenshot(windowHandle).getSubimage(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    /**
+     * スクリーンショットを取得する(デスクトップ全体のイメージからクロップするタイプ)
+     * 参考：https://stackoverflow.com/questions/4433994/java-window-image
+     * @param rect 取得範囲(スクリーン座標)
+     * @return 切り取ったイメージ
+     */
+    public BufferedImage getBasicScreenshot(Rectangle rect){
+        WinDef.HDC hdcWindow = Gdi32Ex.instance.CreateDCW("DISPLAY", 0, 0, 0);
+        WinDef.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
+
+        WinDef.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, rect.width, rect.height);
+
+        WinNT.HANDLE hOld = GDI32.INSTANCE.SelectObject(hdcMemDC, hBitmap);
+        Gdi32Ex.instance.BitBlt(hdcMemDC, 0, 0, rect.width, rect.height, hdcWindow, rect.x, rect.y, SRCCOPY);
+
+        GDI32.INSTANCE.SelectObject(hdcMemDC, hOld);
+        GDI32.INSTANCE.DeleteDC(hdcMemDC);
+
+        WinGDI.BITMAPINFO bmi = new WinGDI.BITMAPINFO();
+        bmi.bmiHeader.biWidth = rect.width;
+        bmi.bmiHeader.biHeight = -rect.height;
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = WinGDI.BI_RGB;
+
+        Memory buffer = new Memory(rect.width * rect.height * 4);
+        GDI32.INSTANCE.GetDIBits(hdcWindow, hBitmap, 0, rect.height, buffer, bmi, WinGDI.DIB_RGB_COLORS);
+
+        if (image.getWidth() != rect.width || image.getHeight() != rect.height) {
+            image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+        }
+        image.setRGB(0, 0, rect.width, rect.height, buffer.getIntArray(0, rect.width * rect.height), 0, rect.width);
+
+        GDI32.INSTANCE.DeleteObject(hBitmap);
+        Gdi32Ex.instance.DeleteDC(hdcWindow);
+
+        return image;
     }
 
     /**
