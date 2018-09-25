@@ -1,5 +1,6 @@
 package com.ysrken.kamo.controller;
 
+import com.ysrken.kamo.BitmapImage;
 import com.ysrken.kamo.model.SceneHelperModel;
 import com.ysrken.kamo.service.ScreenshotService;
 import javafx.fxml.FXML;
@@ -49,7 +50,7 @@ public class SceneHelperController {
         GetScreenShotImageButton.setOnAction(e -> {
             if(screenshot.canGetScreenshot()) {
                 final BufferedImage image = screenshot.getScreenshot();
-                setImage(image);
+                setImage(BitmapImage.of(image).clone().getImage());
             }
         });
 

@@ -110,8 +110,17 @@ public class BitmapImage {
 
     /** モノクロに変換する */
     public BitmapImage mono(){
-        final ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
-        return BitmapImage.of(colorConvert.filter(image, null));
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage image2 = new BufferedImage(width, height, image.getType());
+        for(int y = 0; y < height; ++y){
+            for(int x = 0; x < width; ++x){
+                int color = image.getRGB(x, y);
+                int color2 = (int)(0.299 * ((color >>> 16) & 0xFF) + 0.587 * ((color >>> 8) & 0xFF) + 0.114 * (color & 0xFF));
+                image2.setRGB(x, y, (color2 << 16) + (color2 << 8) + color2);
+            }
+        }
+        return BitmapImage.of(image2);
     }
 
     /** ある点のR値を取得する */
@@ -316,5 +325,17 @@ public class BitmapImage {
         g.drawString(text, x, y + size);
         g.dispose();
         return BitmapImage.of(tempImage);
+    }
+
+    /**
+     * 自身と同じ画像で別のインスタンスを作成する
+     * @return 自身と同じ画像で別のインスタンス
+     */
+    public BitmapImage clone(){
+        BufferedImage image2 = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        Graphics g = image2.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        return BitmapImage.of(image);
     }
 }
