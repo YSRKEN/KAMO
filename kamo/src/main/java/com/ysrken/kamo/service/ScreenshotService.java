@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -196,6 +197,7 @@ public class ScreenshotService {
                     }};
                 })
         );
+
         /**
          * 上辺の候補の左側を走査し、左辺となりうる辺を持ちうるかを調査する
          * ・上記のA1ピクセルより左側stepWidthピクセルの間に、「左上座標」の候補があると考えられる
@@ -238,62 +240,67 @@ public class ScreenshotService {
                         }};
                     })
         );
+
         /**
          * 上辺・左辺から決まる各候補について、Rectangleとしての条件を満たせるかをチェックする
          * ・左上座標候補からもう一度ステップサーチしていって、最小縦幅・横幅は大丈夫そうか調べる
          * ・下辺候補・右辺候補をステップサーチで調べる
          * ・最後は1ピクセルづつ舐めるように検索して正当性を確かめる
          */
-        return step2Stream.<Rectangle>flatMap(point ->
+        final List<ColorPoint> step2List = step2Stream.collect(Collectors.toList());
+        final List<Rectangle> step3List = new ArrayList<>();
+        for(ColorPoint point : step2List){
             // つまり、「左上座標から右にminGameWidth+1ピクセル進んだ位置」から
             // 「min(左上座標から右にmaxGameWidth + 1ピクセル進んだ位置, 画像の右端)」まで。
-            // rangeメソッドは終端(第二引数)を含まないので、+1ではなく+2表記なことに注意
-        	IntStreamEx.range(point.X + minGameWidth + 1, Math.min(point.X + maxGameWidth + 2, image.getWidth()))
-                //　ここのtakeWhileは、右上座標を右に1つづつ見ていく際に、右上座標が枠線の色と
+            // forは終端(第二引数)を含まないので、+1ではなく+2表記なことに注意
+            for(int x2 = point.X + minGameWidth + 1; x2 < Math.min(point.X + maxGameWidth + 2, image.getWidth()); ++x2){
+                //　ここのifは、右上座標を右に1つづつ見ていく際に、右上座標が枠線の色と
                 // 異なってしまった場合、それ以上探索するのは無駄ということから来ている
-                .takeWhile(x2 -> image.getRGB(x2, point.Y) == point.Color).filter(x2 -> {
+                if (image.getRGB(x2, point.Y) != point.Color){
+                    break;
+                }
+                for(int k = -1; k <= 1; ++k){
                     // 左下候補のy座標
-                    final int y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
+                    final int y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1 + k;
                     if(y2 >= image.getHeight())
-                        return false;
-                    
+                        continue;
+
                     // 左下候補をチェック
                     if(image.getRGB(x2, y2) != point.Color)
-                        return false;
-                    
+                        continue;
+
                     // ステップサーチで下辺をチェック
                     if(IntStream.range(0, stepCount).map(j -> point.X + j * stepWidth)
                             .anyMatch(x3 -> image.getRGB(x3, y2) != point.Color)) {
-                        return false;
+                        continue;
                     }
                     if(IntStream.range(0, stepCount).map(j -> point.X + j * stepWidth)
                             .allMatch(x3 -> image.getRGB(x3, y2 - 1) == point.Color)) {
-                        return false;
+                        continue;
                     }
-                    
+
                     // ステップサーチで右辺をチェック
+                    final int x2_ = x2;
                     if(IntStream.range(1, stepCount).map(j -> point.Y + j * stepHeight)
-                            .anyMatch(y3 -> image.getRGB(x2, y3) != point.Color)) {
-                        return false;
+                            .anyMatch(y3 -> image.getRGB(x2_, y3) != point.Color)) {
+                        continue;
                     }
                     if(IntStream.range(1, stepCount).map(j -> point.Y + j * stepHeight)
-                            .allMatch(y3 -> image.getRGB(x2 - 1, y3) == point.Color)) {
-                        return false;
+                            .allMatch(y3 -> image.getRGB(x2_ - 1, y3) == point.Color)) {
+                        continue;
                     }
-                    
+
                     // 最終チェック
                     if(IntStream.range(point.X, x2).anyMatch(x3 -> image.getRGB(x3, point.Y) != point.Color)
-                    || IntStream.range(point.X, x2).anyMatch(x3 -> image.getRGB(x3, y2) != point.Color)
-                    || IntStream.range(point.Y, y2).anyMatch(y3 -> image.getRGB(point.X, y3) != point.Color)
-                    || IntStream.range(point.Y, y2).anyMatch(y3 -> image.getRGB(x2, y3) != point.Color))
-                        return false;
-                    return true;
-            }).mapToObj(x2 -> {
-                // 最後にRecrangleに変換
-                final int y2 = point.Y + (x2 - (point.X + 1)) * minGameHeight / minGameWidth + 1;
-                return new Rectangle(point.X + 1, point.Y + 1, x2 - point.X - 1, y2 - point.Y - 1);
-            })
-        ).collect(Collectors.toList());
+                            || IntStream.range(point.X, x2).anyMatch(x3 -> image.getRGB(x3, y2) != point.Color)
+                            || IntStream.range(point.Y, y2).anyMatch(y3 -> image.getRGB(point.X, y3) != point.Color)
+                            || IntStream.range(point.Y, y2).anyMatch(y3 -> image.getRGB(x2_, y3) != point.Color))
+                        continue;
+                    step3List.add(new Rectangle(point.X + 1, point.Y + 1, x2 - point.X - 1, y2 - point.Y - 1));
+                }
+            }
+        }
+        return step3List;
     }
     
     /**
