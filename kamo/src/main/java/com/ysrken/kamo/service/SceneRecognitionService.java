@@ -249,4 +249,12 @@ public class SceneRecognitionService {
         }
         utility.showDialog(contentText, "画像認識結果");
     }
+
+    /**
+     * MVP画面を見て、大破艦が存在していた場合はtrue
+     * @param image MVP画面の画像
+     */
+    public boolean judgeHardDamage(BufferedImage image) {
+        return false;   // スタブ
+    }
 }

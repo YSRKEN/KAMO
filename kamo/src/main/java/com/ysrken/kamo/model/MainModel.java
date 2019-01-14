@@ -129,6 +129,11 @@ public class MainModel {
 	Timer shortIntervalTimer = null;
 
 	/**
+	 * 大破状態だとtrueになる
+	 */
+	private BooleanProperty marchBlockerStatus = new SimpleBooleanProperty(false);
+
+	/**
 	 * 各種戦闘画面の画像を更新するルーチン
 	 */
 	private BiConsumer<String, BufferedImage> setImage = null;
@@ -216,6 +221,7 @@ public class MainModel {
             if(screenshot.canGetScreenshot()){
                 // 画像を取得
                 final BufferedImage frame = screenshot.getScreenshot();
+
                 // シーンを読み取り、結果をメイン画面に表示する
 				final String scene = sceneRecognition.judgeScene(frame);
 				final String homeType = sceneRecognition.judgeHomeType(frame);
@@ -223,8 +229,10 @@ public class MainModel {
                 Platform.runLater(() -> {
                 	nowSceneText.set(sceneMessage);
                 });
-                // 母港に帰投した際、支援系の遠征は即座にリセットする
+
+                // 母港に帰投した際
 				if(getExpInfo != null && setExpTimer != null && setExpInfo != null && scene.equals("母港")){
+					// 支援系の遠征は即座にリセットする
 					for(int i = 0; i < TimerModel.EXPEDITION_COUNT; ++i){
 						String temp_string = getExpInfo.apply(i);
 						if(getExpInfo.apply(i).contains("支援任務")){
@@ -232,13 +240,18 @@ public class MainModel {
 							setExpTimer.accept(new Date(), i);
 						}
 					}
+
+					// 大破進撃フラグをOFFにする
+					marchBlockerStatus.set(false);
 				}
+
                 // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(openBattleSceneReflectionFlg.get()){
                     if(battleSceneSet.contains(scene)){
                         setImage.accept(scene, frame);
                     }
                 }
+
                 // 各種タイマー機能が有効になっていた際、画像認識により時刻を随時更新する
                 if(openTimerFlg.get()){
                     if(scene.equals("遠征個別") || scene.equals("遠征中止")){
@@ -267,6 +280,19 @@ public class MainModel {
                         }
                     }
                 }
+
+                // 大破進撃防止機能が有効になっていた際、MVP画面から大破していないかを判断する
+				if (marchBlockerFlg.get()) {
+					if (scene.equals("MVP")) {
+						boolean hardDamageFlg = sceneRecognition.judgeHardDamage(frame);
+						if (hardDamageFlg) {
+							marchBlockerStatus.set(true);
+							addLogText("【警告】");
+							addLogText("大破状態の艦がいます。進撃できません");
+						}
+					}
+				}
+
             }
             if(refreshExpTimerString != null){
                 refreshExpTimerString.run();
