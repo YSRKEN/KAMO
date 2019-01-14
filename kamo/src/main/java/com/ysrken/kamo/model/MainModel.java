@@ -66,6 +66,8 @@ public class MainModel {
 	private BooleanProperty specialGetPosFlg = new SimpleBooleanProperty(false);
 	@Getter
 	private BooleanProperty saveWindowPositionFlg = new SimpleBooleanProperty(false);
+	@Getter
+	private BooleanProperty marchBlockerFlg = new SimpleBooleanProperty(false);
 
 	@Getter
 	private BooleanProperty updateFps01Flg = new SimpleBooleanProperty(false);
@@ -284,6 +286,7 @@ public class MainModel {
     	blindNameTextFlg.addListener((ob, o, n) -> setting.setSetting("BlindNameTextFlg", n));
     	specialGetPosFlg.addListener((ob, o, n) -> setting.setSetting("SpecialGetPosFlg", n));
     	saveWindowPositionFlg.addListener((ob, o, n) -> setting.setSetting("SaveWindowPositionFlg", n));
+		marchBlockerFlg.addListener((ob, o, n) -> setting.setSetting("MarchBlockerFlg", n));
 		updateFps.addListener((ob, o, n) -> setting.setSetting("UpdateFps", n));
     }
     
@@ -301,6 +304,7 @@ public class MainModel {
     	blindNameTextFlg.set(setting.getSetting("BlindNameTextFlg"));
     	specialGetPosFlg.set(setting.getSetting("SpecialGetPosFlg"));
     	saveWindowPositionFlg.set(setting.getSetting("SaveWindowPositionFlg"));
+		marchBlockerFlg.set(setting.getSetting("MarchBlockerFlg"));
 		updateFps.set(setting.getSetting("UpdateFps"));
 
 		// FPS設定によって、メニューのチェック状態を変更
