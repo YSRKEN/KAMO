@@ -106,6 +106,8 @@ public class SettingService {
 			return (T)(Boolean.FALSE);
 		case "SaveWindowPositionFlg":
 			return (T)(Boolean.FALSE);
+		case "MarchBlockerFlg":
+			return (T)(Boolean.TRUE);
 		case "UpdateFps":
 			return (T)(Integer.valueOf(5));
 		default:

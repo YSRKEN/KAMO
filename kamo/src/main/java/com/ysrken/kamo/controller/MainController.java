@@ -36,6 +36,7 @@ public class MainController {
 	@FXML private CheckMenuItem BlindNameTextMenu;
 	@FXML private CheckMenuItem SpecialGetPosMenu;
 	@FXML private CheckMenuItem SaveWindowPositionMenu;
+	@FXML private CheckMenuItem MarchBlockerMenu;
 
 	@FXML private RadioMenuItem UpdateFps01Menu;
 	@FXML private RadioMenuItem UpdateFps03Menu;
@@ -111,6 +112,7 @@ public class MainController {
 		BlindNameTextMenu.selectedProperty().bindBidirectional(model.getBlindNameTextFlg());
 		SpecialGetPosMenu.selectedProperty().bindBidirectional(model.getSpecialGetPosFlg());
 		SaveWindowPositionMenu.selectedProperty().bindBidirectional(model.getSaveWindowPositionFlg());
+		MarchBlockerMenu.selectedProperty().bindBidirectional(model.getMarchBlockerFlg());
 		UpdateFps01Menu.selectedProperty().bindBidirectional(model.getUpdateFps01Flg());
 		UpdateFps03Menu.selectedProperty().bindBidirectional(model.getUpdateFps03Flg());
 		UpdateFps05Menu.selectedProperty().bindBidirectional(model.getUpdateFps05Flg());

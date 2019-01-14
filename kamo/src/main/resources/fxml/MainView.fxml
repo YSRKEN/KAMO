@@ -35,6 +35,7 @@
                         <CheckMenuItem fx:id="BlindNameTextMenu" text="スクショで名前を隠す(_B)" />
                         <CheckMenuItem fx:id="SpecialGetPosMenu" text="特殊な座標取得手法を使用する(_S)" />
                         <CheckMenuItem fx:id="SaveWindowPositionMenu" text="ウィンドウの位置を記憶する(_P)" />
+                        <CheckMenuItem fx:id="MarchBlockerMenu" text="大破進撃防止機能を付ける(_M)" />
                         <Menu text="画面更新速度(_U)">
                             <fx:define>
                                 <ToggleGroup fx:id="fpsToggleGroup"/>
