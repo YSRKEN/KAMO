@@ -240,7 +240,10 @@ public class MainModel {
 							setExpTimer.accept(new Date(), i);
 						}
 					}
+				}
 
+				// マップ画面もしくは母港画面に遷移した際
+				if (scene.equals("母港") || scene.equals("マップ")) {
 					// 大破進撃フラグをOFFにする
 					marchBlockerStatus.set(false);
 				}
