@@ -285,7 +285,7 @@ public class MainModel {
 				if (marchBlockerFlg.get()) {
 					if (scene.equals("MVP")) {
 						boolean hardDamageFlg = sceneRecognition.judgeHardDamage(frame);
-						if (hardDamageFlg) {
+						if (hardDamageFlg && !marchBlockerStatus.get()) {
 							marchBlockerStatus.set(true);
 							addLogText("【警告】");
 							addLogText("大破状態の艦がいます。進撃できません");
