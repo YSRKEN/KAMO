@@ -295,7 +295,6 @@ public class MainModel {
 						}
 					}
 				}
-
             }
             if(refreshExpTimerString != null){
                 refreshExpTimerString.run();

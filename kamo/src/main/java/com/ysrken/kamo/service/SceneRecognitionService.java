@@ -7,13 +7,16 @@ import com.ysrken.kamo.BitmapImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * 画面のシーン判定を行う
@@ -229,25 +232,29 @@ public class SceneRecognitionService {
         final String scene = judgeScene(image);
         final String homeType = judgeHomeType(image);
 
-        String contentText = String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "[不明]": scene, homeType.isEmpty() ? "No" : "Yes(" + homeType + ")");
+        StringBuilder contentText = new StringBuilder(String.format("シーン判定：%s%nほぼ母港か？：%s", scene.isEmpty() ? "[不明]" : scene, homeType.isEmpty() ? "No" : "Yes(" + homeType + ")"));
         if(scene.equals("遠征個別") || scene.equals("遠征中止")){
             final long duration = characterRecognition.getExpeditionRemainingTime(image);
             if(duration >= 0) {
-                contentText += String.format("%n残り時間：%s", utility.getDateStringShortFromLong(duration));
+                contentText.append(String.format("%n残り時間：%s", UtilityService.getDateStringShortFromLong(duration)));
             }else{
-                contentText += String.format("%n残り時間：不明");
+                contentText.append(String.format("%n残り時間：不明"));
             }
             final Map<Integer, String> result = characterRecognition.getExpeditionFleetId(image);
             if(result.size() > 0){
-                contentText += String.format("%n遠征艦隊番号：");
+                contentText.append(String.format("%n遠征艦隊番号："));
                 for(Map.Entry<Integer, String> pair : result.entrySet()){
-                    contentText += String.format("%n　第%d艦隊→%s", pair.getKey(), pair.getValue());
+                    contentText.append(String.format("%n　第%d艦隊→%s", pair.getKey(), pair.getValue()));
                 }
             }
             final String expeditionId = characterRecognition.getSelectedExpeditionId(image);
-            contentText += String.format("%n遠征ID：%s", expeditionId);
+            contentText.append(String.format("%n遠征ID：%s", expeditionId));
         }
-        utility.showDialog(contentText, "画像認識結果");
+        if (scene.equals("MVP")) {
+            boolean hardDamageFlg = judgeHardDamage(image);
+            contentText.append(String.format("%n大破艦がいるか？：%s", (hardDamageFlg ? "Yes" : "No")));
+        }
+        utility.showDialog(contentText.toString(), "画像認識結果");
     }
 
     /**
@@ -255,6 +262,21 @@ public class SceneRecognitionService {
      * @param image MVP画面の画像
      */
     public boolean judgeHardDamage(BufferedImage image) {
-        return false;   // スタブ
+        final Color color1Sample = new Color(236, 94, 92);
+        final Color color2Sample = new Color(237, 99, 98);
+        List<Boolean> hardDamageFlg = IntStream.range(0, 6)
+                .boxed().map(index -> {
+                    final double posX1Per = 1.0 * 522 / 12;
+                    final double posY1Per = 1.0 * (337 + index * 68) / 7.2;
+                    final double posX2Per = 1.0 * 490 / 12;
+                    final double posY2Per = 1.0 * (287 + index * 68) / 7.2;
+                    final Color color1 = BitmapImage.of(image).calcAverageColor(posX1Per, posY1Per, 2.0 / 12, 2.0 / 7.2);
+                    final Color color2 = BitmapImage.of(image).calcAverageColor(posX2Per, posY2Per, 2.0 / 12, 2.0 / 7.2);
+                    //System.out.println(color1.toString() + " " + utility.calcColorDistance(color1, color1Sample));
+                    //System.out.println(color2.toString() + " " + utility.calcColorDistance(color2, color2Sample) + "\n");
+                    return (utility.calcColorDistance(color1, color1Sample) < 500 && utility.calcColorDistance(color2, color2Sample) < 500);
+                }).collect(Collectors.toList());
+        //System.out.println("hardDamageFlg : " + hardDamageFlg.get(0) + " " + hardDamageFlg.get(1) + " " + hardDamageFlg.get(2) + " " + hardDamageFlg.get(3) + " " + hardDamageFlg.get(4) + " " + hardDamageFlg.get(5) + "");
+        return hardDamageFlg.stream().anyMatch(flg -> flg);
     }
 }

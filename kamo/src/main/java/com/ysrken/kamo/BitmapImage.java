@@ -74,12 +74,17 @@ public class BitmapImage {
     /** 指定した位置・サイズに切り抜く */
     public BitmapImage crop(Rectangle rect){ return BitmapImage.of(image.getSubimage(rect.x, rect.y, rect.width, rect.height)); }
 
-    /** 指定した位置・サイズ(割合指定)に切り抜く */
+    /**
+     * 指定した位置・サイズ(割合指定)に切り抜く
+     * ただし最低でも1ピクセルは切り取る
+     */
     public BitmapImage crop(double xPer, double yPer, double wPer, double hPer){
         final int x = (int)Math.round(xPer * image.getWidth() / 100);
         final int y = (int)Math.round(yPer * image.getHeight() / 100);
-        final int w = (int)Math.round(wPer * image.getWidth() / 100);
-        final int h = (int)Math.round(hPer * image.getHeight() / 100);
+        int w = (int)Math.round(wPer * image.getWidth() / 100);
+        int h = (int)Math.round(hPer * image.getHeight() / 100);
+        w = (w <= 0 ? 1 : w);
+        h = (h <= 0 ? 1 : h);
         return BitmapImage.of(image.getSubimage(x, y, w, h));
     }
 
