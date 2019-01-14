@@ -10,6 +10,7 @@ import com.ysrken.kamo.stage.ExtraStage;
 import com.ysrken.kamo.stage.ExtraStageFactory;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -292,6 +293,7 @@ public class MainModel {
 							marchBlockerStatus.set(true);
 							addLogText("【警告】");
 							addLogText("大破状態の艦がいます。進撃できません");
+							utility.showDialog("大破状態の艦がいます。進撃できません", "大破進撃防止", Alert.AlertType.ERROR);
 						}
 					}
 				}

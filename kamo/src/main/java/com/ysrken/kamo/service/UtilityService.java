@@ -1,5 +1,6 @@
 package com.ysrken.kamo.service;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -206,8 +207,10 @@ public class UtilityService {
      * @param type ダイアログの種類
      */
     public void showDialog(String contentText, String headerText, Alert.AlertType type){
-        final AlwaysOnTopAlert alert = new AlwaysOnTopAlert();
-        alert.showDialog(contentText, headerText, type);
+        Platform.runLater(() -> {
+            final AlwaysOnTopAlert alert = new AlwaysOnTopAlert();
+            alert.showDialog(contentText, headerText, type);
+        });
     }
     
     /**
