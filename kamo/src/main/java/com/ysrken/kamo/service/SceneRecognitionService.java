@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ysrken.kamo.BitmapImage;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -75,7 +76,7 @@ public class SceneRecognitionService {
          */
         public boolean isMatchImage(BufferedImage image){
             final long hash = BitmapImage.of(image).calcDifferenceHash(xPer, yPer, wPer, hPer);
-            return utility.calcHummingDistance(this.hash, hash) < 20;
+            return utility.calcHummingDistance(this.hash, hash) < 25;
         }
     }
     
@@ -118,8 +119,8 @@ public class SceneRecognitionService {
     /**
      * シーン一覧
      */
-    private Map<String, SceneEvidence[]> homeSceneList = new HashMap<String, SceneEvidence[]>();
-    private Map<String, SceneEvidence[]> otherSceneList = new HashMap<String, SceneEvidence[]>();
+    private List<Pair<String, SceneEvidence[]>> homeSceneList = new ArrayList<>();
+    private List<Pair<String, SceneEvidence[]>> otherSceneList = new ArrayList<>();
 
     public SceneRecognitionService() {
     	System.out.println("DEBUG MainApp - SceneRecognitionService#SceneRecognitionService");
@@ -127,10 +128,8 @@ public class SceneRecognitionService {
     
     /**
      * 初期化
-     * @throws IOException 
-     * @throws JsonProcessingException 
      */
-    public void initialize() throws JsonProcessingException, IOException {
+    public void initialize() {
     	System.out.println("DEBUG MainApp - SceneRecognitionService#initialize");
     	
     	// JSONを読み込む
@@ -169,9 +168,9 @@ public class SceneRecognitionService {
                 }
 
                 if (sceneName.matches("ほぼ母港.*")){
-                    homeSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                    homeSceneList.add(new Pair<>(sceneName, evidenceList.toArray(new SceneEvidence[0])));
                 }else{
-                    otherSceneList.put(sceneName, evidenceList.toArray(new SceneEvidence[0]));
+                    otherSceneList.add(new Pair<>(sceneName, evidenceList.toArray(new SceneEvidence[0])));
                 }
             }
         } catch (IOException e) {
@@ -185,7 +184,7 @@ public class SceneRecognitionService {
      * @return シーンを表す文字列
      */
     public String judgeScene(BufferedImage frame){
-        for(Map.Entry<String, SceneEvidence[]> e : otherSceneList.entrySet()){
+        for(Pair<String, SceneEvidence[]> e : otherSceneList){
             SceneEvidence[] seList = e.getValue();
             boolean flg = true;
             for(SceneEvidence se : seList){
@@ -209,7 +208,7 @@ public class SceneRecognitionService {
      * @return 母港の書類を表す文字列
      */
     public String judgeHomeType(BufferedImage frame){
-        for(Map.Entry<String, SceneEvidence[]> e : homeSceneList.entrySet()){
+        for(Pair<String, SceneEvidence[]> e : homeSceneList){
             SceneEvidence[] seList = e.getValue();
             boolean flg = true;
             for(SceneEvidence se : seList){
