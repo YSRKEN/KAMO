@@ -76,7 +76,6 @@ public class SceneRecognitionService {
          */
         public boolean isMatchImage(BufferedImage image){
             final long hash = BitmapImage.of(image).calcDifferenceHash(xPer, yPer, wPer, hPer);
-            System.out.println(utility.calcHummingDistance(this.hash, hash));
             return utility.calcHummingDistance(this.hash, hash) < 25;
         }
     }
@@ -210,7 +209,6 @@ public class SceneRecognitionService {
      */
     public String judgeHomeType(BufferedImage frame){
         for(Pair<String, SceneEvidence[]> e : homeSceneList){
-            System.out.println(e.getKey());
             SceneEvidence[] seList = e.getValue();
             boolean flg = true;
             for(SceneEvidence se : seList){
