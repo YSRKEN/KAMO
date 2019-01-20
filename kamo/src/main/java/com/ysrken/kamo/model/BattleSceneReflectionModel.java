@@ -23,7 +23,7 @@ public class BattleSceneReflectionModel {
      * 表示するシーン一覧
      */
     final static public Set<String> SceneList = new LinkedHashSet<>(
-            Arrays.asList("昼戦後", "夜戦後", "戦闘結果", "MVP", "マップ", "中破", "大破")
+            Arrays.asList("昼戦後", "夜戦後", "戦闘後", "戦闘結果", "MVP", "マップ", "中破", "大破", "ドロップ")
     );
 
     /**
@@ -64,5 +64,8 @@ public class BattleSceneReflectionModel {
      */
     public void setImage(String key, BufferedImage image){
         setImageFunc.get(key).accept(image);
+        if (key.equals("昼戦後") || key.equals("夜戦後")) {
+            setImageFunc.get("戦闘後").accept(image);
+        }
     }
 }

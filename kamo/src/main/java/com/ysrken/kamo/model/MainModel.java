@@ -251,8 +251,9 @@ public class MainModel {
 
                 // 戦闘振り返り機能が有効になっていた際、特定シーンの画像を転送する
                 if(openBattleSceneReflectionFlg.get()){
-                    if(battleSceneSet.contains(scene)){
-                        setImage.accept(scene, frame);
+					String scene_ = scene.contains("ドロップ") ? "ドロップ" : scene;
+                    if(battleSceneSet.contains(scene_)){
+                        setImage.accept(scene_, frame);
                     }
                 }
 
